@@ -19,6 +19,11 @@ import java.util.regex.Pattern;
  */
 public class Group extends Client {
 
+    /**
+     * Default constructor
+     * @param id User or group id
+     * @param access_token Access token key
+     */
     public Group(Integer id, String access_token) {
         super(id, access_token);
     }
@@ -64,15 +69,12 @@ public class Group extends Client {
                 template_photo = new File(cover);
             }
 
-            // Берем сервак
             String get_upload_server_query = "https://api.vk.com/method/photos.getOwnerCoverPhotoUploadServer?group_id=" + getId() + "&crop_x=0&crop_y=0&crop_x2=1590&crop_y2=400&access_token=" + getAccessToken() + "&v=5.64";
 
             JSONObject getUploadServerResponse = Connection.getRequestResponse(get_upload_server_query);
 
-            // Получаем адрес для загрузки фотачки
             String cover_upload_url = getUploadServerResponse.getJSONObject("response").getString("upload_url");
 
-            // Загружаем
             String response_string = Connection.getFileUploadAnswerOfVK(
                     cover_upload_url,
                     "photo",
@@ -90,11 +92,9 @@ public class Group extends Client {
 
             if (response.has("hash") && response.has("photo")) {
 
-                // Берём своё
                 String hash_field = response.getString("hash");
                 String photo_field = response.getString("photo");
 
-                // Uploading!
                 String save_cover_query = "https://api.vk.com/method/photos.saveOwnerCoverPhoto?hash=" + hash_field + "&photo=" + photo_field + "&access_token=" + getAccessToken() + "&v=5.64";
 
                 return new JSONObject(Connection.getRequestResponse(save_cover_query));

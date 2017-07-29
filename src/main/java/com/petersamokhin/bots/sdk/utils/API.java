@@ -6,7 +6,7 @@ import org.json.JSONObject;
 import java.util.Map;
 
 /**
- * Created by PeterSamokhin on 28/07/2017 12:07
+ * Simple interacting with VK API
  */
 public class API {
 
@@ -137,7 +137,7 @@ public class API {
      * Logging properties:
      * 0 - no info
      * 1 - print every call query to console
-     * 2 - print every call query & response to console
+     * 2 - print every call query and response to console
      *
      * @param newLogLevel new log level
      */
@@ -146,10 +146,10 @@ public class API {
     }
 
     /**
-     * Get current log level:     *
+     * Get current log level:
      * 0 - no info
      * 1 - print every call query to console
-     * 2 - print every call query & response to console
+     * 2 - print every call query and response to console
      */
     public byte getLogLevel() {
         return this.LOG_LEVEL;

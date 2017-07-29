@@ -7,6 +7,11 @@ package com.petersamokhin.bots.sdk.clients;
  */
 public class User extends Client {
 
+    /**
+     * Default constructor
+     * @param id User or group id
+     * @param access_token Access token key
+     */
     public User(Integer id, String access_token) {
         super(id, access_token);
     }

@@ -25,7 +25,7 @@ import java.util.Random;
 import java.util.regex.Pattern;
 
 /**
- * Created by PeterSamokhin on 27/07/2017 21:03
+ * Message object for both (received and sent) messages
  */
 public class Message {
 

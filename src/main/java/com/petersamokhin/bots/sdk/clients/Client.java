@@ -5,7 +5,7 @@ import com.petersamokhin.bots.sdk.utils.API;
 
 /**
  * Main client class, that contains all necessary methods and fields
- * for base work with VK & longpoll server
+ * for base work with VK and longpoll server
  */
 public abstract class Client {
 
@@ -14,6 +14,11 @@ public abstract class Client {
     private API api;
     private LongPoll longPoll = null;
 
+    /**
+     * Default constructor
+     * @param id User or group id
+     * @param access_token Access token key
+     */
     Client(Integer id, String access_token) {
 
         this.id = id;

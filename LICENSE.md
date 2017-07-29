@@ -2,7 +2,9 @@
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
 
-   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+   #####TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+   
+   ### При использовании проекта необходимо указать, что он был создан с использованием данной библиотеки, и указать ссылку на github.com в ссылках своего сообщества, если бот создан для сообщества, или в разделе общедоступной информации, если он создан для личной страницы.
 
    1. Definitions.
 
@@ -186,7 +188,7 @@
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright © 2017 PeterSamokhin.com
+   #Copyright © 2017 PeterSamokhin.com
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

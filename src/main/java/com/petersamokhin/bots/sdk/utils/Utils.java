@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by PeterSamokhin on 27/07/2017 22:44
+ * Utils class with useful methods
  */
 public class Utils {
 
@@ -84,7 +84,7 @@ public class Utils {
     }
 
     /**
-     * Params from varargs: "user_id", 62802565 -> "&user_id=62802565"
+     * Params from varargs: [&quot;user_id&quot;, 62802565] to &quot;&amp;user_id=62802565&quot;
      * @param params Params
      * @return String
      */
