@@ -18,9 +18,9 @@
 
 ### С помощью **maven**
 Поскольку в `maven central` библиотека ещё не загружена, нужно собственноручно добавить её в локальный репозиторий. Для этого необходимо всего лишь скачать jar-файл и прописать одну команду в терминале (для `macOS` и `linux`)
-* [Скачиваем отсюда библиотеку] (https://www.petersamokhin.com/files/vk-java-bot-sdk-0.0.1.jar)
+* [Скачиваем отсюда библиотеку](https://www.petersamokhin.com/files/vk-java-bot-sdk-0.0.1.jar)
 * Файл назван `vk-java-bot-sdk-0.0.1.jar`. Сохраняем его в любую папку, нам нужен лишь путь до файла. Например: `/root/vk-java-bot-sdk-0.0.1.jar`
-* Пишем в консоль: `mvn install:install-file -Dfile=/root/vk-java-bot-sdk-0.0.1.jar -DgroupId=com.petersamokhin -DartifactId=vk-java-bot-sdk -Dversion=0.0.1 -Dpackaging=jar`
+* Пишем в консоль (поменять здесь нужно только путь до файла): `mvn install:install-file -Dfile=/root/vk-java-bot-sdk-0.0.1.jar -DgroupId=com.petersamokhin -DartifactId=vk-java-bot-sdk -Dversion=0.0.1 -Dpackaging=jar`
 * Готово. Можно подключать к проекту. Пишем в **pom.xml**:
 ```xml
 <depedencies>
@@ -31,4 +31,5 @@
     <version>0.0.1</version>
 </dependency>
 ...
+</depedencies>
 ```
