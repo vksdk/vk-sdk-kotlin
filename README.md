@@ -153,7 +153,8 @@ depedencies {
   ```bash
   javac -cp "/root/vk-java-bot-sdk-0.0.1-jar-with-dependencies.jar" MyMainClass.jar 
   ```
-  * Если используете **IntelliJ IDEA**, то нужно зайти в **Project Structure...** | **Libraries**, нажать `+` и добавить скачанный файл в список библиотек.
+  * Если используете **IntelliJ IDEA**, то нужно зайти в **Project Structure...** | **Libraries**, нажать `+` и добавить скачанный файл в список библиотек:
+  ![Cover](https://petersamokhin.com/files/vk-java-bot-sdk/git_screen_2.png)
   
 ---
 Готово. Библиотека подключена к вашему проекту и готова для использования.
