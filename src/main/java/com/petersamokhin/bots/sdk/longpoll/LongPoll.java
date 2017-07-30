@@ -133,6 +133,8 @@ public class LongPoll {
 
             JSONObject response = Connection.getRequestResponse(query);
 
+            System.out.println(response);
+
             if (response.has("failed")) {
 
                 int code = response.getInt("failed");
@@ -238,7 +240,7 @@ public class LongPoll {
                                         }
 
                                         case "simpleTextMessage": {
-                                            callback.onStickerMessage(message);
+                                            callback.onSimpleTextMessage(message);
                                             break;
                                         }
                                     }

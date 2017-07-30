@@ -16,6 +16,19 @@ public abstract class Client {
 
     /**
      * Default constructor
+     * @param access_token Access token key
+     */
+    Client(String access_token) {
+
+        this.id = id;
+        this.accessToken = access_token;
+        this.longPoll = new LongPoll(access_token);
+
+        this.api = new API(this);
+    }
+
+    /**
+     * Default constructor
      * @param id User or group id
      * @param access_token Access token key
      */

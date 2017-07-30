@@ -15,4 +15,12 @@ public class User extends Client {
     public User(Integer id, String access_token) {
         super(id, access_token);
     }
+
+    /**
+     * Default constructor
+     * @param access_token Access token key
+     */
+    public User(String access_token) {
+        super(access_token);
+    }
 }
