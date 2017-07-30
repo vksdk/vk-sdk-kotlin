@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"com.petersamokhin.bots.sdk.callbacks"},{"l":"com.petersamokhin.bots.sdk.clients"},{"l":"com.petersamokhin.bots.sdk.longpoll"},{"l":"com.petersamokhin.bots.sdk.longpoll.responses"},{"l":"com.petersamokhin.bots.sdk.objects"},{"l":"com.petersamokhin.bots.sdk.utils"}]

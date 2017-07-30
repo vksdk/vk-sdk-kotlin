@@ -164,8 +164,6 @@ public class Message {
         // Use file from disk or url
         if (photo.endsWith(".png") || photo.endsWith(".jpg") || photo.endsWith(".gif") || photo.endsWith(".jpeg")) {
 
-            System.out.println("Link received!");
-
             File template_photo;
 
             if (Pattern.matches("https?://.+", photo)) {
@@ -435,6 +433,7 @@ public class Message {
 
     /**
      * Get attachments from message
+     *
      * @return JSONArray: [photo62802565_456241137, photo111_111, doc100_500]
      */
     public JSONArray getAttachments() {
@@ -451,39 +450,39 @@ public class Message {
      * Priority: voice, sticker, gif, ... , simple text
      */
     public boolean isPhotoMessage() {
-        return getCountOfMessagesByType().get("photo") > 0;
+        return getCountOfAttachmentsByType().get("photo") > 0;
     }
 
     public boolean isSimpleTextMessage() {
-        return getCountOfMessagesByType().get("summary") == 0;
+        return getCountOfAttachmentsByType().get("summary") == 0;
     }
 
     public boolean isVoiceMessage() {
-        return getCountOfMessagesByType().get("voice") > 0;
+        return getCountOfAttachmentsByType().get("voice") > 0;
     }
 
     public boolean isAudioMessage() {
-        return getCountOfMessagesByType().get("audio") > 0;
+        return getCountOfAttachmentsByType().get("audio") > 0;
     }
 
     public boolean isVideoMessage() {
-        return getCountOfMessagesByType().get("video") > 0;
+        return getCountOfAttachmentsByType().get("video") > 0;
     }
 
     public boolean isDocMessage() {
-        return getCountOfMessagesByType().get("doc") > 0;
+        return getCountOfAttachmentsByType().get("doc") > 0;
     }
 
     public boolean isWallMessage() {
-        return getCountOfMessagesByType().get("wall") > 0;
+        return getCountOfAttachmentsByType().get("wall") > 0;
     }
 
     public boolean isStickerMessage() {
-        return getCountOfMessagesByType().get("sticker") > 0;
+        return getCountOfAttachmentsByType().get("sticker") > 0;
     }
 
     public boolean isLinkMessage() {
-        return getCountOfMessagesByType().get("link") > 0;
+        return getCountOfAttachmentsByType().get("link") > 0;
     }
 
     public boolean isGifMessage() {
@@ -499,7 +498,7 @@ public class Message {
 
     // Getters and setters for handling new message
 
-    public Map<String, Integer> getCountOfMessagesByType() {
+    public Map<String, Integer> getCountOfAttachmentsByType() {
 
         int photo = 0, video = 0, audio = 0, doc = 0, wall = 0, link = 0;
 
@@ -619,6 +618,26 @@ public class Message {
         }
 
         return answer;
+    }
+
+    public String getBiggestPhotoUrl(JSONArray photos) {
+
+        String currentBiggestPhoto = null;
+
+        for (int i = 0; i < photos.length(); i++) {
+            if (photos.getJSONObject(i).has("photo_1280"))
+                currentBiggestPhoto = photos.getJSONObject(i).getString("photo_1280");
+            else if (photos.getJSONObject(i).has("photo_807"))
+                currentBiggestPhoto = photos.getJSONObject(i).getString("photo_807");
+            else if (photos.getJSONObject(i).has("photo_604"))
+                currentBiggestPhoto = photos.getJSONObject(i).getString("photo_604");
+            else if (photos.getJSONObject(i).has("photo_130"))
+                currentBiggestPhoto = photos.getJSONObject(i).getString("photo_130");
+            else if (photos.getJSONObject(i).has("photo_75"))
+                currentBiggestPhoto = photos.getJSONObject(i).getString("photo_75");
+        }
+
+        return currentBiggestPhoto;
     }
 
     public JSONObject getVoiceMessage() {

@@ -60,8 +60,6 @@ public class Group extends Client {
         Integer groupId;
         String accessToken;
 
-        System.out.println(params.length);
-
         switch (params.length) {
             case 0:
                 return new JSONObject();
@@ -107,7 +105,7 @@ public class Group extends Client {
 
                 try {
                     templatePhoto = new File(template_name);
-                    System.out.println(templatePhoto.createNewFile());
+                    templatePhoto.createNewFile();
                     Files.setPosixFilePermissions(Paths.get(templatePhoto.getAbsolutePath()), PosixFilePermissions.fromString("rwxrwxrwx"));
                     FileUtils.copyURLToFile(new URL(cover), templatePhoto, 5000, 5000);
 

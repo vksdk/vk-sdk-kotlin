@@ -1,0 +1,6 @@
+com.petersamokhin.bots.sdk.callbacks
+com.petersamokhin.bots.sdk.clients
+com.petersamokhin.bots.sdk.longpoll
+com.petersamokhin.bots.sdk.longpoll.responses
+com.petersamokhin.bots.sdk.objects
+com.petersamokhin.bots.sdk.utils

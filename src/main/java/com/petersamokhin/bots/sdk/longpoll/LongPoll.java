@@ -133,8 +133,6 @@ public class LongPoll {
 
             JSONObject response = Connection.getRequestResponse(query);
 
-            System.out.println(response);
-
             if (response.has("failed")) {
 
                 int code = response.getInt("failed");
@@ -144,6 +142,9 @@ public class LongPoll {
                 switch (code) {
 
                     default: {
+
+                        Integer new_ts = response.has("ts") ? response.getInt("ts") : ts;
+
 
                         setData(null, null, null, null, null, null);
 

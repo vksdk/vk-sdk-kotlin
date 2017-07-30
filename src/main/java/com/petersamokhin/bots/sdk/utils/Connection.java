@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit;
 public final class Connection {
 
     private static final OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
             .retryOnConnectionFailure(false)
             .build();
 
@@ -48,7 +48,7 @@ public final class Connection {
 
         client.connectionPool().evictAll();
 
-        responseBody = (responseBody == null || responseBody.length() < 2) ? "P{" : responseBody;
+        responseBody = (responseBody == null || responseBody.length() < 2) ? "{}" : responseBody;
 
         return new JSONObject(responseBody);
     }
