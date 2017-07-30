@@ -16,10 +16,15 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Created by PeterSamokhin on 27/07/2017 14:59
+ * Class for encoding QRCode images and decoding any text to them.
  */
 public class QRCode {
 
+    /**
+     * Encode text to QR Code image
+     * @param what Text
+     * @param file Result image file
+     */
     public void encode(String what, File file) {
 
         int size = 250;
@@ -60,6 +65,11 @@ public class QRCode {
         }
     }
 
+    /**
+     * Decode QR Code from image
+     * @param file Image file with QR Code
+     * @return Decoded text
+     */
     public String decode(File file) {
 
         String stringFromQRCode = "";
