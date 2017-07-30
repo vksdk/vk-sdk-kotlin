@@ -19,7 +19,7 @@
 ---
 
 #### С помощью maven и gradle
-Поскольку в `maven central` библиотека ещё не загружена, нужно собственноручно добавить её в локальный репозиторий. Для этого необходимо всего лишь скачать jar-файл и прописать одну команду в терминале (для `macOS` и `linux`)
+Поскольку в `maven central` библиотека ещё не загружена, нужно собственноручно добавить её в локальный репозиторий. Для этого необходимо всего лишь скачать jar-файл и прописать одну команду в терминале (для `macOS` и `linux`):
 * Скачиваем: [библиотека (28.3 kB)](https://www.petersamokhin.com/files/vk-java-bot-sdk-0.0.1.jar) | [md5](https://www.petersamokhin.com/files/vk-java-bot-sdk-0.0.1.jar.md5)
 * Файл назван `vk-java-bot-sdk-0.0.1.jar`. Сохраняем его в любую папку, нам нужен лишь путь до файла. Например: `/root/vk-java-bot-sdk-0.0.1.jar`
 * Пишем в консоль (поменять здесь нужно только путь до файла): 
@@ -40,21 +40,21 @@ mvn install:install-file -Dfile=/root/vk-java-bot-sdk-0.0.1.jar -DgroupId=com.pe
 </depedencies>
 ```
 
-* Для **gradle** — в build.gradle на уровне проекта добавьте `mavenLocal()` в `repositories`:
+* Для **gradle** — в **build.gradle** на уровне проекта добавьте `mavenLocal()` в `repositories`:
 ```
 repositories {
     mavenCentral()
     mavenLocal()
 }
 ```
-* Затем чуть ниже в depedencies добавьте `compile 'com.petersamokhin:vk-java-bot-sdk:0.0.1'`:
+* Затем чуть ниже в `depedencies` добавьте `compile 'com.petersamokhin:vk-java-bot-sdk:0.0.1'`:
 ```
 depedencies {
     compile 'com.petersamokhin:vk-java-bot-sdk:0.0.1'
 }
 ```
 
-Все остальные нужные зависимости сами будут подгружены автоматически (`com.squareup.okhttp3`, `org.json`, `commons-io`, `org.apache.commons`). 
+Все остальные нужные зависимости сами будут подгружены автоматически ([com.squareup.okhttp3](https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp/3.8.1), [org.json](https://mvnrepository.com/artifact/org.json/json/20170516), [commons-io](https://mvnrepository.com/artifact/commons-io/commons-io/2.5), [org.apache.commons](https://mvnrepository.com/artifact/org.apache.commons/commons-lang3/3.6)). 
 
 ---
 
