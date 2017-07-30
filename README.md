@@ -40,10 +40,10 @@ mvn install:install-file -Dfile=/root/vk-java-bot-sdk-0.0.1.jar -DgroupId=com.pe
 ```
 Все остальные нужные зависимости сами будут подгружены автоматически (`com.squareup.okhttp3`, `org.json`, `commons-io`, `org.apache.commons`).
 
+---
+
 #### Без систем сборок (добавляем библиотеку в classpath)
 Здесь немного проще, но это не значит, что лучше. Вопрос удобства.
-
----
 
 * Скачиваем (все зависимости включены в сборку): [библиотека (1.3 MB)](https://petersamokhin.com/files/vk-java-bot-sdk-0.0.1-jar-with-dependencies.jar) | [md5](https://petersamokhin.com/files/vk-java-bot-sdk-0.0.1-jar-with-dependencies.jar.md5)
 
