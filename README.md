@@ -7,6 +7,47 @@
 С помощью данной библиотеки можно довольно просто взаимодействовать с [VK API](https://vk.com/dev/manuals) для создания ботов и не только. 
 Функционал прекрасно подходит как для сообществ, так и для личных страниц.
 
+## Пример
+
+```java
+Group group = new Group(151083290, "access_token");
+
+        Message message = new Message();
+        
+        group.longPoll().listen(new Callback() {
+            
+            @Override
+            public void onSimpleTextMessage(Message message) {
+                
+                message
+                        .from(group)
+                        .to(message.authorId())
+                        .text("Что-то скучновато много букв читать. Картинку кинь лучше.")
+                        .send();
+            }
+
+            @Override
+            public void onPhotoMessage(Message message) {
+
+                message
+                        .from(group)
+                        .to(message.authorId())
+                        .text("Уже лучше. Что дальше?")
+                        .send();
+            }
+
+            @Override
+            public void onVoiceMessage(Message message) {
+
+                message
+                        .from(group)
+                        .to(message.authorId())
+                        .text("Не охота мне голосовые твои слушать.")
+                        .send();
+            }
+        });
+```
+
 ## Подготовка
 * Для начала необходимо создать сообщество, если бот будет работать от его имени
   * Сделать это можно [здесь](https://vk.com/groups)
