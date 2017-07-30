@@ -240,3 +240,20 @@ depedencies {
    * [public JSONObject call(String method, Object params)](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/API.java#L45) Делаем запрос к VK API, данный метод принимает JSONObject, Map или строку с параметрами для вызова метода API.
    * [public JSONObject call(String method, Object... params)](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/API.java#L102) Делаем запрос к VK API, данный метод принимает перечисленные через запятую параметры.
    * Также, для отслеживания работы запросов к API добавлен "логгер", в консоль будут выводиться либо только строки запросов [(setLogLevel(1))](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/API.java#L144), либо только ответы от сервера ВК [(setLogLevel(2))](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/API.java#L144), либо и то, и то вместе [(setLogLevel(3))](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/API.java#L144), либо ничего [((setLogLevel(0))](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/API.java#L144).
+   
+### Connection
+
+* [public final class Connection](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/Connection.java#L15) Класс для взаимодействия с сетью
+  * [public static JSONObject getRequestResponse(String url)](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/Connection.java#L29) Отправляем GET-запрос 
+  * [public static JSONObject postRequestResponse(String url, String Body)](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/Connection.java#L63) Отправляем POST-запрос
+  * [public static String getFileUploadAnswerOfVK(String uploadUrl, String fieldName, MediaType mediaType, File file)](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/Connection.java#L98) Загружаем файл в ВК
+  
+  
+### Utils
+
+* [public class Utils](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/Utils.java#L15) Класс, содержащий <s>свистелки и перделки</s> важные и полезные методы.
+  * [public static void setTimeout(Runnable runnable, int delay)](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/Utils.java#L20) Аналог метода `setTimeout` из `javascript`.
+  * [public static String MapToURLParamsQuery(Object arr)](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/Utils.java#L37) Метод возвращает строку для запроса, созданную из Map / JSONObject 
+  * [public static String toQueryString(Object o)](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/Utils.java#L61) Метод превращает строку, разделенную запятыми, созданную из `List`/`String[]`/`Object[]`/`JSONArray`.
+  * [public static String paramsToString(Object... params)](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/Utils.java#L91) Метод превращает строку "param=value&one=1" из перечисленного списка аргументов (их должно быть четное количество - пара ключ-значение).
+  * [public static int sizeOfFile(String url, String dim)](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/utils/Utils.java#L115) Метод возвращает размер файла по URL в `bits` / `kbits` / `mbits`
