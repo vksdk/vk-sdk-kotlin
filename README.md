@@ -16,9 +16,9 @@
 ## Установка
 Как только библиотека будет хорошо отлажена и протестирована, она будет загружена в `maven central repository`, и для подключения её к проекту (с использованием любой из систем сборок) нужно будет потратить пару секунд. На данный момент библиотека находится на стадии альфа-тестирования, и вы можете помочь улучшить её.
 
-### С помощью **maven**
+#### С помощью **maven**
 Поскольку в `maven central` библиотека ещё не загружена, нужно собственноручно добавить её в локальный репозиторий. Для этого необходимо всего лишь скачать jar-файл и прописать одну команду в терминале (для `macOS` и `linux`)
-* [Скачиваем отсюда библиотеку](https://www.petersamokhin.com/files/vk-java-bot-sdk-0.0.1.jar)
+* Скачиваем: [библиотека (28.3 kB)](https://www.petersamokhin.com/files/vk-java-bot-sdk-0.0.1.jar) | [md5](https://www.petersamokhin.com/files/vk-java-bot-sdk-0.0.1.jar.md5)
 * Файл назван `vk-java-bot-sdk-0.0.1.jar`. Сохраняем его в любую папку, нам нужен лишь путь до файла. Например: `/root/vk-java-bot-sdk-0.0.1.jar`
 * Пишем в консоль (поменять здесь нужно только путь до файла): 
 ```bash
@@ -36,3 +36,10 @@ mvn install:install-file -Dfile=/root/vk-java-bot-sdk-0.0.1.jar -DgroupId=com.pe
 ...
 </depedencies>
 ```
+Все остальные нужные зависимости сами будут подгружены автоматически (`com.squareup.okhttp3`, `org.json`, `commons-io`, `org.apache.commons`).
+
+#### Без систем сборок (добавляем библиотеку в classpath)
+Здесь немного проще, но это не значит, что лучше. Вопрос удобства.
+
+* Скачиваем (все зависимости включены в сборку): [библиотека (1.3 MB)](https://petersamokhin.com/files/vk-java-bot-sdk-0.0.1-jar-with-dependencies.jar) | [md5](https://petersamokhin.com/files/vk-java-bot-sdk-0.0.1-jar-with-dependencies.jar.md5)
+
