@@ -9,6 +9,8 @@
 
 ## Пример
 
+![Example](https://petersamokhin.com/files/vk-java-bot-sdk/git_screen.png)
+
 ```java
 Group group = new Group(151083290, "access_token");
 
