@@ -15,14 +15,12 @@
 ```java
 Group group = new Group(151083290, "access_token");
 
-Message message = new Message();
-
 group.longPoll().listen(new Callback() {
     
     @Override
     public void onSimpleTextMessage(Message msg) {
 
-        message
+        new Message()
             .from(group)
             .to(msg.authorId())
             .text("Что-то скучновато много букв читать. Картинку кинь лучше.")
@@ -32,7 +30,7 @@ group.longPoll().listen(new Callback() {
     @Override
     public void onPhotoMessage(Message msg) {
 
-        message
+        new Message()
             .from(group)
             .to(msg.authorId())
             .text("Уже лучше. Что дальше?")
@@ -42,7 +40,7 @@ group.longPoll().listen(new Callback() {
     @Override
     public void onVoiceMessage(Message msg) {
 
-        message
+        new Message()
             .from(group)
             .to(msg.authorId())
             .text("Не охота мне голосовые твои слушать.")
