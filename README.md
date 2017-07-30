@@ -7,49 +7,6 @@
 С помощью данной библиотеки можно довольно просто взаимодействовать с [VK API](https://vk.com/dev/manuals) для создания ботов и не только. 
 Функционал прекрасно подходит как для сообществ, так и для личных страниц.
 
-## Функционал: версия 0.0.1 (30.07.2017) 
-
-* Работа с личными сообщениями сообществ и личных страниц — необходим только [access_token](https://vk.com/dev/access_token).
-* Возможность обработки сообщений только нужного типа (голосовые, простые текстовые, со стикером, и так далее)
-* Упрощенное взаимодействие с VK API:
-```java
-// Так
-group.api().call("users.get", "user_ids", 62802565, "fields", "photo_max_orig");
-        
-// Или так
-group.api().call("users.get", "user_ids=62802565&fields=photo_max_orig");
-        
-// Или вот так
-Map<String, Object> params = new HashMap<>();
-params.put("user_ids", 62802565);
-params.put("fields", "photo_max_orig");
-        
-group.api().call("users.get", params);
-```
-* Возможность прикрепить картинку/документ/etc по ссылке:
-```java
-// Можно так
-message.doc("doc62802565_447117479");
-
-// Или так
-message.doc("/Users/PeterSamokhin/Desktop/cp.zip").send();
-
-// Или даже так
-message.doc("https://www.petersamokhin.com/files/test.txt").send();
-```
-* Возможность загрузить обложку в сообщество одной строчкой:
-```java
-// В эту же группу, если при инициализации были указаны и access_token, и ID группы
-group.uploadCover("https://www.petersamokhin.com/files/vk-java-bot-sdk/cover.png");
-
-// В эту же группу, если ID не был указан при инициализации (используем access_token)
-group.uploadCover(151083290, "https://www.petersamokhin.com/files/vk-java-bot-sdk/cover.png");
-
-// В какую-то другую группу, если знаем её ID и access_token
-group.uploadCover(151083290, "access_token", "https://www.petersamokhin.com/files/vk-java-bot-sdk/cover.png");
-```
-* Возможность как использовать настройки по умолчанию и написать бота в две строчки кода, так и возможность провести тонкую настройку, указать любой параметр, полностью управлять всем процессом и получать лог событий в консоль.
-
 ## Пример
 
 ![Example](https://petersamokhin.com/files/vk-java-bot-sdk/git_screen.png)
@@ -93,6 +50,49 @@ group.longPoll().listen(new Callback() {
     }
 });
 ```
+
+## Функционал: версия 0.0.1 (30.07.2017) 
+
+* Работа с личными сообщениями сообществ и личных страниц — необходим только [access_token](https://vk.com/dev/access_token).
+* Возможность обработки сообщений только нужного типа (голосовые, простые текстовые, со стикером, и так далее)
+* Упрощенное взаимодействие с VK API:
+```java
+// Так
+group.api().call("users.get", "user_ids", 62802565, "fields", "photo_max_orig");
+        
+// Или так
+group.api().call("users.get", "user_ids=62802565&fields=photo_max_orig");
+        
+// Или вот так
+Map<String, Object> params = new HashMap<>();
+params.put("user_ids", 62802565);
+params.put("fields", "photo_max_orig");
+        
+group.api().call("users.get", params);
+```
+* Возможность прикрепить картинку/документ/etc по ссылке:
+```java
+// Можно так
+message.doc("doc62802565_447117479").send();
+
+// Или так
+message.doc("/Users/PeterSamokhin/Desktop/cp.zip").send();
+
+// Или даже так
+message.doc("https://www.petersamokhin.com/files/test.txt").send();
+```
+* Возможность загрузить обложку в сообщество одной строчкой:
+```java
+// В эту же группу, если при инициализации были указаны и access_token, и ID группы
+group.uploadCover("https://www.petersamokhin.com/files/vk-java-bot-sdk/cover.png");
+
+// В эту же группу, если ID не был указан при инициализации (используем access_token)
+group.uploadCover(151083290, "https://www.petersamokhin.com/files/vk-java-bot-sdk/cover.png");
+
+// В какую-то другую группу, если знаем её ID и access_token
+group.uploadCover(151083290, "access_token", "https://www.petersamokhin.com/files/vk-java-bot-sdk/cover.png");
+```
+* Возможность как использовать настройки по умолчанию и написать бота в две строчки кода, так и возможность провести тонкую настройку, указать любой параметр, полностью управлять всем процессом и получать лог событий в консоль.
 
 ## Подготовка
 * Для начала необходимо создать сообщество, если бот будет работать от его имени
