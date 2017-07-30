@@ -46,4 +46,10 @@ mvn install:install-file -Dfile=/root/vk-java-bot-sdk-0.0.1.jar -DgroupId=com.pe
 Здесь немного проще, но это не значит, что лучше. Вопрос удобства.
 
 * Скачиваем (все зависимости включены в сборку): [библиотека (1.3 MB)](https://petersamokhin.com/files/vk-java-bot-sdk-0.0.1-jar-with-dependencies.jar) | [md5](https://petersamokhin.com/files/vk-java-bot-sdk-0.0.1-jar-with-dependencies.jar.md5)
-
+* Теперь для использования библиотеки в проекте, нужно всего лишь добавить её в `classpath`:
+  * Если компилируете через терминал, то команда будет выглядеть следующим образом: 
+  ```bash
+  javac -cp "/root/vk-java-bot-sdk-0.0.1-jar-with-dependencies.jar" MyMainClass.jar 
+  ```
+  * Если используете IntelliJ IDEA, то нужно зайти в Project Structure... | Libraries | нажать `+` и добавить скачанный файл в список библиотек.
+Готово. Библиотека подключена к вашему проекту, можно начинать использовать.
