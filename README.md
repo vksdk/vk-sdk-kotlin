@@ -18,7 +18,7 @@
 
 ---
 
-#### С помощью **maven**
+#### С помощью maven и gradle
 Поскольку в `maven central` библиотека ещё не загружена, нужно собственноручно добавить её в локальный репозиторий. Для этого необходимо всего лишь скачать jar-файл и прописать одну команду в терминале (для `macOS` и `linux`)
 * Скачиваем: [библиотека (28.3 kB)](https://www.petersamokhin.com/files/vk-java-bot-sdk-0.0.1.jar) | [md5](https://www.petersamokhin.com/files/vk-java-bot-sdk-0.0.1.jar.md5)
 * Файл назван `vk-java-bot-sdk-0.0.1.jar`. Сохраняем его в любую папку, нам нужен лишь путь до файла. Например: `/root/vk-java-bot-sdk-0.0.1.jar`
@@ -26,7 +26,8 @@
 ```bash
 mvn install:install-file -Dfile=/root/vk-java-bot-sdk-0.0.1.jar -DgroupId=com.petersamokhin -DartifactId=vk-java-bot-sdk -Dversion=0.0.1 -Dpackaging=jar
 ```
-* Готово. Можно подключать к проекту. Пишем в **pom.xml**:
+Готово. Можно подключать к проекту. 
+* Для **maven** — пишем в **pom.xml**:
 ```xml
 <depedencies>
 ...
@@ -38,7 +39,22 @@ mvn install:install-file -Dfile=/root/vk-java-bot-sdk-0.0.1.jar -DgroupId=com.pe
 ...
 </depedencies>
 ```
-Все остальные нужные зависимости сами будут подгружены автоматически (`com.squareup.okhttp3`, `org.json`, `commons-io`, `org.apache.commons`).
+
+* Для **gradle** — в build.gradle на уровне проекта добавьте `mavenLocal()` в `repositories`:
+```
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+```
+* Затем чуть ниже в depedencies добавьте `compile 'com.petersamokhin:vk-java-bot-sdk:0.0.1'`:
+```
+depedencies {
+    compile 'com.petersamokhin:vk-java-bot-sdk:0.0.1'
+}
+```
+
+Все остальные нужные зависимости сами будут подгружены автоматически (`com.squareup.okhttp3`, `org.json`, `commons-io`, `org.apache.commons`). 
 
 ---
 
@@ -51,5 +67,5 @@ mvn install:install-file -Dfile=/root/vk-java-bot-sdk-0.0.1.jar -DgroupId=com.pe
   ```bash
   javac -cp "/root/vk-java-bot-sdk-0.0.1-jar-with-dependencies.jar" MyMainClass.jar 
   ```
-  * Если используете IntelliJ IDEA, то нужно зайти в Project Structure... | Libraries | нажать `+` и добавить скачанный файл в список библиотек.
+  * Если используете **IntelliJ IDEA**, то нужно зайти в **Project Structure...** | **Libraries** | нажать `+` и добавить скачанный файл в список библиотек.
 Готово. Библиотека подключена к вашему проекту, можно начинать использовать.
