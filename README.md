@@ -188,7 +188,15 @@ depedencies {
 ### Clients
 
 * [public abstract class Client](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/clients/Client.java#L10) Обобщённый клиент для взаимодействия с ВК
+  * [Client(String access_token)](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/clients/Client.java#L21) Базовый конструктор, позволяющий производить почти все действия.
+  * [Client(Integer id, String access_token)](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/clients/Client.java#35) Расширенный конструктор. Если при инициализации клиента группы не указать ID, то его необходимо будет указать при вызове метода для загрузки обложки.
+  * [public void setLongPoll(LongPoll LP)](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/clients/Client.java#L47) Метод позволяет установить свои параметры для LongPoll сервера, не обязателен
+  * [public LongPoll longPoll()](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/clients/Client.java#L55) Метод возвращает экземпляр класса для взаимодействия с LongPoll сервером, прослушивания событий и изменения параметров
+  * [public API api()](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/clients/Client.java#L62) Метод возвращает экземпляр класса для взаимодействия с VK API, access_token берётся у текущего клиента.
+  * геттеры и сеттеры для `access_token` и `id` клиента.
 * [public class Group extends Client](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/clients/Group.java#L22) Клиент для взаимодействия с ВК от имени сообщества
+  * [public boolean isMember(Object id)](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/clients/Group.java#L48) Метод возвращает true, если пользователь с переданным id состоит в группе, от имени которой вызвается метод.
+  * [public JSONObject uploadCover(Object... params)](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/clients/Group.java#L57) Метод позволяет загрузить обложку в сообщество по ссылке или из файла с диска. Возвращает ответ от сервера ВК.
 * [public class User extends Client](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/clients/User.java#L8) Клиент для взаимодействия с ВК от имени пользователя
 
 
