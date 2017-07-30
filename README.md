@@ -26,7 +26,7 @@
 ```bash
 mvn install:install-file -Dfile=/root/vk-java-bot-sdk-0.0.1.jar -DgroupId=com.petersamokhin -DartifactId=vk-java-bot-sdk -Dversion=0.0.1 -Dpackaging=jar
 ```
-Готово. Можно подключать к проекту. 
+Готово. Библиотека добавлена в локальный репозиторий. Теперь подключим её к проекту.
 * Для **maven** — пишем в **pom.xml**:
 ```xml
 <depedencies>
