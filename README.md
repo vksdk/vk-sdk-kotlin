@@ -10,7 +10,7 @@
 ## Пример
 
 ```java
-Group group = new Group(151083290, "0cb6de1b33ab9079e38bede6e188d5b089f25eeebb4d714562c356aa9a82c3d0b1dc37720145526308b6c");
+Group group = new Group(151083290, "access_token");
 
 Message message = new Message();
 
