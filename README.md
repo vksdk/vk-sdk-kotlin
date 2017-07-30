@@ -17,33 +17,33 @@ Message message = new Message();
 group.longPoll().listen(new Callback() {
     
     @Override
-    public void onSimpleTextMessage(Message message) {
+    public void onSimpleTextMessage(Message msg) {
 
         message
-        .from(group)
-        .to(message.authorId())
-        .text("Что-то скучновато много букв читать. Картинку кинь лучше.")
-        .send();
+            .from(group)
+            .to(msg.authorId())
+            .text("Что-то скучновато много букв читать. Картинку кинь лучше.")
+            .send();
     }
 
     @Override
-    public void onPhotoMessage(Message message) {
+    public void onPhotoMessage(Message msg) {
 
         message
-        .from(group)
-        .to(message.authorId())
-        .text("Уже лучше. Что дальше?")
-        .send();
+            .from(group)
+            .to(msg.authorId())
+            .text("Уже лучше. Что дальше?")
+            .send();
     }
 
     @Override
-    public void onVoiceMessage(Message message) {
+    public void onVoiceMessage(Message msg) {
 
         message
-        .from(group)
-        .to(message.authorId())
-        .text("Не охота мне голосовые твои слушать.")
-        .send();
+            .from(group)
+            .to(msg.authorId())
+            .text("Не охота мне голосовые твои слушать.")
+            .send();
     }
 });
 ```
