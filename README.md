@@ -186,3 +186,9 @@ depedencies {
 Коллбэк `onTyping` будет вызван ~ каждые 5 секунд после того, как пользователь начал печатать и до того, как он закончит.
 
 ### Clients
+
+* [public abstract class Client](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/clients/Client.java#L10) Обобщённый клиент для взаимодействия с ВК
+* [public class Group extends Client](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/clients/Group.java#L22) Клиент для взаимодействия с ВК от имени сообщества
+* [public class User extends Client](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/src/main/java/com/petersamokhin/bots/sdk/clients/User.java#L8) Клиент для взаимодействия с ВК от имени пользователя
+
+
