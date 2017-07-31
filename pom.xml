@@ -5,8 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
 
+    <!--todo изменить название артефакта, чтобы не было неразберихи-->
     <groupId>com.petersamokhin</groupId>
-    <artifactId>vk-java-bot-sdk</artifactId>
+    <artifactId>vk-bot-java-sdk</artifactId>
     <version>0.0.1</version>
 
     <properties>

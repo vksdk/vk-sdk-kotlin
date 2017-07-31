@@ -1,5 +1,5 @@
 # VK Bot Java SDK
-![Cover](https://petersamokhin.com/files/vk-java-bot-sdk/cover.png)
+![Cover](https://petersamokhin.com/files/vk-bot-java-sdk/cover.png)
 ###### Удобная и простая библиотека, помогающая легко и быстро создать бота для ВКонтакте https://vk.com/vkbotsdk
 
 ---
@@ -9,7 +9,7 @@
 
 ## Пример
 
-![Example](https://petersamokhin.com/files/vk-java-bot-sdk/git_screen.png)
+![Example](https://petersamokhin.com/files/vk-bot-java-sdk/git_screen.png)
 
 Реализуем возможность получать уведомления только о сообщениях нужного типа:
 ```java
@@ -85,13 +85,13 @@ message.doc("https://www.petersamokhin.com/files/test.txt").send();
 * Возможность загрузить обложку в сообщество одной строчкой:
 ```java
 // В эту же группу, если при инициализации были указаны и access_token, и ID группы
-group.uploadCover("https://www.petersamokhin.com/files/vk-java-bot-sdk/cover.png");
+group.uploadCover("https://www.petersamokhin.com/files/vk-bot-java-sdk/cover.png");
 
 // В эту же группу, если ID не был указан при инициализации (используем access_token)
-group.uploadCover(151083290, "https://www.petersamokhin.com/files/vk-java-bot-sdk/cover.png");
+group.uploadCover(151083290, "https://www.petersamokhin.com/files/vk-bot-java-sdk/cover.png");
 
 // В какую-то другую группу, если знаем её ID и access_token
-group.uploadCover(151083290, "access_token", "https://www.petersamokhin.com/files/vk-java-bot-sdk/cover.png");
+group.uploadCover(151083290, "access_token", "https://www.petersamokhin.com/files/vk-bot-java-sdk/cover.png");
 ```
 * Возможность как использовать настройки по умолчанию и написать бота в две строчки кода, так и возможность провести тонкую настройку, указать любой параметр, полностью управлять всем процессом и получать лог событий в консоль.
 * Библиотека полностью и довольно подробно продукоментирована. В этом репозитории можно увидеть комментарии почти к каждому методу и каждому параметру, а также скомпилированы **javadoc**.
@@ -109,11 +109,11 @@ group.uploadCover(151083290, "access_token", "https://www.petersamokhin.com/file
 
 #### С помощью maven и gradle
 Поскольку в `maven central` библиотека ещё не загружена, нужно собственноручно добавить её в локальный репозиторий. Для этого необходимо всего лишь скачать jar-файл и прописать одну команду в терминале (для `macOS` и `linux`):
-* Скачиваем: [библиотека (28.8 kB)](https://www.petersamokhin.com/files/vk-java-bot-sdk/vk-java-bot-sdk-0.0.1.jar) | [md5](https://www.petersamokhin.com/files/vk-java-bot-sdk/vk-java-bot-sdk-0.0.1.jar.md5)
-* Файл назван `vk-java-bot-sdk-0.0.1.jar`. Сохраняем его в любую папку, нам нужен лишь путь до файла. Например: `/root/vk-java-bot-sdk-0.0.1.jar`
+* Скачиваем: [библиотека (28.8 kB)](https://www.petersamokhin.com/files/vk-bot-java-sdk/vk-bot-java-sdk-0.0.1.jar) | [md5](https://www.petersamokhin.com/files/vk-bot-java-sdk/vk-bot-java-sdk-0.0.1.jar.md5)
+* Файл назван `vk-bot-java-sdk-0.0.1.jar`. Сохраняем его в любую папку, нам нужен лишь путь до файла. Например: `/root/vk-bot-java-sdk-0.0.1.jar`
 * Пишем в консоль (поменять здесь нужно только путь до файла): 
 ```bash
-mvn install:install-file -Dfile=/root/vk-java-bot-sdk-0.0.1.jar -DgroupId=com.petersamokhin -DartifactId=vk-java-bot-sdk -Dversion=0.0.1 -Dpackaging=jar
+mvn install:install-file -Dfile=/root/vk-bot-java-sdk-0.0.1.jar -DgroupId=com.petersamokhin -DartifactId=vk-bot-java-sdk -Dversion=0.0.1 -Dpackaging=jar
 ```
 Готово. Библиотека добавлена в локальный репозиторий. Теперь подключим её к проекту.
 * Для **maven** — пишем в **pom.xml**:
@@ -122,7 +122,7 @@ mvn install:install-file -Dfile=/root/vk-java-bot-sdk-0.0.1.jar -DgroupId=com.pe
 ...
 <dependency>
     <groupId>com.petersamokhin</groupId>
-    <artifactId>vk-java-bot-sdk</artifactId>
+    <artifactId>vk-bot-java-sdk</artifactId>
     <version>0.0.1</version>
 </dependency>
 ...
@@ -136,10 +136,10 @@ repositories {
     mavenLocal()
 }
 ```
-* Затем чуть ниже в `depedencies` добавьте `compile 'com.petersamokhin:vk-java-bot-sdk:0.0.1'`:
+* Затем чуть ниже в `depedencies` добавьте `compile 'com.petersamokhin:vk-bot-java-sdk:0.0.1'`:
 ```
 depedencies {
-    compile 'com.petersamokhin:vk-java-bot-sdk:0.0.1'
+    compile 'com.petersamokhin:vk-bot-java-sdk:0.0.1'
 }
 ```
 
@@ -149,14 +149,14 @@ depedencies {
 #### Без систем сборок (добавляем библиотеку в classpath)
 Здесь немного проще, но это не значит, что лучше. Вопрос удобства.
 
-* Скачиваем (все зависимости включены в сборку): [библиотека (1.3 MB)](https://petersamokhin.com/files/vk-java-bot-sdk-0.0.1-jar-with-dependencies.jar) | [md5](https://petersamokhin.com/files/vk-java-bot-sdk-0.0.1-jar-with-dependencies.jar.md5)
+* Скачиваем (все зависимости включены в сборку): [библиотека (1.3 MB)](https://petersamokhin.com/files/vk-bot-java-sdk-0.0.1-jar-with-dependencies.jar) | [md5](https://petersamokhin.com/files/vk-bot-java-sdk-0.0.1-jar-with-dependencies.jar.md5)
 * Теперь для использования библиотеки в проекте, нужно всего лишь добавить её в `classpath`:
   * Если компилируете через терминал, то команда будет выглядеть следующим образом: 
   ```bash
-  javac -cp "/root/vk-java-bot-sdk-0.0.1-jar-with-dependencies.jar" MyMainClass.jar 
+  javac -cp "/root/vk-bot-java-sdk-0.0.1-jar-with-dependencies.jar" MyMainClass.jar 
   ```
   * Если используете **IntelliJ IDEA**, то нужно зайти в **Project Structure...** | **Libraries**, нажать `+` и добавить скачанный файл в список библиотек:
-  ![Cover](https://petersamokhin.com/files/vk-java-bot-sdk/git_screen_2.png)
+  ![Cover](https://petersamokhin.com/files/vk-bot-java-sdk/git_screen_2.png)
   
 ---
 Готово. Библиотека подключена к вашему проекту и готова для использования.

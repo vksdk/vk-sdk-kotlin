@@ -8,9 +8,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -46,7 +44,10 @@ public class Group extends Client {
      * @param id IDs of users
      */
     public boolean isMember(Object id) {
-        return api().call("groups.isMember", "group_id", getId().toString().replace("-", ""), "user_id", id).getInt("response") == 1;
+        if (getId() != null)
+            return api().call("groups.isMember", "group_id", getId().toString().replace("-", ""), "user_id", id).getInt("response") == 1;
+        else
+            return false;
     }
 
     /**
