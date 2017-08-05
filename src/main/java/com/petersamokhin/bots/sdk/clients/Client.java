@@ -4,6 +4,7 @@ import com.petersamokhin.bots.sdk.callbacks.commands.OnCommandCallback;
 import com.petersamokhin.bots.sdk.callbacks.messages.*;
 import com.petersamokhin.bots.sdk.longpoll.LongPoll;
 import com.petersamokhin.bots.sdk.utils.vkapi.API;
+import com.petersamokhin.bots.sdk.utils.vkapi.CallbackApiHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,7 @@ public abstract class Client {
     private Integer id;
     private API api;
     private LongPoll longPoll = null;
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Client.class);
 
     public static List<Commmand> commands = new ArrayList<>();
 

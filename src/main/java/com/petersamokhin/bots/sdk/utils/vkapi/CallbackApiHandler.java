@@ -34,13 +34,13 @@ import java.util.Map;
  */
 public class CallbackApiHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CallbackApiHandler.class);
 
     private final String ok = "ok";
 
     private Map<String, Callback> callbacks = new HashMap<>();
 
-    private volatile boolean autoSetEvents = true;
+    public static volatile boolean autoSetEvents = true;
     private Group group;
 
     private volatile boolean serverIsStarted = false;
@@ -62,7 +62,7 @@ public class CallbackApiHandler {
         // We need to listen port 80 to get events from VK
         // But if you have another server, you can set any port
         // And pre-roam
-        int port = 1234;
+        int port = 80;
         Spark.port(port);
         LOG.info("Started listening to VK Callback API on port {}.", port);
 
@@ -392,40 +392,5 @@ public class CallbackApiHandler {
 
     public void setGroup(Group group) {
         this.group = group;
-    }
-
-    /**
-     * Settings for interacting with Callback API
-     */
-    public class CallbackApiSettings {
-
-        private String host = null, path;
-        private int port = 80;
-        private boolean autoAnswer = false;
-
-        private CallbackApiSettings(String host, int port, String path, boolean autoAnswer, boolean autoSet) {
-            this.host = host;
-            this.path = path;
-            this.port = port;
-            this.autoAnswer = autoAnswer;
-            autoSetEvents = autoSet;
-        }
-
-        /* Getters and setters */
-        private String getHost() {
-            return host;
-        }
-
-        private String getPath() {
-            return path;
-        }
-
-        private int getPort() {
-            return port;
-        }
-
-        private boolean isAutoAnswer() {
-            return autoAnswer;
-        }
     }
 }

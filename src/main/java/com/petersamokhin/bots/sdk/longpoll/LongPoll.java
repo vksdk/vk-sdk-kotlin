@@ -142,6 +142,10 @@ public class LongPoll {
         String query = "https://api.vk.com/method/messages.getLongPollServer?need_pts=" + need_pts + "&lp_version=" + version + "&access_token=" + access_token + "&v=" + API;
 
         JSONObject response = Connection.getRequestResponse(query);
+
+        if (!response.has("response"))
+            LOG.error("No response! Error: {}", response);
+
         JSONObject data = response.getJSONObject("response");
 
         return new GetLongPollServerResponse(

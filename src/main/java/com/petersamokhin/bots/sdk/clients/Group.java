@@ -10,6 +10,7 @@ import com.petersamokhin.bots.sdk.callbacks.callbackapi.videos.*;
 import com.petersamokhin.bots.sdk.callbacks.callbackapi.wall.*;
 import com.petersamokhin.bots.sdk.utils.vkapi.CallbackApiHandler;
 import com.petersamokhin.bots.sdk.utils.Connection;
+import com.petersamokhin.bots.sdk.utils.vkapi.CallbackApiSettings;
 import okhttp3.MediaType;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -189,7 +190,7 @@ public class Group extends Client {
      *
      * @param settings (host, path, port etc)
      */
-    public Group callbackApi(CallbackApiHandler.CallbackApiSettings settings) {
+    public Group callbackApi(CallbackApiSettings settings) {
         if (callbackApiHandler == null) {
             callbackApiHandler = new CallbackApiHandler(settings);
             callbackApiHandler.setGroup(this);
@@ -202,7 +203,7 @@ public class Group extends Client {
      *
      * @param settings
      */
-    public void setCallbackApiSettings(CallbackApiHandler.CallbackApiSettings settings) {
+    public void setCallbackApiSettings(CallbackApiSettings settings) {
         callbackApiHandler = new CallbackApiHandler(settings);
         callbackApiHandler.setGroup(this);
     }
