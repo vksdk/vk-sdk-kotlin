@@ -54,8 +54,17 @@ group.longPoll().listen(new Callback() {
 * [Старый функционал](https://github.com/petersamokhin/vk-bot-java-sdk#Функционал-версия-001-30072017) по возможности оптимизирован и протестирован
 * Улучшено взаимодействие с VK API: теперь все запросы становятся в очередь и выполняются с помощью метода [execute](https://vk.com/dev/execute), позволяющего за одно выполнение метода делать до 25 запросов к API. Без него можно делать всего до трёх запросов в секунду. Ответ от VK вернётся через callback:
 ```java
+// постарался предусмотреть все возможные варианты вызова этого метода
+// данный вариант мне кажется самым удобным
+// в виде списка параметров можно передавать Map, JSONObject, строку и так далее
 group.api().call("users.get", "{user_ids:[1,2,3]}", response ->
     System.out.println("Response: " + response.toString())
+);
+```
+* Добавлена возможность работать с [Callback API](https://vk.com/dev/callback_api) ВКонтакте:
+```java
+group.callbackApi("/callback").onGroupJoin(newSubscriber ->
+    System.out.println("Новый пользователь подписался на сообщество: id" + newSubscriber.getInt("user_id"))
 );
 ```
 
