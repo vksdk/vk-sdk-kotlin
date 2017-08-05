@@ -50,27 +50,20 @@ group.longPoll().listen(new Callback() {
     }
 });
 ```
+## Функционал: версия 0.1.0 (6.08.2017)
+* [Старый функционал](https://github.com/petersamokhin/vk-bot-java-sdk#Функционал-версия-001-30072017) по возможности оптимизирован и протестирован
+* Улучшено взаимодействие с VK API: теперь все запросы становятся в очередь и выполняются с помощью метода [execute](https://vk.com/dev/execute), позволяющего за одно выполнение метода делать до 25 запросов к API. Без него можно делать всего до трёх запросов в секунду. Ответ от VK вернётся через callback:
+```java
+group.api().call("users.get", "{user_ids:[1,2,3]}", response ->
+    System.out.println("Response: " + response.toString())
+);
+```
 
 ## Функционал: версия 0.0.1 (30.07.2017) 
 
 * Работа с личными сообщениями сообществ и личных страниц — необходим только [access_token](https://vk.com/dev/access_token).
 * Возможность обработки сообщений только нужного типа (голосовые, простые текстовые, со стикером, и так далее)
 * Возможность реагировать на то, что пользователь начал печатать.
-* Упрощенное взаимодействие с VK API:
-```java
-// Так
-group.api().call("users.get", "user_ids", 62802565, "fields", "photo_max_orig");
-        
-// Или так
-group.api().call("users.get", "user_ids=62802565&fields=photo_max_orig");
-        
-// Или вот так
-Map<String, Object> params = new HashMap<>();
-params.put("user_ids", 62802565);
-params.put("fields", "photo_max_orig");
-        
-group.api().call("users.get", params);
-```
 * Возможность прикрепить картинку/документ/etc по ссылке:
 ```java
 // Можно так
