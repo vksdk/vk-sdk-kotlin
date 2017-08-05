@@ -14,49 +14,40 @@
 Реализуем возможность получать уведомления только о сообщениях нужного типа:
 ```java
 Group group = new Group(151083290, "access_token");
-
-group.longPoll().listen(new Callback() {
     
-    @Override
-    public void onSimpleTextMessage(Message msg) {
+group.onSimpleTextMessage(message ->
+     new Message()
+         .from(group)
+         .to(message.authorId())
+         .text("Что-то скучновато буковки читать. Картинку кинь лучше.")
+         .send()
+);
 
-        new Message()
-            .from(group)
-            .to(msg.authorId())
-            .text("Что-то скучновато буковки читать. Картинку кинь лучше.")
-            .send();
-    }
+group.onPhotoMessage(message ->
+    new Message()
+         .from(group)
+         .to(message.authorId())
+         .text("Уже лучше. Но я тоже так могу. Что дальше?")
+         .photo("/Users/PeterSamokhin/Desktop/topoviy_mem.png")
+         .send()
+);
 
-    @Override
-    public void onPhotoMessage(Message msg) {
-
-        new Message()
-            .from(group)
-            .to(msg.authorId())
-            .text("Уже лучше. Но я тоже так могу. Что дальше?")
-            .photo("/Users/PeterSamokhin/Desktop/topoviy_mem.png");
-            .send();
-    }
-
-    @Override
-    public void onVoiceMessage(Message msg) {
-
-        new Message()
-            .from(group)
-            .to(msg.authorId())
-            .text("Не охота мне голосовые твои слушать.")
-            .doc("https://vk.com/doc62802565_447117479")
-            .send();
-    }
-});
+group.onVoiceMessage(message ->
+    new Message()
+         .from(group)
+         .to(message.authorId())
+         .text("Не охота мне голосовые твои слушать.")
+         .doc("https://vk.com/doc62802565_447117479")
+         .send()
+);
 ```
 ## Функционал: версия 0.1.0 (6.08.2017)
 * [Старый функционал](https://github.com/petersamokhin/vk-bot-java-sdk#Функционал-версия-001-30072017) по возможности оптимизирован и протестирован
 * Улучшено взаимодействие с VK API: теперь все запросы становятся в очередь и выполняются с помощью метода [execute](https://vk.com/dev/execute), позволяющего за одно выполнение метода делать до 25 запросов к API. Без него можно делать всего до трёх запросов в секунду. Ответ от VK вернётся через callback:
 ```java
-// постарался предусмотреть все возможные варианты вызова этого метода
-// данный вариант мне кажется самым удобным
-// в виде списка параметров можно передавать Map, JSONObject, строку и так далее
+// Постарался предусмотреть все возможные варианты вызова этого метода
+// Данный вариант мне кажется самым удобным
+// В виде списка параметров можно передавать Map, JSONObject, строку и так далее
 group.api().call("users.get", "{user_ids:[1,2,3]}", response ->
     System.out.println("Response: " + response.toString())
 );
@@ -71,14 +62,18 @@ group.callbackApi("/callback").onGroupJoin(newSubscriber ->
 
 // Или же настраиваем всё по-своему
 // В данном случае настройка Callback API у сообщества будет проведена автоматически
-// Параметры: 1 - адрес сервера; 2 - порт (если у вас установлен другой сервер, настройте переадресацию на нужный порт);
+// Параметры: 
+// 1 - адрес сервера; 
+// 2 - порт (если у вас установлен другой сервер, настройте переадресацию на нужный порт);
 // 3 - путь, который будем слушать; отвечать ли "ok" серверу ВК сразу, или после выполнения всех действий по обработке запроса;
 // 4 - настраивать ли автоматически получение уведомлений для вызываемых коллбэков
 // Пример: вы вызвали onGroupJoin, и сразу же, если вы забыли в админке группы сами установить получение событий такого типа,
 // Настройка проведётся автоматически
 CallbackApiSettings settings = new CallbackApiSettings("https://petersamokhin.com", 80, "/callback", false, true);
 group.setCallbackApiSettings(settings);
-        
+ 
+// Возвращён будет только object из ответа 
+// (помимо него в ответе от ВК присутствует тип запроса и id группы)
 group.onGroupJoin(newSubscriber ->
     System.out.println("Новый подписчик: https://vk.com/id" + newSubscriber.getInt("user_id"))
 );
