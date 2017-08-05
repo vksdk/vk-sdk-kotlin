@@ -2,10 +2,16 @@ package com.petersamokhin.bots.sdk.utils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +19,8 @@ import java.util.Map;
  * Utils class with useful methods
  */
 public class Utils {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
 
     /**
      * Analog of JS setTimeout
@@ -107,6 +115,34 @@ public class Utils {
     }
 
     /**
+     * Convert params query to map
+     */
+    public static JSONObject explodeQuery(String query) {
+
+        try {
+            query = URLEncoder.encode(query, "UTF-8");
+        } catch (UnsupportedEncodingException ignored) {
+        }
+
+        Map<String, Object> map = new HashMap<>();
+
+        String[] arr = query.split("&");
+
+        for (String param : arr) {
+            String[] tmp_arr = param.split("=");
+            String key = tmp_arr[0], value = tmp_arr[1];
+
+            if (tmp_arr[1].contains(",")) {
+                map.put(key, new JSONArray(Arrays.asList(value.split(","))));
+            } else {
+                map.put(key, value);
+            }
+        }
+
+        return new JSONObject(map);
+    }
+
+    /**
      * Calculcating size of file in url
      * @param url URL
      * @param dim Bits, KBits or MBits
@@ -133,7 +169,7 @@ public class Utils {
                 }
             }
         } catch (IOException ignored) {
-            System.out.println("[Utils.java:126] IOException: " + ignored.toString());
+            LOG.error("IOException when calculating size of file {} , error: {}", url, ignored.toString());
         }
 
         return 0;

@@ -2,7 +2,7 @@ package com.petersamokhin.bots.sdk.objects;
 
 import com.petersamokhin.bots.sdk.clients.Client;
 import com.petersamokhin.bots.sdk.clients.Group;
-import com.petersamokhin.bots.sdk.utils.API;
+import com.petersamokhin.bots.sdk.utils.vkapi.API;
 import com.petersamokhin.bots.sdk.utils.Connection;
 import com.petersamokhin.bots.sdk.utils.Utils;
 import okhttp3.MediaType;
@@ -10,6 +10,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +30,8 @@ import java.util.regex.Pattern;
  * Message object for both (received and sent) messages
  */
 public class Message {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Message.class);
 
     private Integer messageId, flags, peerId, timestamp, randomId, stickerId;
     private String text, accessToken, clientType, id, title;
@@ -129,7 +133,7 @@ public class Message {
     public Message attachments(String... attachments) {
 
         if (attachments.length > 10)
-            System.out.println("Trying to send message with illegal count of attachments: " + attachments.length + " (> 10)");
+            LOG.error("Trying to send message with illegal count of attachments: {} (>10)", attachments.length);
         else if (attachments.length == 1 && attachments[0].contains(",")) {
             this.attachments = attachments[0].split(",");
         } else {
@@ -175,7 +179,7 @@ public class Message {
 
                     photoFromUrl = true;
                 } catch (IOException ignored) {
-                    System.out.println("[Message.java:141] IOException when downloading file " + photo + " : " + ignored.toString());
+                    LOG.error("IOException when downloading file {}, message: {}", photo, ignored.toString());
                     return this;
                 }
 
@@ -272,9 +276,10 @@ public class Message {
             File template_file;
 
             if (Pattern.matches("https?://.+", doc)) {
+                int sizeOfFile = Utils.sizeOfFile(doc, "mbits");
 
-                if (Utils.sizeOfFile(doc, "mbits") > 10) {
-                    System.out.println("Trying to upload file, but he is too big.");
+                if (sizeOfFile > 10) {
+                    LOG.error("Trying to upload file that is too big. URL is {} and size is {}", doc, sizeOfFile);
                     return this;
                 }
 
@@ -286,7 +291,7 @@ public class Message {
 
                     fileFromUrl = true;
                 } catch (IOException ignored) {
-                    System.out.println("[Message.java:141] IOException when downloading file " + doc + " : " + ignored.toString());
+                    LOG.error("IOException when downloading file {}, message: {}", doc, ignored.toString());
                     return this;
                 }
 
@@ -438,7 +443,7 @@ public class Message {
      */
     public JSONArray getAttachments() {
 
-        JSONObject response = new API(accessToken).call("messages.getById", "message_ids", getMessageId());
+        JSONObject response = new API(accessToken).callSync("messages.getById", "message_ids", getMessageId());
 
         if (response.has("response") && response.getJSONObject("response").getJSONArray("items").getJSONObject(0).has("attachments"))
             return response.getJSONObject("response").getJSONArray("items").getJSONObject(0).getJSONArray("attachments");
@@ -620,6 +625,10 @@ public class Message {
         return answer;
     }
 
+    /**
+     * @param photos JSONArray with photo objects
+     * @return URL of biggest image file
+     */
     public String getBiggestPhotoUrl(JSONArray photos) {
 
         String currentBiggestPhoto = null;

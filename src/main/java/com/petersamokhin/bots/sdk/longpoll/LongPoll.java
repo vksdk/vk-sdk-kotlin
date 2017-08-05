@@ -1,17 +1,28 @@
 package com.petersamokhin.bots.sdk.longpoll;
 
 import com.petersamokhin.bots.sdk.callbacks.Callback;
+import com.petersamokhin.bots.sdk.callbacks.messages.*;
+import com.petersamokhin.bots.sdk.clients.Client;
 import com.petersamokhin.bots.sdk.longpoll.responses.GetLongPollServerResponse;
 import com.petersamokhin.bots.sdk.objects.Message;
 import com.petersamokhin.bots.sdk.utils.Connection;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 
 /**
- * Main class for work with VK longpoll server
+ * com.petersamokhin.bots.sdk.Main class for work with VK longpoll server
  * More: <a href="https://vk.com/dev/using_longpoll">link</a>
  */
 public class LongPoll {
+
+    private static final Logger LOG = LoggerFactory.getLogger(LongPoll.class);
 
     private String access_token = null;
 
@@ -32,7 +43,13 @@ public class LongPoll {
     private Integer need_pts = 1;
     private Double API = 5.67;
 
-    private boolean on = false;
+    private volatile boolean on = false;
+
+
+    /**
+     * Map with callbacks
+     */
+    private volatile Map<String, Callback> callbacks = new HashMap<>();
 
     /**
      * Simple default constructor that requires only access token
@@ -41,8 +58,12 @@ public class LongPoll {
      */
     public LongPoll(String access_token) {
 
-        on = true;
         setData(access_token, null, null, null, null, null);
+
+        if (!on) {
+            on = true;
+            new Thread(this::startListening).start();
+        }
     }
 
     /**
@@ -57,8 +78,12 @@ public class LongPoll {
      */
     public LongPoll(String access_token, Integer need_pts, Integer version, Double API, Integer wait, Integer mode) {
 
-        on = true;
         setData(access_token, need_pts, version, API, wait, mode);
+
+        if (!on) {
+            on = true;
+            new Thread(this::startListening).start();
+        }
     }
 
     /**
@@ -67,6 +92,16 @@ public class LongPoll {
      */
     public void off() {
         on = false;
+    }
+
+    /**
+     * Add callback to the map
+     *
+     * @param name     Callback name
+     * @param callback Callback
+     */
+    public void registerCallback(String name, Callback callback) {
+        this.callbacks.put(name, callback);
     }
 
     /**
@@ -123,28 +158,29 @@ public class LongPoll {
      * and call callbacks on events.
      * You can override only necessary methods in callback to get necessary events.
      */
-    public void listen(Callback callback) {
+    private void startListening() {
 
-        String query;
+        LOG.error("Started listening to events from VK LongPoll server...");
 
         while (on) {
 
-            query = "https://" + server + "?act=a_check&key=" + key + "&ts=" + ts + "&wait=" + wait + "&mode=" + mode + "&version=" + version + "&msgs_limit=100000";
+            StringBuilder query = new StringBuilder();
 
-            JSONObject response = Connection.getRequestResponse(query);
+            query.append("https://").append(server).append("?act=a_check&key=").append(key).append("&ts=").append(ts).append("&wait=").append(wait).append("&mode=").append(mode).append("&version=").append(version).append("&msgs_limit=100000");
+
+            JSONObject response = Connection.getRequestResponse(query.toString());
 
             if (response.has("failed")) {
 
                 int code = response.getInt("failed");
 
-                System.out.println("[RESPONSE IS FAILED!] with code: " + code);
+                LOG.error("Response of VK LongPoll fallen with error code {}", code);
 
                 switch (code) {
 
                     default: {
 
-                        Integer new_ts = response.has("ts") ? response.getInt("ts") : ts;
-
+                        ts = response.has("ts") ? response.getInt("ts") : ts;
 
                         setData(null, null, null, null, null, null);
 
@@ -160,114 +196,157 @@ public class LongPoll {
                 }
             } else {
 
-                if (response.has("ts") && response.has("updates")) {
+                if (Client.commands.size() > 0 || callbacks.size() > 0) {
 
-                    Integer new_ts = response.getInt("ts");
+                    if (response.has("ts") && response.has("updates")) {
 
-                    Integer new_pts = response.has("pts") ? response.getInt("pts") : pts;
+                        Integer new_ts = response.getInt("ts");
 
-                    JSONArray updates = response.getJSONArray("updates");
+                        Integer new_pts = response.has("pts") ? response.getInt("pts") : pts;
 
-                    for (Object currentUpdateObject : updates) {
+                        JSONArray updates = response.getJSONArray("updates");
 
-                        JSONArray currentUpdate = (JSONArray) currentUpdateObject;
+                        for (Object currentUpdateObject : updates) {
 
-                        int updateType = currentUpdate.getInt(0);
+                            JSONArray currentUpdate = (JSONArray) currentUpdateObject;
 
-                        switch (updateType) {
+                            int updateType = currentUpdate.getInt(0);
 
-                            // Handling new message
-                            case 4: {
+                            switch (updateType) {
 
-                                if ((currentUpdate.getInt(2) & 2) == 0) {
+                                // Handling new message
+                                case 4: {
 
-                                    Message message = new Message(
-                                            access_token,
-                                            currentUpdate.getInt(1),
-                                            currentUpdate.getInt(2),
-                                            currentUpdate.getInt(3),
-                                            currentUpdate.getInt(4),
-                                            currentUpdate.getString(5),
-                                            (currentUpdate.length() > 6 ? (currentUpdate.get(6).toString().startsWith("{") ? new JSONObject(currentUpdate.get(6).toString()) : null) : null),
-                                            currentUpdate.length() > 7 ? currentUpdate.getInt(7) : null
-                                    );
+                                    int messageFlags = currentUpdate.getInt(2);
 
+                                    // Check if message is received
+                                    if ((messageFlags & 2) == 0) {
 
-                                    switch (message.messageType()) {
+                                        Message message = new Message(
+                                                access_token,
+                                                currentUpdate.getInt(1),
+                                                currentUpdate.getInt(2),
+                                                currentUpdate.getInt(3),
+                                                currentUpdate.getInt(4),
+                                                currentUpdate.getString(5),
+                                                (currentUpdate.length() > 6 ? (currentUpdate.get(6).toString().startsWith("{") ? new JSONObject(currentUpdate.get(6).toString()) : null) : null),
+                                                currentUpdate.length() > 7 ? currentUpdate.getInt(7) : null
+                                        );
 
-                                        case "voiceMessage": {
-                                            callback.onVoiceMessage(message);
-                                            break;
+                                        // check for commands
+                                        handleCommands(message);
+
+                                        switch (message.messageType()) {
+
+                                            case "voiceMessage": {
+                                                if (callbacks.containsKey("OnVoiceMessageCallback")) {
+                                                    ((OnVoiceMessageCallback) callbacks.get("OnVoiceMessageCallback")).OnVoiceMessage(message);
+                                                }
+                                                break;
+                                            }
+
+                                            case "stickerMessage": {
+                                                if (callbacks.containsKey("OnStickerMessageCallback")) {
+                                                    ((OnStickerMessageCallback) callbacks.get("OnStickerMessageCallback")).OnStickerMessage(message);
+                                                }
+                                                break;
+                                            }
+
+                                            case "gifMessage": {
+                                                if (callbacks.containsKey("OnGifMessageCallback")) {
+                                                    ((OnGifMessageCallback) callbacks.get("OnGifMessageCallback")).OnGifMessage(message);
+                                                }
+                                                break;
+                                            }
+
+                                            case "audioMessage": {
+                                                if (callbacks.containsKey("OnAudioMessageCallback")) {
+                                                    ((OnAudioMessageCallback) callbacks.get("OnAudioMessageCallback")).onAudioMessage(message);
+                                                }
+                                                break;
+                                            }
+
+                                            case "videoMessage": {
+                                                if (callbacks.containsKey("OnVideoMessageCallback")) {
+                                                    ((OnVideoMessageCallback) callbacks.get("OnVideoMessageCallback")).onVideoMessage(message);
+                                                }
+                                                break;
+                                            }
+
+                                            case "docMessage": {
+                                                if (callbacks.containsKey("OnDocMessageCallback")) {
+                                                    ((OnDocMessageCallback) callbacks.get("OnDocMessageCallback")).OnDocMessage(message);
+                                                }
+                                                break;
+                                            }
+
+                                            case "wallMessage": {
+                                                if (callbacks.containsKey("OnWallMessageCallback")) {
+                                                    ((OnVoiceMessageCallback) callbacks.get("OnWallMessageCallback")).OnVoiceMessage(message);
+                                                }
+                                                break;
+                                            }
+
+                                            case "photoMessage": {
+                                                if (callbacks.containsKey("OnPhotoMessageCallback")) {
+                                                    ((OnPhotoMessageCallback) callbacks.get("OnPhotoMessageCallback")).onPhotoMessage(message);
+                                                }
+                                                break;
+                                            }
+
+                                            case "linkMessage": {
+                                                if (callbacks.containsKey("OnLinkMessageCallback")) {
+                                                    ((OnLinkMessageCallback) callbacks.get("OnLinkMessageCallback")).OnLinkMessage(message);
+                                                }
+                                                break;
+                                            }
+
+                                            case "simpleTextMessage": {
+                                                if (callbacks.containsKey("OnSimpleTextMessageCallback")) {
+                                                    ((OnSimpleTextMessageCallback) callbacks.get("OnSimpleTextMessageCallback")).OnSimpleTextMessage(message);
+                                                }
+                                                break;
+                                            }
                                         }
 
-                                        case "stickerMessage": {
-                                            callback.onStickerMessage(message);
-                                            break;
-                                        }
-
-                                        case "gifMessage": {
-                                            callback.onGifMessage(message);
-                                            break;
-                                        }
-
-                                        case "audioMessage": {
-                                            callback.onAudioMessage(message);
-                                            break;
-                                        }
-
-                                        case "videoMessage": {
-                                            callback.onVideoMessage(message);
-                                            break;
-                                        }
-
-                                        case "docMessage": {
-                                            callback.onDocMessage(message);
-                                            break;
-                                        }
-
-                                        case "wallMessage": {
-                                            callback.onWallMessage(message);
-                                            break;
-                                        }
-
-                                        case "photoMessage": {
-                                            callback.onPhotoMessage(message);
-                                            break;
-                                        }
-
-                                        case "linkMessage": {
-                                            callback.onLinkMessage(message);
-                                            break;
-                                        }
-
-                                        case "simpleTextMessage": {
-                                            callback.onSimpleTextMessage(message);
-                                            break;
+                                        if (callbacks.containsKey("OnMessageCallback")) {
+                                            ((OnMessageCallback) callbacks.get("OnMessageCallback")).onMessage(message);
                                         }
                                     }
 
-                                    callback.onMessage(message);
+                                    break;
                                 }
 
-                                break;
-                            }
+                                case 61: {
 
-                            case 61: {
-
-                                callback.onTyping(currentUpdate.getInt(1));
-                                break;
+                                    if (callbacks.containsKey("OnTypingCallback")) {
+                                        ((OnTypingCallback) callbacks.get("OnTypingCallback")).OnTyping(currentUpdate.getInt(1));
+                                    }
+                                    break;
+                                }
                             }
                         }
+
+                        ts = new_ts;
+
+                    } else {
+                        LOG.error("Bad response from VK LongPoll server: no `ts` or `updates` array: {}", response);
                     }
-
-                    ts = new_ts;
-
-                } else {
-                    System.out.println("Bad response from longpoll: no ts or updates array: " + response.toString());
                 }
-
             }
+        }
+    }
 
+    /**
+     * Handle message and call back if it contains any command
+     * @param message received message
+     */
+    private void handleCommands(Message message) {
+
+        for (Client.Commmand command : Client.commands) {
+            for (int i = 0; i < command.getCommands().length; i++)
+                if (containsIgnoreCase(message.getText(), command.getCommands()[i].toString()))
+                    command.getCallback().OnCommand(message);
         }
     }
 }

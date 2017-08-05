@@ -1,6 +1,5 @@
 package com.petersamokhin.bots.sdk.examples;
 
-import com.petersamokhin.bots.sdk.callbacks.Callback;
 import com.petersamokhin.bots.sdk.clients.Group;
 import com.petersamokhin.bots.sdk.objects.Message;
 import org.apache.commons.io.FileUtils;
