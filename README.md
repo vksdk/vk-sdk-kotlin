@@ -63,8 +63,24 @@ group.api().call("users.get", "{user_ids:[1,2,3]}", response ->
 ```
 * Добавлена возможность работать с [Callback API](https://vk.com/dev/callback_api) ВКонтакте:
 ```java
+// Самый простой способ - все настройки по дефолту
+// Указываем только путь для прослушки запросов
 group.callbackApi("/callback").onGroupJoin(newSubscriber ->
-    System.out.println("Новый пользователь подписался на сообщество: id" + newSubscriber.getInt("user_id"))
+    System.out.println("Новый подписчик: https://vk.com/id" + newSubscriber.getInt("user_id"))
+);
+
+// Или же настраиваем всё по-своему
+// В данном случае настройка Callback API у сообщества будет проведена автоматически
+// Параметры: 1 - адрес сервера; 2 - порт (если у вас установлен другой сервер, настройте переадресацию на нужный порт);
+// 3 - путь, который будем слушать; отвечать ли "ok" серверу ВК сразу, или после выполнения всех действий по обработке запроса;
+// 4 - настраивать ли автоматически получение уведомлений для вызываемых коллбэков
+// Пример: вы вызвали onGroupJoin, и сразу же, если вы забыли в админке группы сами установить получение событий такого типа,
+// Настройка проведётся автоматически
+CallbackApiSettings settings = new CallbackApiSettings("https://petersamokhin.com", 80, "/callback", false, true);
+group.setCallbackApiSettings(settings);
+        
+group.onGroupJoin(newSubscriber ->
+    System.out.println("Новый подписчик: https://vk.com/id" + newSubscriber.getInt("user_id"))
 );
 ```
 
