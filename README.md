@@ -116,48 +116,24 @@ group.uploadCover(151083290, "access_token", "https://www.petersamokhin.com/file
   * Максимально подробно всё изложено [здесь](https://vk.com/dev/access_token)
 
 ## Установка
-На данный момент библиотека находится на стадии альфа-тестирования, и, пока она не будет достаточно хорошо отлажена и протестирована, загружать её в центральный репозиторий `maven` я не стану. Но и без этого подключение библиотеки к проекту не займёт и полминуты.
+Библиотека добавлена в центральный репозиторий `maven`. Для её использования достаточно (при условии успользования любых систем сборок) добавить всего пару строк в конфигурационный файл.
 
----
-
-#### С помощью maven и gradle
-Поскольку в `maven central` библиотека ещё не загружена, нужно собственноручно добавить её в локальный репозиторий. Для этого необходимо всего лишь скачать jar-файл и прописать одну команду в терминале (для `macOS` и `linux`):
-* Скачиваем: [библиотека (28.8 kB)](https://www.petersamokhin.com/files/vk-bot-java-sdk/vk-bot-java-sdk-0.0.1.jar) | [md5](https://www.petersamokhin.com/files/vk-bot-java-sdk/vk-bot-java-sdk-0.0.1.jar.md5)
-* Файл назван `vk-bot-java-sdk-0.0.1.jar`. Сохраняем его в любую папку, нам нужен лишь путь до файла. Например: `/root/vk-bot-java-sdk-0.0.1.jar`
-* Пишем в консоль (поменять здесь нужно только путь до файла): 
-```bash
-mvn install:install-file -Dfile=/root/vk-bot-java-sdk-0.0.1.jar -DgroupId=com.petersamokhin -DartifactId=vk-bot-java-sdk -Dversion=0.0.1 -Dpackaging=jar
-```
-Готово. Библиотека добавлена в локальный репозиторий. Теперь подключим её к проекту.
-* Для **maven** — пишем в **pom.xml**:
+#### Для maven
+Добавить строки, что ниже, в **pom.xml**:
 ```xml
-<depedencies>
-...
 <dependency>
     <groupId>com.petersamokhin</groupId>
     <artifactId>vk-bot-java-sdk</artifactId>
-    <version>0.0.1</version>
+    <version>0.1.0</version>
 </dependency>
-...
-</depedencies>
 ```
-
-* Для **gradle** — в **build.gradle** на уровне проекта добавьте `mavenLocal()` в `repositories`:
+#### Для gradle 
+Добавить строки, что ниже, в **build.gradle** в dependencies:
+```gradle
+compile group: 'com.petersamokhin', name: 'vk-bot-java-sdk', version: '0.1.0'
 ```
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-```
-* Затем чуть ниже в `depedencies` добавьте `compile 'com.petersamokhin:vk-bot-java-sdk:0.0.1'`:
-```
-depedencies {
-    compile 'com.petersamokhin:vk-bot-java-sdk:0.0.1'
-}
-```
-
-Все остальные нужные зависимости сами будут подгружены автоматически ([com.squareup.okhttp3](https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp/3.8.1), [org.json](https://mvnrepository.com/artifact/org.json/json/20170516), [commons-io](https://mvnrepository.com/artifact/commons-io/commons-io/2.5), [org.apache.commons](https://mvnrepository.com/artifact/org.apache.commons/commons-lang3/3.6)). 
-
+### Любые другие системы сборок
+Поскольку библиотека загружена в центральный репозиторий, на сайте поиска по репозиторию описаны способы подключения библиотеки с помощью любой из систем сборок: https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk/0.1.0
 ---
 #### Без систем сборок (добавляем библиотеку в classpath)
 Здесь немного проще, но это не значит, что лучше. Вопрос удобства.
