@@ -134,15 +134,16 @@ compile group: 'com.petersamokhin', name: 'vk-bot-java-sdk', version: '0.1.0'
 ```
 ### Любые другие системы сборок
 Поскольку библиотека загружена в центральный репозиторий, на сайте поиска по репозиторию описаны способы подключения библиотеки с помощью любой из систем сборок: https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk/0.1.0
+
 ---
 #### Без систем сборок (добавляем библиотеку в classpath)
 Здесь немного проще, но это не значит, что лучше. Вопрос удобства.
 
-* Скачиваем (все зависимости включены в сборку): [библиотека (1.3 MB)](https://petersamokhin.com/files/vk-bot-java-sdk-0.0.1-jar-with-dependencies.jar) | [md5](https://petersamokhin.com/files/vk-bot-java-sdk-0.0.1-jar-with-dependencies.jar.md5)
+* Скачиваем (все зависимости включены в сборку): [библиотека (1.3 MB)](https://petersamokhin.com/files/vk-bot-java-sdk-0.1.0-jar-with-dependencies.jar) | [md5](https://petersamokhin.com/files/vk-bot-java-sdk-0.1.0-jar-with-dependencies.jar.md5)
 * Теперь для использования библиотеки в проекте, нужно всего лишь добавить её в `classpath`:
   * Если компилируете через терминал, то команда будет выглядеть следующим образом: 
   ```bash
-  javac -cp "/root/vk-bot-java-sdk-0.0.1-jar-with-dependencies.jar" MyMainClass.jar 
+  javac -cp "/root/vk-bot-java-sdk-0.1.0-jar-with-dependencies.jar" MyMainClass.jar 
   ```
   * Если используете **IntelliJ IDEA**, то нужно зайти в **Project Structure...** | **Libraries**, нажать `+` и добавить скачанный файл в список библиотек:
   ![Cover](https://petersamokhin.com/files/vk-bot-java-sdk/git_screen_2.png)
