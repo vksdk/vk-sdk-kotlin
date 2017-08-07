@@ -197,7 +197,7 @@ public class Message {
                 i++;
 
                 // Getting of server for uploading the photo
-                String getUploadServerQuery = "https://api.vk.com/method/photos.getMessagesUploadServer?access_token=" + accessToken + "&v=5.67";
+                String getUploadServerQuery = "https://api.vk.com/method/photos.getMessagesUploadServer?access_token=" + accessToken + "&peer_id=" + this.peerId + "&v=5.67";
                 JSONObject getUploadServerResponse = Connection.getRequestResponse(getUploadServerQuery);
                 uploadUrl = getUploadServerResponse.has("response") ? getUploadServerResponse.getJSONObject("response").has("upload_url") ? getUploadServerResponse.getJSONObject("response").getString("upload_url") : null : null;
 
@@ -308,7 +308,7 @@ public class Message {
                 i++;
 
                 // Getting of server for uploading the photo
-                String getUploadServerQuery = "https://api.vk.com/method/docs.getUploadServer?" + (type.length > 0 ? "type=" + type[0] : "") + "&access_token=" + accessToken + "&v=5.67";
+                String getUploadServerQuery = "https://api.vk.com/method/docs.getMessagesUploadServer?" + (type.length > 0 ? "type=" + type[0] : "") + "&access_token=" + accessToken + "&peer_id=" + this.peerId + "&v=5.67";
                 JSONObject getUploadServerResponse = Connection.getRequestResponse(getUploadServerQuery);
                 uploadUrl = getUploadServerResponse.has("response") ? getUploadServerResponse.getJSONObject("response").has("upload_url") ? getUploadServerResponse.getJSONObject("response").getString("upload_url") : null : null;
 
