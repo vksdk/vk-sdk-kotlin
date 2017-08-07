@@ -143,7 +143,7 @@ compile group: 'com.petersamokhin', name: 'vk-bot-java-sdk', version: '0.1.0'
 * Теперь для использования библиотеки в проекте, нужно всего лишь добавить её в `classpath`:
   * Если компилируете через терминал, то команда будет выглядеть следующим образом: 
   ```bash
-  javac -cp "/root/vk-bot-java-sdk-0.1.0-jar-with-dependencies.jar" MyMainClass.jar 
+  javac -cp "/root/vk-bot-java-sdk-0.1.0-jar-with-dependencies.jar" Bot.jar 
   ```
   * Если используете **IntelliJ IDEA**, то нужно зайти в **Project Structure...** | **Libraries**, нажать `+` и добавить скачанный файл в список библиотек:
   ![Cover](https://petersamokhin.com/files/vk-bot-java-sdk/git_screen_2.png)
