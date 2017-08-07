@@ -78,6 +78,18 @@ group.onGroupJoin(newSubscriber ->
     System.out.println("Новый подписчик: https://vk.com/id" + newSubscriber.getInt("user_id"))
 );
 ```
+* Можно, также, реагировать не только на сообщения с определенными вложениями, но и на сообщения, содержащие только определенные команды:
+```java
+// Самый простой вариант для одной команды
+group.onCommand("/start", message -> 
+    // do something with message
+);
+
+// Если команд много
+group.onCommand(new String[]{"/start", "/bot", "hello"}, message ->
+    System.out.println("New message: " + message.getText())
+);
+```
 
 ## Функционал: версия 0.0.1 (30.07.2017) 
 
