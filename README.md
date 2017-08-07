@@ -87,7 +87,7 @@ group.onCommand("/start", message ->
 
 // Если команд много
 group.onCommand(new String[]{"/start", "/bot", "hello"}, message ->
-    System.out.println("New message: " + message.getText())
+    // do something with message
 );
 ```
 
