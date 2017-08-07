@@ -1,11 +1,13 @@
 # VK Bot Java SDK
-![Cover](https://petersamokhin.com/files/vk-bot-java-sdk/cover.png)
+[Cover](https://petersamokhin.com/files/vk-bot-java-sdk/cover.png)
 ###### Удобная и простая библиотека, помогающая легко и быстро создать бота для ВКонтакте https://vk.com/vkbotsdk
 
 ---
 
 С помощью данной библиотеки можно довольно просто взаимодействовать с [VK API](https://vk.com/dev/manuals) для создания ботов и не только. 
 Функционал прекрасно подходит как для сообществ, так и для личных страниц.
+
+Последняя версия: [![vk-bot-java-sdk](https://img.shields.io/badge/maven--central-v0.1.0-blue.svg?style=flat)](https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk)
 
 ## Пример
 
