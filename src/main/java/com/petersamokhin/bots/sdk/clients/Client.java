@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * com.petersamokhin.bots.sdk.Main client class, that contains all necessary methods and fields
+ * Main client class, that contains all necessary methods and fields
  * for base work with VK and longpoll server
  */
 public abstract class Client {
@@ -21,7 +21,6 @@ public abstract class Client {
     private Integer id;
     private API api;
     private LongPoll longPoll = null;
-    private static final Logger LOG = LoggerFactory.getLogger(Client.class);
 
     public static List<Commmand> commands = new ArrayList<>();
 

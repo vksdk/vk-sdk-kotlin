@@ -1,14 +1,14 @@
 package com.petersamokhin.bots.sdk.objects;
 
 import com.petersamokhin.bots.sdk.clients.Client;
-import com.petersamokhin.bots.sdk.clients.Group;
-import com.petersamokhin.bots.sdk.utils.vkapi.API;
 import com.petersamokhin.bots.sdk.utils.Connection;
 import com.petersamokhin.bots.sdk.utils.Utils;
+import com.petersamokhin.bots.sdk.utils.vkapi.API;
 import okhttp3.MediaType;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ public class Message {
     private static final Logger LOG = LoggerFactory.getLogger(Message.class);
 
     private Integer messageId, flags, peerId, timestamp, randomId, stickerId;
-    private String text, accessToken, clientType, id, title;
+    private String text, accessToken, title;
 
     /**
      * Attachments in format of received event from longpoll server
@@ -74,8 +74,6 @@ public class Message {
      */
     public Message from(Client client) {
         this.accessToken = client.getAccessToken();
-        this.id = String.valueOf(client.getId());
-        this.clientType = client instanceof Group ? "group" : "user";
         return this;
     }
 
@@ -209,8 +207,13 @@ public class Message {
 
                 // Uploading the photo
                 String uploadingOfPhotoResponseString = Connection.getFileUploadAnswerOfVK(uploadUrl, "photo", MediaType.parse("image/*"), template_photo);
-                uploadingOfPhotoResponseString = (uploadingOfPhotoResponseString != null && uploadingOfPhotoResponseString.length() > 2) ? uploadingOfPhotoResponseString : "{}";
-                JSONObject uploadingOfPhotoResponse = new JSONObject(uploadingOfPhotoResponseString);
+                JSONObject uploadingOfPhotoResponse = new JSONObject();
+
+                try {
+                    uploadingOfPhotoResponse = new JSONObject(uploadingOfPhotoResponseString);
+                } catch (JSONException ignored) {
+                    LOG.error("Bad response: {}, error: {}", uploadingOfPhotoResponseString, ignored.toString());
+                }
 
                 // Getting necessary params
                 String server, photo_param, hash;
@@ -377,6 +380,7 @@ public class Message {
 
     /**
      * Send the message
+     * @return id of sent message
      */
     public Integer send() {
 

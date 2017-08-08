@@ -125,6 +125,12 @@ public class LongPoll {
         this.mode = mode == null ? this.mode : mode;
 
         GetLongPollServerResponse serverResponse = getLongPollServer(this.access_token);
+
+        if (serverResponse == null) {
+            LOG.error("Some error occured, can't start.");
+            return;
+        }
+
         this.server = serverResponse.getServer();
         this.key = serverResponse.getKey();
         this.ts = serverResponse.getTs();
@@ -143,8 +149,10 @@ public class LongPoll {
 
         JSONObject response = Connection.getRequestResponse(query);
 
-        if (!response.has("response"))
+        if (!response.has("response")) {
             LOG.error("No response! Error: {}", response);
+            return null;
+        }
 
         JSONObject data = response.getJSONObject("response");
 
@@ -185,16 +193,13 @@ public class LongPoll {
                     default: {
 
                         ts = response.has("ts") ? response.getInt("ts") : ts;
-
                         setData(null, null, null, null, null, null);
-
                         break;
                     }
 
                     case 4: {
 
                         version = response.getInt("max_version");
-
                         break;
                     }
                 }
@@ -317,7 +322,6 @@ public class LongPoll {
                                             ((OnMessageCallback) callbacks.get("OnMessageCallback")).onMessage(message);
                                         }
                                     }
-
                                     break;
                                 }
 
@@ -343,6 +347,7 @@ public class LongPoll {
 
     /**
      * Handle message and call back if it contains any command
+     *
      * @param message received message
      */
     private void handleCommands(Message message) {

@@ -14,6 +14,7 @@ import com.petersamokhin.bots.sdk.utils.vkapi.CallbackApiSettings;
 import okhttp3.MediaType;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,7 @@ public class Group extends Client {
 
             case 1: {
 
-                if (this.getId() == null || this.getId() < 0)
+                if (this.getId() == null || this.getId() == 0)
                     return new JSONObject();
 
                 groupId = this.getId();
@@ -132,11 +133,18 @@ public class Group extends Client {
                 templatePhoto = new File(cover);
             }
 
-            String getUploadServerQuery = "https://api.vk.com/method/photos.getOwnerCoverPhotoUploadServer?group_id=" + groupId + "&crop_x=0&crop_y=0&crop_x2=1590&crop_y2=400&access_token=" + accessToken + "&v=5.64";
+            String getUploadServerQuery = "https://api.vk.com/method/photos.getOwnerCoverPhotoUploadServer?group_id=" + groupId + "&crop_x=0&crop_y=0&crop_x2=1590&crop_y2=400&access_token=" + accessToken + "&v=5.67";
 
             JSONObject getUploadServerResponse = Connection.getRequestResponse(getUploadServerQuery);
 
-            String coverUploadUrl = getUploadServerResponse.getJSONObject("response").getString("upload_url");
+            String coverUploadUrl = "";
+
+            if (getUploadServerResponse.has("response") && getUploadServerResponse.getJSONObject("response").has("upload_url"))
+                getUploadServerResponse.getJSONObject("response").getString("upload_url");
+
+
+            if (coverUploadUrl.length() < 5)
+                return new JSONObject();
 
             String responseOfUploadingPhotoToVk = Connection.getFileUploadAnswerOfVK(
                     coverUploadUrl,
@@ -145,9 +153,13 @@ public class Group extends Client {
                     templatePhoto
             );
 
-            responseOfUploadingPhotoToVk = (responseOfUploadingPhotoToVk != null && responseOfUploadingPhotoToVk.length() > 2) ? responseOfUploadingPhotoToVk : "{}";
+            JSONObject response = new JSONObject();
 
-            JSONObject response = new JSONObject(responseOfUploadingPhotoToVk);
+            try {
+                response = new JSONObject(responseOfUploadingPhotoToVk);
+            } catch (JSONException ignored) {
+                LOG.error("Bad response of uploading cover: {}, error: {}", responseOfUploadingPhotoToVk, ignored.toString());
+            }
 
             if (photoFromUrl) {
                 try {
@@ -163,9 +175,7 @@ public class Group extends Client {
 
                 String save_cover_query = "https://api.vk.com/method/photos.saveOwnerCoverPhoto?hash=" + hashField + "&photo=" + photoField + "&access_token=" + accessToken + "&v=5.67";
 
-                JSONObject saveCoverResponse = Connection.getRequestResponse(save_cover_query);
-
-                return saveCoverResponse;
+                return Connection.getRequestResponse(save_cover_query);
             }
         }
 
@@ -201,7 +211,7 @@ public class Group extends Client {
     /**
      * If need to set own port, host, etc
      *
-     * @param settings
+     * @param settings Settings: host, port, path etc
      */
     public void setCallbackApiSettings(CallbackApiSettings settings) {
         callbackApiHandler = new CallbackApiHandler(settings);

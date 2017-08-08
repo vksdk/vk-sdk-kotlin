@@ -1,6 +1,7 @@
 package com.petersamokhin.bots.sdk.utils;
 
 import okhttp3.*;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,9 +52,17 @@ public final class Connection {
 
         client.connectionPool().evictAll();
 
-        responseBody = (responseBody == null || responseBody.length() < 2) ? "{}" : responseBody;
+        responseBody = (responseBody == null) ? "{}" : responseBody;
 
-        return new JSONObject(responseBody);
+        JSONObject answer = new JSONObject();
+
+        try {
+            answer = new JSONObject(responseBody);
+        } catch (JSONException ignored) {
+            LOG.error("Bad response: {}, error: {}", responseBody, ignored.toString());
+        }
+
+        return answer;
     }
 
     /**
@@ -72,14 +81,14 @@ public final class Connection {
                 .post(RequestBody.create(JSON_TYPE, body))
                 .build();
 
-        String answer = "{}";
+        String responseBody = "{}";
         try {
             Response response = client.newCall(request).execute();
 
             if (!response.isSuccessful()) LOG.error("Request: {} , response is not successful: {}", url, response);
 
             ResponseBody rb = response.body();
-            answer = rb != null ? rb.string() : "{}";
+            responseBody = rb != null ? rb.string() : "{}";
 
         } catch (IOException ignored) {
             LOG.error("IOException when processing POST request {} , body is {} and error is {}", url, body, ignored.toString());
@@ -87,7 +96,15 @@ public final class Connection {
 
         client.connectionPool().evictAll();
 
-        return new JSONObject(answer);
+        JSONObject answer = new JSONObject();
+
+        try {
+            answer = new JSONObject(responseBody);
+        } catch (JSONException ignored) {
+            LOG.error("Bad response: {}, error: {}", responseBody, ignored.toString());
+        }
+
+        return answer;
     }
 
     /**
