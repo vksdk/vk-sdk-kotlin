@@ -7,7 +7,7 @@
 С помощью данной библиотеки можно довольно просто взаимодействовать с [VK API](https://vk.com/dev/manuals) для создания ботов и не только. 
 Функционал прекрасно подходит как для сообществ, так и для личных страниц.
 
-Последняя версия: [![vk-bot-java-sdk](https://img.shields.io/badge/maven--central-v0.1.0-blue.svg?style=flat)](https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk)
+Последняя версия: [![vk-bot-java-sdk](https://img.shields.io/badge/maven--central-v0.1.1-blue.svg?style=flat)](https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk)
 
 ## Пример
 
@@ -43,7 +43,7 @@ group.onVoiceMessage(message ->
          .send()
 );
 ```
-## Функционал: версия 0.1.0 (6.08.2017)
+## Функционал: версия 0.1.1 (8.08.2017)
 * [Старый функционал](https://github.com/petersamokhin/vk-bot-java-sdk#Функционал-версия-001-30072017) по возможности оптимизирован и протестирован
 * Улучшено взаимодействие с VK API: теперь все запросы становятся в очередь и выполняются с помощью метода [execute](https://vk.com/dev/execute), позволяющего за одно выполнение метода делать до 25 запросов к API. Без него можно делать всего до трёх запросов в секунду. Ответ от VK вернётся через callback:
 ```java
