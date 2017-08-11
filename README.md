@@ -139,22 +139,22 @@ group.uploadCover(151083290, "access_token", "https://www.petersamokhin.com/file
 <dependency>
     <groupId>com.petersamokhin</groupId>
     <artifactId>vk-bot-java-sdk</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </dependency>
 ```
 #### Для gradle 
 Добавить строки, что ниже, в **build.gradle** в dependencies:
 ```gradle
-compile group: 'com.petersamokhin', name: 'vk-bot-java-sdk', version: '0.1.0'
+compile group: 'com.petersamokhin', name: 'vk-bot-java-sdk', version: '0.1.1'
 ```
 ### Любые другие системы сборок
-Поскольку библиотека загружена в центральный репозиторий, на сайте поиска по репозиторию описаны способы подключения библиотеки с помощью любой из систем сборок: https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk/0.1.0
+Поскольку библиотека загружена в центральный репозиторий, на сайте поиска по репозиторию описаны способы подключения библиотеки с помощью любой из систем сборок: https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk/0.1.1
 
 ---
 #### Без систем сборок (добавляем библиотеку в classpath)
 Здесь немного проще, но это не значит, что лучше. Вопрос удобства.
 
-* Скачиваем (все зависимости включены в сборку): [библиотека (3.8 MB)](https://www.petersamokhin.com/files/vk-bot-java-sdk/vk-bot-java-sdk-0.1.0-jar-with-dependencies.jar) | [md5](https://www.petersamokhin.com/files/vk-bot-java-sdk/vk-bot-java-sdk-0.1.0-jar-with-dependencies.jar.md5)
+* Скачиваем (все зависимости включены в сборку): [библиотека (3.8 MB)](https://www.petersamokhin.com/files/vk-bot-java-sdk/vk-bot-java-sdk-0.1.1-jar-with-dependencies.jar) | [md5](https://www.petersamokhin.com/files/vk-bot-java-sdk/vk-bot-java-sdk-0.1.1-jar-with-dependencies.jar.md5)
 * Теперь для использования библиотеки в проекте, нужно всего лишь добавить её в `classpath`:
   * Если компилируете через терминал, то команда будет выглядеть следующим образом: 
   ```bash
