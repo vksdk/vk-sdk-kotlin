@@ -1,6 +1,5 @@
 # VK Bot Java SDK
-![Cover](https://petersamokhin.com/files/vk-bot-java-sdk/cover.png)
-<a href="https://vk.com/id62802565"><img src="https://petersamokhin.com/files/vk-bot-java-sdk/cover.png"></img></a>
+<a href="https://vk.com/vkbotsdk"><img src="https://petersamokhin.com/files/vk-bot-java-sdk/cover.png"></img></a>
 ###### Удобная и простая библиотека, помогающая легко и быстро создать бота для ВКонтакте https://vk.com/vkbotsdk
 
 ---
