@@ -58,7 +58,7 @@ public class Message {
      */
     public Message(String accessToken, Integer messageId, Integer flags, Integer peerId, Integer timestamp, String text, JSONObject attachments, Integer randomId) {
 
-        this.accessToken = accessToken;
+        setAccessToken(accessToken);
         setMessageId(messageId);
         setFlags(flags);
         setPeerId(peerId);
@@ -73,7 +73,7 @@ public class Message {
      * Your client with id, access token
      */
     public Message from(Client client) {
-        this.accessToken = client.getAccessToken();
+        setAccessToken(client.getAccessToken());
         return this;
     }
 
@@ -664,6 +664,10 @@ public class Message {
         }
 
         return answer;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     private void setAttachments(JSONObject attachments) {

@@ -22,7 +22,7 @@ public abstract class Client {
     private API api;
     private LongPoll longPoll = null;
 
-    public static List<Commmand> commands = new ArrayList<>();
+    public List<Commmand> commands = new ArrayList<>();
 
     /**
      * Default constructor
@@ -32,7 +32,7 @@ public abstract class Client {
     Client(String access_token) {
 
         this.accessToken = access_token;
-        this.longPoll = new LongPoll(access_token);
+        this.longPoll = new LongPoll(this);
 
         this.api = new API(this);
     }
@@ -47,7 +47,7 @@ public abstract class Client {
 
         this.id = id;
         this.accessToken = access_token;
-        this.longPoll = new LongPoll(access_token);
+        this.longPoll = new LongPoll(this);
 
         this.api = new API(this);
     }
@@ -128,19 +128,19 @@ public abstract class Client {
     /* Commands */
 
     public void onCommand(Object command, OnCommandCallback callback) {
-        Client.commands.add(new Commmand(command, callback));
+        this.commands.add(new Commmand(command, callback));
     }
 
     public void onCommand(OnCommandCallback callback, Object... commands) {
-        Client.commands.add(new Commmand(commands, callback));
+        this.commands.add(new Commmand(commands, callback));
     }
 
     public void onCommand(Object[] commands, OnCommandCallback callback) {
-        Client.commands.add(new Commmand(commands, callback));
+        this.commands.add(new Commmand(commands, callback));
     }
 
     public void onCommand(List<?> list, OnCommandCallback callback) {
-        Client.commands.add(new Commmand(list, callback));
+        this.commands.add(new Commmand(list, callback));
     }
 
     /**

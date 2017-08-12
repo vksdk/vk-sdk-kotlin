@@ -25,6 +25,7 @@ public class LongPoll {
     private static final Logger LOG = LoggerFactory.getLogger(LongPoll.class);
 
     private String access_token = null;
+    private Client client = null;
 
     private String server = null;
     private String key = null;
@@ -54,11 +55,12 @@ public class LongPoll {
     /**
      * Simple default constructor that requires only access token
      *
-     * @param access_token your access token key, more: <a href="https://vk.com/dev/access_token">link</a>
+     * @param client client with your access token key, more: <a href="https://vk.com/dev/access_token">link</a>
      */
-    public LongPoll(String access_token) {
+    public LongPoll(Client client) {
 
-        setData(access_token, null, null, null, null, null);
+        this.client = client;
+        setData(client.getAccessToken(), null, null, null, null, null);
 
         if (!on) {
             on = true;
@@ -69,16 +71,17 @@ public class LongPoll {
     /**
      * Custom constructor
      *
-     * @param access_token your access token key, more: <a href="https://vk.com/dev/access_token">link</a>
+     * @param client client with your access token key, more: <a href="https://vk.com/dev/access_token">link</a>
      * @param need_pts     more: <a href="https://vk.com/dev/using_longpoll">link</a>
      * @param version      more: <a href="https://vk.com/dev/using_longpoll">link</a>
      * @param API          more: <a href="https://vk.com/dev/using_longpoll">link</a>
      * @param wait         more: <a href="https://vk.com/dev/using_longpoll">link</a>
      * @param mode         more: <a href="https://vk.com/dev/using_longpoll">link</a>
      */
-    public LongPoll(String access_token, Integer need_pts, Integer version, Double API, Integer wait, Integer mode) {
+    public LongPoll(Client client, Integer need_pts, Integer version, Double API, Integer wait, Integer mode) {
 
-        setData(access_token, need_pts, version, API, wait, mode);
+        this.client = client;
+        setData(client.getAccessToken(), need_pts, version, API, wait, mode);
 
         if (!on) {
             on = true;
@@ -205,7 +208,7 @@ public class LongPoll {
                 }
             } else {
 
-                if (Client.commands.size() > 0 || callbacks.size() > 0) {
+                if (this.client.commands.size() > 0 || callbacks.size() > 0) {
 
                     if (response.has("ts") && response.has("updates")) {
 
@@ -352,7 +355,7 @@ public class LongPoll {
      */
     private void handleCommands(Message message) {
 
-        for (Client.Commmand command : Client.commands) {
+        for (Client.Commmand command : this.client.commands) {
             for (int i = 0; i < command.getCommands().length; i++)
                 if (containsIgnoreCase(message.getText(), command.getCommands()[i].toString()))
                     command.getCallback().OnCommand(message);
