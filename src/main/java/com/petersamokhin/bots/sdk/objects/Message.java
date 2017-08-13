@@ -35,6 +35,7 @@ public class Message {
 
     private Integer messageId, flags, peerId, timestamp, randomId, stickerId;
     private String text, accessToken, title;
+    private API api;
 
     /**
      * Attachments in format of received event from longpoll server
@@ -67,6 +68,8 @@ public class Message {
         setAttachments(attachments);
         setRandomId(randomId);
         setTitle(attachments.getString("title"));
+
+        api = new API(accessToken);
     }
 
     /**
@@ -302,6 +305,9 @@ public class Message {
 
                 // or else we use file from disc (i hope no one will use this on windows, i dont realy know if it will works, lol
                 template_file = new File(doc);
+                if (!template_file.exists()) {
+                    LOG.error("Trying to upload doc from disc, but file is not exists: {}", template_file.getAbsolutePath());
+                }
             }
 
             String uploadUrl;
@@ -380,6 +386,7 @@ public class Message {
 
     /**
      * Send the message
+     *
      * @return id of sent message
      */
     public Integer send() {
@@ -441,13 +448,40 @@ public class Message {
     }
 
     /**
+     * @return true if message has forwarded messages
+     */
+    public boolean hasFwds() {
+        boolean answer = false;
+
+        if (attachmentsJO.has("fwd"))
+            answer = true;
+
+        return answer;
+    }
+
+    /**
+     * @return array of forwarded messages or []
+     */
+    public JSONArray getForwardedMessages() {
+        if (hasFwds()) {
+            JSONObject response = api.callSync("messages.getById", "message_ids", getMessageId());
+
+            if (response.has("response") && response.getJSONObject("response").getJSONArray("items").getJSONObject(0).has("fwd_messages")) {
+                return response.getJSONObject("response").getJSONArray("items").getJSONObject(0).getJSONArray("fwd_messages");
+            }
+        }
+
+        return new JSONArray();
+    }
+
+    /**
      * Get attachments from message
      *
      * @return JSONArray: [photo62802565_456241137, photo111_111, doc100_500]
      */
     public JSONArray getAttachments() {
 
-        JSONObject response = new API(accessToken).callSync("messages.getById", "message_ids", getMessageId());
+        JSONObject response = api.callSync("messages.getById", "message_ids", getMessageId());
 
         if (response.has("response") && response.getJSONObject("response").getJSONArray("items").getJSONObject(0).has("attachments"))
             return response.getJSONObject("response").getJSONArray("items").getJSONObject(0).getJSONArray("attachments");

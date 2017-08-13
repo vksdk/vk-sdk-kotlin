@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,12 +72,12 @@ public class LongPoll {
     /**
      * Custom constructor
      *
-     * @param client client with your access token key, more: <a href="https://vk.com/dev/access_token">link</a>
-     * @param need_pts     more: <a href="https://vk.com/dev/using_longpoll">link</a>
-     * @param version      more: <a href="https://vk.com/dev/using_longpoll">link</a>
-     * @param API          more: <a href="https://vk.com/dev/using_longpoll">link</a>
-     * @param wait         more: <a href="https://vk.com/dev/using_longpoll">link</a>
-     * @param mode         more: <a href="https://vk.com/dev/using_longpoll">link</a>
+     * @param client   client with your access token key, more: <a href="https://vk.com/dev/access_token">link</a>
+     * @param need_pts more: <a href="https://vk.com/dev/using_longpoll">link</a>
+     * @param version  more: <a href="https://vk.com/dev/using_longpoll">link</a>
+     * @param API      more: <a href="https://vk.com/dev/using_longpoll">link</a>
+     * @param wait     more: <a href="https://vk.com/dev/using_longpoll">link</a>
+     * @param mode     more: <a href="https://vk.com/dev/using_longpoll">link</a>
      */
     public LongPoll(Client client, Integer need_pts, Integer version, Double API, Integer wait, Integer mode) {
 
@@ -148,12 +149,13 @@ public class LongPoll {
      */
     private GetLongPollServerResponse getLongPollServer(String access_token) {
 
-        String query = "https://api.vk.com/method/messages.getLongPollServer?need_pts=" + need_pts + "&lp_version=" + version + "&access_token=" + access_token + "&v=" + API;
+        StringBuilder query = new StringBuilder();
+        query.append("https://api.vk.com/method/messages.getLongPollServer?need_pts=").append(need_pts).append("&lp_version=").append(version).append("&access_token=").append(access_token).append("&v=").append(API);
 
-        JSONObject response = Connection.getRequestResponse(query);
+        JSONObject response = Connection.getRequestResponse(query.toString());
 
-        if (!response.has("response")) {
-            LOG.error("No response! Error: {}", response);
+        if (!response.has("response") || !response.getJSONObject("response").has("key") || !response.getJSONObject("response").has("server") || !response.getJSONObject("response").has("ts")) {
+            LOG.error("Bad response of getting longpoll server!\nQuery: {}\n Response: {}", query, response);
             return null;
         }
 
@@ -355,10 +357,11 @@ public class LongPoll {
      */
     private void handleCommands(Message message) {
 
-        for (Client.Commmand command : this.client.commands) {
-            for (int i = 0; i < command.getCommands().length; i++)
-                if (containsIgnoreCase(message.getText(), command.getCommands()[i].toString()))
-                    command.getCallback().OnCommand(message);
-        }
+        this.client.commands.
+                forEach(command ->
+                        Arrays.stream(command.getCommands())
+                                .filter(item -> containsIgnoreCase(message.getText(), item.toString()))
+                                .forEach(item -> command.getCallback().OnCommand(message))
+                );
     }
 }
