@@ -154,6 +154,8 @@ public class LongPoll {
 
         JSONObject response = Connection.getRequestResponse(query.toString());
 
+        LOG.info("GetLongPollServerResponse: \n{}\n", response);
+
         if (!response.has("response") || !response.getJSONObject("response").has("key") || !response.getJSONObject("response").has("server") || !response.getJSONObject("response").has("ts")) {
             LOG.error("Bad response of getting longpoll server!\nQuery: {}\n Response: {}", query, response);
             return null;
@@ -177,7 +179,7 @@ public class LongPoll {
      */
     private void startListening() {
 
-        LOG.error("Started listening to events from VK LongPoll server...");
+        LOG.info("Started listening to events from VK LongPoll server...");
 
         while (on) {
 
@@ -250,11 +252,19 @@ public class LongPoll {
                                         // check for commands
                                         handleCommands(message);
 
+                                        if (message.hasFwds() && callbacks.containsKey("OnMessageWithFwdsCallback")) {
+                                            ((OnMessageWithFwdsCallback) callbacks.get("OnMessageWithFwdsCallback")).onMessage(message);
+                                        }
+
                                         switch (message.messageType()) {
 
                                             case "voiceMessage": {
                                                 if (callbacks.containsKey("OnVoiceMessageCallback")) {
                                                     ((OnVoiceMessageCallback) callbacks.get("OnVoiceMessageCallback")).OnVoiceMessage(message);
+                                                } else {
+                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
+                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
+                                                    }
                                                 }
                                                 break;
                                             }
@@ -262,6 +272,10 @@ public class LongPoll {
                                             case "stickerMessage": {
                                                 if (callbacks.containsKey("OnStickerMessageCallback")) {
                                                     ((OnStickerMessageCallback) callbacks.get("OnStickerMessageCallback")).OnStickerMessage(message);
+                                                } else {
+                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
+                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
+                                                    }
                                                 }
                                                 break;
                                             }
@@ -269,6 +283,10 @@ public class LongPoll {
                                             case "gifMessage": {
                                                 if (callbacks.containsKey("OnGifMessageCallback")) {
                                                     ((OnGifMessageCallback) callbacks.get("OnGifMessageCallback")).OnGifMessage(message);
+                                                } else {
+                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
+                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
+                                                    }
                                                 }
                                                 break;
                                             }
@@ -276,6 +294,10 @@ public class LongPoll {
                                             case "audioMessage": {
                                                 if (callbacks.containsKey("OnAudioMessageCallback")) {
                                                     ((OnAudioMessageCallback) callbacks.get("OnAudioMessageCallback")).onAudioMessage(message);
+                                                } else {
+                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
+                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
+                                                    }
                                                 }
                                                 break;
                                             }
@@ -283,6 +305,10 @@ public class LongPoll {
                                             case "videoMessage": {
                                                 if (callbacks.containsKey("OnVideoMessageCallback")) {
                                                     ((OnVideoMessageCallback) callbacks.get("OnVideoMessageCallback")).onVideoMessage(message);
+                                                } else {
+                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
+                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
+                                                    }
                                                 }
                                                 break;
                                             }
@@ -290,6 +316,10 @@ public class LongPoll {
                                             case "docMessage": {
                                                 if (callbacks.containsKey("OnDocMessageCallback")) {
                                                     ((OnDocMessageCallback) callbacks.get("OnDocMessageCallback")).OnDocMessage(message);
+                                                } else {
+                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
+                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
+                                                    }
                                                 }
                                                 break;
                                             }
@@ -297,6 +327,10 @@ public class LongPoll {
                                             case "wallMessage": {
                                                 if (callbacks.containsKey("OnWallMessageCallback")) {
                                                     ((OnVoiceMessageCallback) callbacks.get("OnWallMessageCallback")).OnVoiceMessage(message);
+                                                } else {
+                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
+                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
+                                                    }
                                                 }
                                                 break;
                                             }
@@ -304,6 +338,10 @@ public class LongPoll {
                                             case "photoMessage": {
                                                 if (callbacks.containsKey("OnPhotoMessageCallback")) {
                                                     ((OnPhotoMessageCallback) callbacks.get("OnPhotoMessageCallback")).onPhotoMessage(message);
+                                                } else {
+                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
+                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
+                                                    }
                                                 }
                                                 break;
                                             }
@@ -311,6 +349,10 @@ public class LongPoll {
                                             case "linkMessage": {
                                                 if (callbacks.containsKey("OnLinkMessageCallback")) {
                                                     ((OnLinkMessageCallback) callbacks.get("OnLinkMessageCallback")).OnLinkMessage(message);
+                                                } else {
+                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
+                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
+                                                    }
                                                 }
                                                 break;
                                             }
@@ -318,6 +360,10 @@ public class LongPoll {
                                             case "simpleTextMessage": {
                                                 if (callbacks.containsKey("OnSimpleTextMessageCallback")) {
                                                     ((OnSimpleTextMessageCallback) callbacks.get("OnSimpleTextMessageCallback")).OnSimpleTextMessage(message);
+                                                } else {
+                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
+                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
+                                                    }
                                                 }
                                                 break;
                                             }
@@ -357,11 +403,10 @@ public class LongPoll {
      */
     private void handleCommands(Message message) {
 
-        this.client.commands.
-                forEach(command ->
-                        Arrays.stream(command.getCommands())
-                                .filter(item -> containsIgnoreCase(message.getText(), item.toString()))
-                                .forEach(item -> command.getCallback().OnCommand(message))
-                );
+        this.client.commands.forEach(command ->
+                Arrays.stream(command.getCommands())
+                        .filter(item -> containsIgnoreCase(message.getText(), item.toString()))
+                        .forEach(item -> command.getCallback().OnCommand(message))
+        );
     }
 }

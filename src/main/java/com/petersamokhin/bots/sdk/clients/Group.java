@@ -76,13 +76,17 @@ public class Group extends Client {
         String accessToken;
 
         switch (params.length) {
-            case 0:
+            case 0: {
+                LOG.error("Can't upload cover without params.");
                 return new JSONObject();
+            }
 
             case 1: {
 
-                if (this.getId() == null || this.getId() == 0)
+                if (this.getId() == null || this.getId() == 0) {
+                    LOG.error("Can't upload cover: please provide group_id.");
                     return new JSONObject();
+                }
 
                 groupId = this.getId();
                 cover = String.valueOf(params[0]);
@@ -105,7 +109,8 @@ public class Group extends Client {
             }
 
             default: {
-                return new JSONObject().put("response", "Some error occured, cover not uploaded.");
+                LOG.error("Some error occured, cover not uploaded.");
+                return new JSONObject();
             }
         }
 
@@ -139,12 +144,17 @@ public class Group extends Client {
 
             String coverUploadUrl = "";
 
-            if (getUploadServerResponse.has("response") && getUploadServerResponse.getJSONObject("response").has("upload_url"))
-                getUploadServerResponse.getJSONObject("response").getString("upload_url");
+            if (getUploadServerResponse.has("response") && getUploadServerResponse.getJSONObject("response").has("upload_url")) {
+                coverUploadUrl = getUploadServerResponse.getJSONObject("response").getString("upload_url");
+            } else {
+                LOG.error("Cover not uploaded. Get upload server response is {}", getUploadServerResponse);
+            }
 
 
-            if (coverUploadUrl.length() < 5)
+            if (coverUploadUrl.length() < 5) {
+                LOG.error("Cover not uploaded. Bad upload url: {}", getUploadServerResponse);
                 return new JSONObject();
+            }
 
             String responseOfUploadingPhotoToVk = Connection.getFileUploadAnswerOfVK(
                     coverUploadUrl,
@@ -159,6 +169,7 @@ public class Group extends Client {
                 response = new JSONObject(responseOfUploadingPhotoToVk);
             } catch (JSONException ignored) {
                 LOG.error("Bad response of uploading cover: {}, error: {}", responseOfUploadingPhotoToVk, ignored.toString());
+                return response;
             }
 
             if (photoFromUrl) {
@@ -176,6 +187,8 @@ public class Group extends Client {
                 String save_cover_query = "https://api.vk.com/method/photos.saveOwnerCoverPhoto?hash=" + hashField + "&photo=" + photoField + "&access_token=" + accessToken + "&v=5.67";
 
                 return Connection.getRequestResponse(save_cover_query);
+            } else {
+                LOG.error("Cover not uploaded. No hash and photo params: {}", response);
             }
         }
 

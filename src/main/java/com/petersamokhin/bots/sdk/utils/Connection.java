@@ -59,7 +59,7 @@ public final class Connection {
         try {
             answer = new JSONObject(responseBody);
         } catch (JSONException ignored) {
-            LOG.error("Bad response: {}, error: {}", responseBody, ignored.toString());
+            LOG.error("Query: {}, Bad response: {}, error: {}", url, responseBody, ignored.toString());
         }
 
         return answer;

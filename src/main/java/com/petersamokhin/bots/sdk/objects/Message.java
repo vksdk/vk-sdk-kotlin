@@ -1,5 +1,6 @@
 package com.petersamokhin.bots.sdk.objects;
 
+import com.petersamokhin.bots.sdk.callbacks.callbackapi.ExecuteCallback;
 import com.petersamokhin.bots.sdk.clients.Client;
 import com.petersamokhin.bots.sdk.utils.Connection;
 import com.petersamokhin.bots.sdk.utils.Utils;
@@ -46,7 +47,7 @@ public class Message {
     /**
      * Attahments in format [photo62802565_456241137, photo111_111, doc100_500]
      */
-    private String[] attachments, forwardMessages;
+    private String[] attachments, forwardedMessages;
 
     /**
      * Constructor for sent message
@@ -77,6 +78,7 @@ public class Message {
      */
     public Message from(Client client) {
         setAccessToken(client.getAccessToken());
+        api = new API(client.getAccessToken());
         return this;
     }
 
@@ -107,7 +109,7 @@ public class Message {
             arr[i] = String.valueOf(ids[i]);
         }
 
-        this.forwardMessages = arr;
+        this.forwardedMessages = arr;
 
         return this;
     }
@@ -268,6 +270,13 @@ public class Message {
      */
     public Message doc(String doc, String... type) {
 
+        if (type.length > 0 && !type[0].contains("doc") && !type[0].contains("audio_message") && !type[0].contains("graffiti")) {
+            LOG.error("Error when attaching doc to message: type should be 'doc', 'audio_message' or 'graffiti', your type is '{}'.", type[0]);
+
+            if (type.length > 1)
+                LOG.error("Unknown params when calling '.doc' method: please give link to doc (or path from disc, or doc<OWNER_ID>_<ID>) and type of it.");
+        }
+
         boolean fileFromUrl = false;
 
         // Use already loaded doc
@@ -303,15 +312,17 @@ public class Message {
 
             } else {
 
-                // or else we use file from disc (i hope no one will use this on windows, i dont realy know if it will works, lol
+                // or else we use file from disc (i hope no one will use this on windows, i dont realy know if it will works, lol)
                 template_file = new File(doc);
                 if (!template_file.exists()) {
-                    LOG.error("Trying to upload doc from disc, but file is not exists: {}", template_file.getAbsolutePath());
+                    LOG.error("Trying to upload doc from disc, but file is not exists: {}", doc);
+                    return this;
                 }
             }
 
             String uploadUrl;
             int maxAttempts = 5, i = 0;
+            boolean good = false;
 
             while (i < maxAttempts) {
                 i++;
@@ -323,6 +334,9 @@ public class Message {
 
                 // Some error
                 if (uploadUrl == null) {
+
+                    LOG.error("Error when trying to get upload server for doc, response: {}", getUploadServerResponse);
+
                     try {
                         Thread.sleep(400);
                     } catch (InterruptedException ignored) {
@@ -340,6 +354,9 @@ public class Message {
                 if (uploadingOfDocResponse.has("file")) {
                     file = "" + uploadingOfDocResponse.getString("file");
                 } else {
+
+                    LOG.error("Error when uploading doc, no file field in response: {}", uploadingOfDocResponse);
+
                     try {
                         Thread.sleep(400);
                     } catch (InterruptedException ignored) {
@@ -353,6 +370,9 @@ public class Message {
                 String docAsAttach = saveMessagesDocResponse.has("response") ? "doc" + saveMessagesDocResponse.getJSONArray("response").getJSONObject(0).getInt("owner_id") + "_" + saveMessagesDocResponse.getJSONArray("response").getJSONObject(0).getInt("id") : "";
 
                 if (docAsAttach.length() < 2) {
+
+                    LOG.error("Error when uploading doc, bad doc: {}", saveMessagesDocResponse);
+
                     try {
                         Thread.sleep(400);
                     } catch (InterruptedException ignored) {
@@ -369,8 +389,13 @@ public class Message {
 
                 if (Pattern.matches("doc-?\\d+_\\d+", docAsAttach)) {
                     doc = docAsAttach;
+                    good = true;
                     break;
                 }
+            }
+
+            if (!good) {
+                return this;
             }
         }
 
@@ -387,36 +412,37 @@ public class Message {
     /**
      * Send the message
      *
-     * @return id of sent message
+     * @param callback will be called with response object
      */
-    public Integer send() {
+    public void send(ExecuteCallback... callback) {
 
-        try {
-            text = (text != null && text.length() > 0) ? URLEncoder.encode(text, "UTF-8") : "";
-            title = (title != null && title.length() > 0) ? URLEncoder.encode(title, "UTF-8") : "";
-        } catch (UnsupportedEncodingException ignored) {
-        }
+        text = (text != null && text.length() > 0) ? text : "";
+        title = (title != null && title.length() > 0) ? title : "";
 
         randomId = randomId != null && randomId > 0 ? randomId : 0;
         peerId = peerId != null ? peerId : -142409596;
         attachments = attachments != null && attachments.length > 0 ? attachments : new String[]{};
-        forwardMessages = forwardMessages != null && forwardMessages.length > 0 ? forwardMessages : new String[]{};
+        forwardedMessages = forwardedMessages != null && forwardedMessages.length > 0 ? forwardedMessages : new String[]{};
         stickerId = stickerId != null && stickerId > 0 ? stickerId : 0;
 
-        String query = "https://api.vk.com/method/messages.send?" +
-                "message=" + text + "&" +
-                "title=" + title + "&" +
-                "random_id=" + (randomId > 0 ? randomId : "") + "&" +
-                "peer_id=" + peerId + "&" +
-                "attachment=" + (attachments.length > 0 ? String.join(",", attachments) : "") + "&" +
-                "forward_messages=" + (forwardMessages.length > 0 ? String.join(",", forwardMessages) : "") + "&" +
-                "sticker_id=" + (stickerId > 0 ? stickerId : "") + "&" +
-                "access_token=" + accessToken + "&" +
-                "v=" + "5.67";
+        JSONObject params = new JSONObject();
 
-        JSONObject response = Connection.getRequestResponse(query);
+        params.put("message", text);
+        if (title != null && title.length() > 0) params.put("title", title);
+        if (randomId != null && randomId > 0) params.put("random_id", randomId);
+        params.put("peer_id", peerId);
+        if (attachments.length > 0) params.put("attachment", String.join(",", attachments));
+        if (forwardedMessages.length > 0) params.put("forward_messages", String.join(",", forwardedMessages));
+        if (stickerId != null && stickerId > 0) params.put("sticker_id", stickerId);
 
-        return response.has("response") ? response.getInt("response") : null;
+        api.call("messages.send", params, response -> {
+            if (callback.length > 0) {
+                callback[0].onResponse(response);
+            }
+            if (!(response instanceof Integer)) {
+                LOG.error("Message not sent: {}", response);
+            }
+        });
     }
 
     /**
@@ -476,8 +502,6 @@ public class Message {
 
     /**
      * Get attachments from message
-     *
-     * @return JSONArray: [photo62802565_456241137, photo111_111, doc100_500]
      */
     public JSONArray getAttachments() {
 
@@ -554,14 +578,17 @@ public class Message {
             put("sticker", 0);
             put("link", 0);
             put("voice", 0);
+            put("summary", 0);
         }};
 
         if (attachmentsJO.toString().contains("sticker")) {
             answer.put("sticker", 1);
+            answer.put("summary", 1);
             return answer;
         } else {
             if (attachmentsJO.toString().contains("audiomsg")) {
                 answer.put("voice", 1);
+                answer.put("summary", 1);
                 return answer;
             } else {
                 for (String key : attachmentsJO.keySet()) {

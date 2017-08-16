@@ -77,6 +77,14 @@ public abstract class Client {
 
     /* Messages */
 
+    public void onOtherMessages(OnOtherMessagesCallback callback) {
+        this.longPoll().registerCallback("OnOtherMessagesCallback", callback);
+    }
+
+    public void onMessageWithFwds(OnMessageWithFwdsCallback callback) {
+        this.longPoll().registerCallback("OnMessageWithFwdsCallback", callback);
+    }
+
     public void onAudioMessage(OnAudioMessageCallback callback) {
         this.longPoll().registerCallback("OnAudioMessageCallback", callback);
     }
