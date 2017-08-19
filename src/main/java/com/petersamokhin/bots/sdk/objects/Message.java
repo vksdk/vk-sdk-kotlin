@@ -16,9 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -36,6 +34,7 @@ public class Message {
 
     private Integer messageId, flags, peerId, timestamp, randomId, stickerId;
     private String text, accessToken, title;
+    private String templateFileName;
     private API api;
 
     /**
@@ -283,11 +282,10 @@ public class Message {
         if (Pattern.matches("doc-?\\d+_\\d+", doc) || Pattern.matches("/doc-?\\d+_\\d+", doc) || Pattern.matches("https?://vk\\.com/doc-?\\d+_\\d+", doc)) {
 
             doc = doc.replace("https://vk.com/", "").replace("/", "");
-        }
+        } else
 
         // Use file from disk or url
-        if (Pattern.matches(".+\\.\\w\\w.*", doc)) {
-
+        {
             File template_file;
 
             if (Pattern.matches("https?://.+", doc)) {
@@ -299,7 +297,11 @@ public class Message {
                 }
 
                 try {
-                    template_file = new File(doc.substring(doc.lastIndexOf('/') + 1, doc.length()));
+                    String tmpName = doc.substring(doc.lastIndexOf('/') + 1, doc.length());
+                    if (templateFileName != null && templateFileName.length() > 2) {
+                        tmpName = templateFileName;
+                    }
+                    template_file = new File(tmpName);
                     template_file.createNewFile();
                     Files.setPosixFilePermissions(Paths.get(template_file.getAbsolutePath()), PosixFilePermissions.fromString("rwxrwxrwx"));
                     FileUtils.copyURLToFile(new URL(doc), template_file, 5000, 5000);
@@ -405,6 +407,12 @@ public class Message {
 
         System.arraycopy(this.attachments, 0, attachmentsNew, 0, attachments.length);
         this.attachments = attachmentsNew;
+
+        return this;
+    }
+
+    public Message templateFileName(String name) {
+        this.templateFileName = name;
 
         return this;
     }

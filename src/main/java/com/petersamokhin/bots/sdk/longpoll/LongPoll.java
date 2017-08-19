@@ -1,21 +1,12 @@
 package com.petersamokhin.bots.sdk.longpoll;
 
 import com.petersamokhin.bots.sdk.callbacks.Callback;
-import com.petersamokhin.bots.sdk.callbacks.messages.*;
 import com.petersamokhin.bots.sdk.clients.Client;
 import com.petersamokhin.bots.sdk.longpoll.responses.GetLongPollServerResponse;
-import com.petersamokhin.bots.sdk.objects.Message;
 import com.petersamokhin.bots.sdk.utils.Connection;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 
 /**
  * com.petersamokhin.bots.sdk.Main class for work with VK longpoll server
@@ -24,9 +15,6 @@ import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 public class LongPoll {
 
     private static final Logger LOG = LoggerFactory.getLogger(LongPoll.class);
-
-    private String access_token = null;
-    private Client client = null;
 
     private String server = null;
     private String key = null;
@@ -47,11 +35,8 @@ public class LongPoll {
 
     private volatile boolean on = false;
 
-
-    /**
-     * Map with callbacks
-     */
-    private volatile Map<String, Callback> callbacks = new HashMap<>();
+    private UpdatesHandler updatesHandler;
+    private Client client;
 
     /**
      * Simple default constructor that requires only access token
@@ -60,8 +45,10 @@ public class LongPoll {
      */
     public LongPoll(Client client) {
 
+        this.updatesHandler = new UpdatesHandler(client);
+        this.updatesHandler.start();
         this.client = client;
-        setData(client.getAccessToken(), null, null, null, null, null);
+        setData(null, null, null, null, null);
 
         if (!on) {
             on = true;
@@ -81,8 +68,10 @@ public class LongPoll {
      */
     public LongPoll(Client client, Integer need_pts, Integer version, Double API, Integer wait, Integer mode) {
 
+        this.updatesHandler = new UpdatesHandler(client);
+        this.updatesHandler.start();
         this.client = client;
-        setData(client.getAccessToken(), need_pts, version, API, wait, mode);
+        setData(need_pts, version, API, wait, mode);
 
         if (!on) {
             on = true;
@@ -105,22 +94,19 @@ public class LongPoll {
      * @param callback Callback
      */
     public void registerCallback(String name, Callback callback) {
-        this.callbacks.put(name, callback);
+        updatesHandler.registerCallback(name, callback);
     }
 
     /**
      * Setting all necessary parameters
      *
-     * @param access_token Access token of user or group
      * @param need_pts     param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
      * @param version      param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
      * @param API          param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
      * @param wait         param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
      * @param mode         param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
      */
-    private void setData(String access_token, Integer need_pts, Integer version, Double API, Integer wait, Integer mode) {
-
-        this.access_token = (access_token != null && access_token.length() > 5) ? access_token : this.access_token;
+    private void setData(Integer need_pts, Integer version, Double API, Integer wait, Integer mode) {
 
         this.need_pts = need_pts == null ? this.need_pts : need_pts;
         this.version = version == null ? this.version : version;
@@ -128,7 +114,7 @@ public class LongPoll {
         this.wait = wait == null ? this.wait : wait;
         this.mode = mode == null ? this.mode : mode;
 
-        GetLongPollServerResponse serverResponse = getLongPollServer(this.access_token);
+        GetLongPollServerResponse serverResponse = getLongPollServer(client.getAccessToken());
 
         if (serverResponse == null) {
             LOG.error("Some error occured, can't start.");
@@ -189,6 +175,8 @@ public class LongPoll {
 
             JSONObject response = Connection.getRequestResponse(query.toString());
 
+            LOG.info("Response of getting updates: \n{}\n", response);
+
             if (response.has("failed")) {
 
                 int code = response.getInt("failed");
@@ -199,194 +187,34 @@ public class LongPoll {
 
                     default: {
 
-                        ts = response.has("ts") ? response.getInt("ts") : ts;
-                        setData(null, null, null, null, null, null);
+                        if (response.has("ts")) {
+                            ts = response.getInt("ts");
+                        }
+
+                        setData(null, null, null, null, null);
                         break;
                     }
 
                     case 4: {
 
                         version = response.getInt("max_version");
+                        setData(null, null, null, null, null);
                         break;
                     }
                 }
             } else {
 
-                if (this.client.commands.size() > 0 || callbacks.size() > 0) {
+                if (response.has("ts"))
+                    ts = response.getInt("ts");
+
+                if (response.has("pts"))
+                    pts = response.getInt("pts");
+
+                if (this.updatesHandler.callbacksCount() > 0 || this.updatesHandler.commandsCount() > 0) {
 
                     if (response.has("ts") && response.has("updates")) {
 
-                        Integer new_ts = response.getInt("ts");
-
-                        Integer new_pts = response.has("pts") ? response.getInt("pts") : pts;
-
-                        JSONArray updates = response.getJSONArray("updates");
-
-                        for (Object currentUpdateObject : updates) {
-
-                            JSONArray currentUpdate = (JSONArray) currentUpdateObject;
-
-                            int updateType = currentUpdate.getInt(0);
-
-                            switch (updateType) {
-
-                                // Handling new message
-                                case 4: {
-
-                                    int messageFlags = currentUpdate.getInt(2);
-
-                                    // Check if message is received
-                                    if ((messageFlags & 2) == 0) {
-
-                                        Message message = new Message(
-                                                access_token,
-                                                currentUpdate.getInt(1),
-                                                currentUpdate.getInt(2),
-                                                currentUpdate.getInt(3),
-                                                currentUpdate.getInt(4),
-                                                currentUpdate.getString(5),
-                                                (currentUpdate.length() > 6 ? (currentUpdate.get(6).toString().startsWith("{") ? new JSONObject(currentUpdate.get(6).toString()) : null) : null),
-                                                currentUpdate.length() > 7 ? currentUpdate.getInt(7) : null
-                                        );
-
-                                        // check for commands
-                                        handleCommands(message);
-
-                                        if (message.hasFwds() && callbacks.containsKey("OnMessageWithFwdsCallback")) {
-                                            ((OnMessageWithFwdsCallback) callbacks.get("OnMessageWithFwdsCallback")).onMessage(message);
-                                        }
-
-                                        switch (message.messageType()) {
-
-                                            case "voiceMessage": {
-                                                if (callbacks.containsKey("OnVoiceMessageCallback")) {
-                                                    ((OnVoiceMessageCallback) callbacks.get("OnVoiceMessageCallback")).OnVoiceMessage(message);
-                                                } else {
-                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
-                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
-                                                    }
-                                                }
-                                                break;
-                                            }
-
-                                            case "stickerMessage": {
-                                                if (callbacks.containsKey("OnStickerMessageCallback")) {
-                                                    ((OnStickerMessageCallback) callbacks.get("OnStickerMessageCallback")).OnStickerMessage(message);
-                                                } else {
-                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
-                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
-                                                    }
-                                                }
-                                                break;
-                                            }
-
-                                            case "gifMessage": {
-                                                if (callbacks.containsKey("OnGifMessageCallback")) {
-                                                    ((OnGifMessageCallback) callbacks.get("OnGifMessageCallback")).OnGifMessage(message);
-                                                } else {
-                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
-                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
-                                                    }
-                                                }
-                                                break;
-                                            }
-
-                                            case "audioMessage": {
-                                                if (callbacks.containsKey("OnAudioMessageCallback")) {
-                                                    ((OnAudioMessageCallback) callbacks.get("OnAudioMessageCallback")).onAudioMessage(message);
-                                                } else {
-                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
-                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
-                                                    }
-                                                }
-                                                break;
-                                            }
-
-                                            case "videoMessage": {
-                                                if (callbacks.containsKey("OnVideoMessageCallback")) {
-                                                    ((OnVideoMessageCallback) callbacks.get("OnVideoMessageCallback")).onVideoMessage(message);
-                                                } else {
-                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
-                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
-                                                    }
-                                                }
-                                                break;
-                                            }
-
-                                            case "docMessage": {
-                                                if (callbacks.containsKey("OnDocMessageCallback")) {
-                                                    ((OnDocMessageCallback) callbacks.get("OnDocMessageCallback")).OnDocMessage(message);
-                                                } else {
-                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
-                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
-                                                    }
-                                                }
-                                                break;
-                                            }
-
-                                            case "wallMessage": {
-                                                if (callbacks.containsKey("OnWallMessageCallback")) {
-                                                    ((OnVoiceMessageCallback) callbacks.get("OnWallMessageCallback")).OnVoiceMessage(message);
-                                                } else {
-                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
-                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
-                                                    }
-                                                }
-                                                break;
-                                            }
-
-                                            case "photoMessage": {
-                                                if (callbacks.containsKey("OnPhotoMessageCallback")) {
-                                                    ((OnPhotoMessageCallback) callbacks.get("OnPhotoMessageCallback")).onPhotoMessage(message);
-                                                } else {
-                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
-                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
-                                                    }
-                                                }
-                                                break;
-                                            }
-
-                                            case "linkMessage": {
-                                                if (callbacks.containsKey("OnLinkMessageCallback")) {
-                                                    ((OnLinkMessageCallback) callbacks.get("OnLinkMessageCallback")).OnLinkMessage(message);
-                                                } else {
-                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
-                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
-                                                    }
-                                                }
-                                                break;
-                                            }
-
-                                            case "simpleTextMessage": {
-                                                if (callbacks.containsKey("OnSimpleTextMessageCallback")) {
-                                                    ((OnSimpleTextMessageCallback) callbacks.get("OnSimpleTextMessageCallback")).OnSimpleTextMessage(message);
-                                                } else {
-                                                    if (callbacks.containsKey("OnOtherMessagesCallback")) {
-                                                        ((OnOtherMessagesCallback) callbacks.get("OnOtherMessagesCallback")).onMessage(message);
-                                                    }
-                                                }
-                                                break;
-                                            }
-                                        }
-
-                                        if (callbacks.containsKey("OnMessageCallback")) {
-                                            ((OnMessageCallback) callbacks.get("OnMessageCallback")).onMessage(message);
-                                        }
-                                    }
-                                    break;
-                                }
-
-                                case 61: {
-
-                                    if (callbacks.containsKey("OnTypingCallback")) {
-                                        ((OnTypingCallback) callbacks.get("OnTypingCallback")).OnTyping(currentUpdate.getInt(1));
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-
-                        ts = new_ts;
+                        this.updatesHandler.handle(response.getJSONArray("updates"));
 
                     } else {
                         LOG.error("Bad response from VK LongPoll server: no `ts` or `updates` array: {}", response);
@@ -397,16 +225,11 @@ public class LongPoll {
     }
 
     /**
-     * Handle message and call back if it contains any command
-     *
-     * @param message received message
+     * If the client need to start typing
+     * after receiving message
+     * and until client's message is sent
      */
-    private void handleCommands(Message message) {
-
-        this.client.commands.forEach(command ->
-                Arrays.stream(command.getCommands())
-                        .filter(item -> containsIgnoreCase(message.getText(), item.toString()))
-                        .forEach(item -> command.getCallback().OnCommand(message))
-        );
+    public void enableTyping(boolean enable) {
+        this.updatesHandler.sendTyping = enable;
     }
 }

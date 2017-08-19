@@ -20,8 +20,8 @@ public final class Connection {
     private static final Logger LOG = LoggerFactory.getLogger(Connection.class);
 
     private static final OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
             .retryOnConnectionFailure(false)
             .build();
 

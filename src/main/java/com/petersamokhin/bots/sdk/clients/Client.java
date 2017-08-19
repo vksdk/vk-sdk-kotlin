@@ -75,10 +75,19 @@ public abstract class Client {
         return this.api;
     }
 
+    /**
+     * If the client need to start typing
+     * after receiving message
+     * and until client's message is sent
+     */
+    public void enableTyping(boolean enable) {
+        this.longPoll().enableTyping(enable);
+    }
+
     /* Messages */
 
-    public void onOtherMessages(OnOtherMessagesCallback callback) {
-        this.longPoll().registerCallback("OnOtherMessagesCallback", callback);
+    public void onEveryMessage(OnEveryMessageCallback callback) {
+        this.longPoll().registerCallback("OnEveryMessageCallback", callback);
     }
 
     public void onMessageWithFwds(OnMessageWithFwdsCallback callback) {

@@ -19,7 +19,6 @@ import java.util.List;
  */
 public class Executor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Executor.class);
     private static final int delay = 400;
 
     private volatile List<Call> queue = new ArrayList<>();
@@ -68,8 +67,6 @@ public class Executor {
                 JSONObject response = Connection.getRequestResponse(vkCallQuery);
                 JSONArray responses = response.getJSONArray("response");
 
-                //LOG.info("Response: {}", response);
-
                 for (int i = 0; i < count; i++) {
                     queue.get(i).getCallback().onResponse(responses.get(i));
                 }
@@ -88,7 +85,7 @@ public class Executor {
 
     private String codeForExecute(Call call) {
 
-        return "API." + call.getMethodName() + '(' + call.getParams().toString() + ')';
+        return new StringBuilder().append("API.").append(call.getMethodName()).append('(').append(call.getParams().toString()).append(')').toString();
     }
 
     public void execute(Call call) {
