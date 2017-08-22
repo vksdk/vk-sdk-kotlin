@@ -10,8 +10,6 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
-
 /**
  * Class for handling all updates in other thread
  */
@@ -72,7 +70,7 @@ public class UpdatesHandler extends Thread {
                 if ((messageFlags & 2) == 0) {
 
                     Message message = new Message(
-                            this.client.getAccessToken(),
+                            this.client,
                             currentUpdate.getInt(1),
                             currentUpdate.getInt(2),
                             currentUpdate.getInt(3),
@@ -240,7 +238,7 @@ public class UpdatesHandler extends Thread {
 
         for (Client.Commmand command : this.client.commands) {
             for (int i = 0; i < command.getCommands().length; i++) {
-                if (containsIgnoreCase(message.getText(), command.getCommands()[i].toString())) {
+                if (message.getText().toLowerCase().contains(command.getCommands()[i].toString().toLowerCase())) {
                     command.getCallback().OnCommand(message);
                     is = true;
                 }

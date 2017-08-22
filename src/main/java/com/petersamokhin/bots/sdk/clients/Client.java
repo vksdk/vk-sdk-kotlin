@@ -19,7 +19,7 @@ public abstract class Client {
 
     private String accessToken;
     private Integer id;
-    private API api;
+    private static API api;
     private LongPoll longPoll = null;
 
     public List<Commmand> commands = new ArrayList<>();
@@ -34,7 +34,7 @@ public abstract class Client {
         this.accessToken = access_token;
         this.longPoll = new LongPoll(this);
 
-        this.api = new API(this);
+        api = new API(this);
     }
 
     /**
@@ -49,7 +49,7 @@ public abstract class Client {
         this.accessToken = access_token;
         this.longPoll = new LongPoll(this);
 
-        this.api = new API(this);
+        api = new API(this);
     }
 
     /**
@@ -72,7 +72,7 @@ public abstract class Client {
      * Get API for making requests
      */
     public API api() {
-        return this.api;
+        return api;
     }
 
     /**

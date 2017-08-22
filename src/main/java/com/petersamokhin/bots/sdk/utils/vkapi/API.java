@@ -22,7 +22,8 @@ public class API {
 
     private String URL = "https://api.vk.com/method/", V = "&v=" + 5.67;
     private String accessToken;
-    private byte LOG_LEVEL = 0;
+
+    private static boolean executionStarted = false;
 
     /**
      * Get the token from client
@@ -33,7 +34,10 @@ public class API {
      */
     public API(Client client) {
         this.accessToken = "&access_token=" + client.getAccessToken();
-        executor = new Executor(accessToken);
+        if (!executionStarted) {
+            executor = new Executor(client.getAccessToken());
+            executionStarted = true;
+        }
     }
 
     /**
@@ -44,7 +48,10 @@ public class API {
      */
     public API(String token) {
         this.accessToken = "&access_token=" + token;
-        executor = new Executor(accessToken);
+        if (!executionStarted) {
+            executor = new Executor(token);
+            executionStarted = true;
+        }
     }
 
     /**
@@ -159,28 +166,7 @@ public class API {
 
             String query = URL + method + "?" + paramsString + accessToken + V;
 
-            JSONObject response = Connection.getRequestResponse(query);
-
-            switch (getLogLevel()) {
-
-                case 1: {
-                    System.out.println("[New call to API] Query: " + query);
-                    break;
-                }
-
-                case 2: {
-                    System.out.println("[New call to API] Response: " + response);
-                    break;
-                }
-
-                case 3: {
-                    System.out.println("[New call to API] Query: " + query);
-                    System.out.println("[New call to API] Response: " + query);
-                    break;
-                }
-            }
-
-            return response;
+            return Connection.getRequestResponse(query);
         }
         return new JSONObject();
     }
@@ -199,53 +185,9 @@ public class API {
 
             String query = URL + method + "?" + Utils.paramsToString(params) + accessToken + V;
 
-            JSONObject response = Connection.getRequestResponse(query);
-
-            switch (getLogLevel()) {
-
-                case 1: {
-                    System.out.println("[New call to API] Query: " + query);
-                    break;
-                }
-
-                case 2: {
-                    System.out.println("[New call to API] Response: " + response);
-                    break;
-                }
-
-                case 3: {
-                    System.out.println("[New call to API] Query: " + query);
-                    System.out.println("[New call to API] Response: " + query);
-                    break;
-                }
-            }
-
-            return response;
+            return Connection.getRequestResponse(query);
         }
 
         return new JSONObject();
-    }
-
-
-    /**
-     * Logging properties:
-     * 0 - no info
-     * 1 - print every call query to console
-     * 2 - print every call query and response to console
-     *
-     * @param newLogLevel new log level
-     */
-    public void setLogLevel(byte newLogLevel) {
-        this.LOG_LEVEL = newLogLevel;
-    }
-
-    /**
-     * Get current log level:
-     * 0 - no info
-     * 1 - print every call query to console
-     * 2 - print every call query and response to console
-     */
-    public byte getLogLevel() {
-        return this.LOG_LEVEL;
     }
 }

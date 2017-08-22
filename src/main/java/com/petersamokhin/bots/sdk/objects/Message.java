@@ -57,9 +57,9 @@ public class Message {
     /**
      * Constructor for received message
      */
-    public Message(String accessToken, Integer messageId, Integer flags, Integer peerId, Integer timestamp, String text, JSONObject attachments, Integer randomId) {
+    public Message(Client client, Integer messageId, Integer flags, Integer peerId, Integer timestamp, String text, JSONObject attachments, Integer randomId) {
 
-        setAccessToken(accessToken);
+        setAccessToken(client.getAccessToken());
         setMessageId(messageId);
         setFlags(flags);
         setPeerId(peerId);
@@ -69,7 +69,7 @@ public class Message {
         setRandomId(randomId);
         setTitle(attachments.getString("title"));
 
-        api = new API(accessToken);
+        api = client.api();
     }
 
     /**
@@ -77,7 +77,7 @@ public class Message {
      */
     public Message from(Client client) {
         setAccessToken(client.getAccessToken());
-        api = new API(client.getAccessToken());
+        api = client.api();
         return this;
     }
 
