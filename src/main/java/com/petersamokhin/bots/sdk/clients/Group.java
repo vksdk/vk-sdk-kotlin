@@ -91,7 +91,6 @@ public class Group extends Client {
 
     private void updateCoverByFile(byte[] bytes, ExecuteCallback... callback) {
 
-        // Берем сервак
         JSONObject params_getUploadServer = new JSONObject()
                 .put("group_id", getId())
                 .put("crop_x", 0)
@@ -103,7 +102,6 @@ public class Group extends Client {
 
             String uploadUrl = new JSONObject(response.toString()).getString("upload_url");
 
-            // Загружаем
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("photo", "photo.png", RequestBody.create(MediaType.parse("image/*"), bytes))
@@ -141,11 +139,9 @@ public class Group extends Client {
 
                     if (coverUploadedResponse.has("hash") && coverUploadedResponse.has("photo")) {
 
-                        // Берём своё
                         String hash_field = coverUploadedResponse.getString("hash");
                         String photo_field = coverUploadedResponse.getString("photo");
 
-                        // Загружаем в группу
                         JSONObject params_saveCover = new JSONObject()
                                 .put("hash", hash_field)
                                 .put("photo", photo_field);
