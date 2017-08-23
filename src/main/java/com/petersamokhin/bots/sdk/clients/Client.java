@@ -4,12 +4,9 @@ import com.petersamokhin.bots.sdk.callbacks.commands.OnCommandCallback;
 import com.petersamokhin.bots.sdk.callbacks.messages.*;
 import com.petersamokhin.bots.sdk.longpoll.LongPoll;
 import com.petersamokhin.bots.sdk.utils.vkapi.API;
-import com.petersamokhin.bots.sdk.utils.vkapi.CallbackApiHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Main client class, that contains all necessary methods and fields
@@ -22,7 +19,7 @@ public abstract class Client {
     private static API api;
     private LongPoll longPoll = null;
 
-    public List<Commmand> commands = new ArrayList<>();
+    public CopyOnWriteArrayList<Command> commands = new CopyOnWriteArrayList<>();
 
     /**
      * Default constructor
@@ -145,39 +142,39 @@ public abstract class Client {
     /* Commands */
 
     public void onCommand(Object command, OnCommandCallback callback) {
-        this.commands.add(new Commmand(command, callback));
+        this.commands.add(new Command(command, callback));
     }
 
     public void onCommand(OnCommandCallback callback, Object... commands) {
-        this.commands.add(new Commmand(commands, callback));
+        this.commands.add(new Command(commands, callback));
     }
 
     public void onCommand(Object[] commands, OnCommandCallback callback) {
-        this.commands.add(new Commmand(commands, callback));
+        this.commands.add(new Command(commands, callback));
     }
 
     public void onCommand(List<?> list, OnCommandCallback callback) {
-        this.commands.add(new Commmand(list, callback));
+        this.commands.add(new Command(list, callback));
     }
 
     /**
      * Command object
      */
-    public class Commmand {
+    public class Command {
         private Object[] commands;
         private OnCommandCallback callback;
 
-        public Commmand(Object[] commands, OnCommandCallback callback) {
+        public Command(Object[] commands, OnCommandCallback callback) {
             this.commands = commands;
             this.callback = callback;
         }
 
-        public Commmand(Object command, OnCommandCallback callback) {
+        public Command(Object command, OnCommandCallback callback) {
             this.commands = new Object[]{command};
             this.callback = callback;
         }
 
-        public Commmand(List<?> command, OnCommandCallback callback) {
+        public Command(List<?> command, OnCommandCallback callback) {
             this.commands = command.toArray();
             this.callback = callback;
         }

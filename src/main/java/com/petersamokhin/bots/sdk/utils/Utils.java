@@ -5,10 +5,10 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -93,6 +93,7 @@ public class Utils {
 
     /**
      * Params from varargs: [&quot;user_id&quot;, 62802565] to &quot;&amp;user_id=62802565&quot;
+     *
      * @param params Params
      * @return String
      */
@@ -144,6 +145,7 @@ public class Utils {
 
     /**
      * Calculcating size of file in url
+     *
      * @param url URL
      * @param dim Bits, KBits or MBits
      * @return Size
@@ -173,5 +175,72 @@ public class Utils {
         }
 
         return 0;
+    }
+
+    /*
+     * Methods from commons-lang library of Apache
+     * Added to not use the library for several methods
+     */
+
+    public static byte[] toByteArray(URL url) throws IOException {
+        URLConnection conn = url.openConnection();
+
+        byte[] var2;
+        try {
+            var2 = toByteArray(conn);
+        } finally {
+            close(conn);
+        }
+
+        return var2;
+    }
+
+    public static byte[] toByteArray(URLConnection urlConn) throws IOException {
+        InputStream inputStream = urlConn.getInputStream();
+
+        byte[] var2;
+        try {
+            var2 = toByteArray(inputStream);
+        } finally {
+            inputStream.close();
+        }
+
+        return var2;
+    }
+
+    public static byte[] toByteArray(InputStream input) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        copy((InputStream)input, (OutputStream)output);
+        return output.toByteArray();
+    }
+
+    public static int copy(InputStream input, OutputStream output) throws IOException {
+        long count = copyLarge(input, output);
+        return count > 2147483647L ? -1 : (int)count;
+    }
+
+    public static long copyLarge(InputStream input, OutputStream output) throws IOException {
+        return copy(input, output, 4096);
+    }
+
+    public static long copy(InputStream input, OutputStream output, int bufferSize) throws IOException {
+        return copyLarge(input, output, new byte[bufferSize]);
+    }
+
+    public static long copyLarge(InputStream input, OutputStream output, byte[] buffer) throws IOException {
+        long count;
+        int n;
+        for(count = 0L; -1 != (n = input.read(buffer)); count += (long)n) {
+            output.write(buffer, 0, n);
+        }
+
+        return count;
+    }
+
+    public static void close(URLConnection conn) {
+        if (conn instanceof HttpURLConnection) {
+            ((HttpURLConnection)conn).disconnect();
+        }
+
     }
 }

@@ -1,20 +1,24 @@
 package com.petersamokhin.bots.sdk.clients;
 
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.audios.*;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.boards.*;
+import com.petersamokhin.bots.sdk.callbacks.callbackapi.ExecuteCallback;
+import com.petersamokhin.bots.sdk.callbacks.callbackapi.audios.OnAudioNewCallback;
+import com.petersamokhin.bots.sdk.callbacks.callbackapi.boards.OnBoardPostDeleteCallback;
+import com.petersamokhin.bots.sdk.callbacks.callbackapi.boards.OnBoardPostEditCallback;
+import com.petersamokhin.bots.sdk.callbacks.callbackapi.boards.OnBoardPostNewCallback;
 import com.petersamokhin.bots.sdk.callbacks.callbackapi.group.*;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.market.*;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.messages.*;
+import com.petersamokhin.bots.sdk.callbacks.callbackapi.market.OnMarketCommentDeleteCallback;
+import com.petersamokhin.bots.sdk.callbacks.callbackapi.messages.OnMessageAllowCallback;
+import com.petersamokhin.bots.sdk.callbacks.callbackapi.messages.OnMessageDenyCallback;
+import com.petersamokhin.bots.sdk.callbacks.callbackapi.messages.OnMessageNewCallback;
+import com.petersamokhin.bots.sdk.callbacks.callbackapi.messages.OnMessageReplyCallback;
 import com.petersamokhin.bots.sdk.callbacks.callbackapi.photos.*;
 import com.petersamokhin.bots.sdk.callbacks.callbackapi.videos.*;
 import com.petersamokhin.bots.sdk.callbacks.callbackapi.wall.*;
-import com.petersamokhin.bots.sdk.utils.vkapi.CallbackApiHandler;
 import com.petersamokhin.bots.sdk.utils.Connection;
+import com.petersamokhin.bots.sdk.utils.Utils;
+import com.petersamokhin.bots.sdk.utils.vkapi.CallbackApiHandler;
 import com.petersamokhin.bots.sdk.utils.vkapi.CallbackApiSettings;
-import okhttp3.MediaType;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.json.JSONException;
+import okhttp3.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +26,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.util.regex.Pattern;
 
 /**
  * Group client, that contains important methods to work with groups
@@ -56,143 +56,127 @@ public class Group extends Client {
     }
 
     /**
-     * Check are users in group
-     *
-     * @param id IDs of users
+     * Upload group cover by file from url or from disk
      */
-    public boolean isMember(Object id) {
-        return getId() != null && api().callSync("groups.isMember", "group_id", getId().toString().replace("-", ""), "user_id", id).getInt("response") == 1;
+    public void uploadCover(String cover, ExecuteCallback callback) {
+
+        if (this.getId() == null || this.getId() == 0) {
+            LOG.error("Please, provide group_id when initialising the client, because it's impossible to upload cover to group not knowing it id.");
+            return;
+        }
+
+        byte[] bytes;
+
+        File coverFile = new File(cover);
+        if (coverFile.exists()) {
+            try {
+                bytes = Utils.toByteArray(coverFile.toURI().toURL());
+            } catch (IOException ignored) {
+                LOG.error("Cover file was exists, but IOException occured: {}", ignored.toString());
+                return;
+            }
+        } else {
+            URL coverUrl;
+            try {
+                coverUrl = new URL(cover);
+                bytes = Utils.toByteArray(coverUrl);
+            } catch (IOException ignored) {
+                LOG.error("Bad string was proviced to uploadCocver method: path to file or url was expected, but got this: {}, error: {}", cover, ignored.toString());
+                return;
+            }
+        }
+
+        updateCoverByFile(bytes, callback);
     }
 
-    /**
-     * Upload group cover by file from url or from disk
-     *
-     * @return VK response
-     */
-    public JSONObject uploadCover(Object... params) {
+    private void updateCoverByFile(byte[] bytes, ExecuteCallback... callback) {
 
-        String cover;
-        Integer groupId;
-        String accessToken;
+        // Берем сервак
+        JSONObject params_getUploadServer = new JSONObject()
+                .put("group_id", getId())
+                .put("crop_x", 0)
+                .put("crop_y", 0)
+                .put("crop_x2", 1590)
+                .put("crop_y2", 400);
 
-        switch (params.length) {
-            case 0: {
-                LOG.error("Can't upload cover without params.");
-                return new JSONObject();
-            }
+        api().call("photos.getOwnerCoverPhotoUploadServer", params_getUploadServer, response -> {
 
-            case 1: {
+            String uploadUrl = new JSONObject(response.toString()).getString("upload_url");
 
-                if (this.getId() == null || this.getId() == 0) {
-                    LOG.error("Can't upload cover: please provide group_id.");
-                    return new JSONObject();
+            // Загружаем
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("photo", "photo.png", RequestBody.create(MediaType.parse("image/*"), bytes))
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(uploadUrl)
+                    .post(requestBody)
+                    .build();
+
+            Connection.client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    LOG.error("Error occured when uploading cover: {}", e.toString());
                 }
 
-                groupId = this.getId();
-                cover = String.valueOf(params[0]);
-                accessToken = this.getAccessToken();
-                break;
-            }
+                @Override
+                public void onResponse(Call call, Response response) {
 
-            case 2: {
-                groupId = (Integer) params[0];
-                cover = String.valueOf(params[1]);
-                accessToken = this.getAccessToken();
-                break;
-            }
+                    String coverUploadedResponseString = null;
+                    try {
+                        ResponseBody rb = response.body();
+                        if (rb != null) {
+                            coverUploadedResponseString = rb.string();
+                        } else {
+                            LOG.error("Some error occured when uploading cover: response is null");
+                            return;
+                        }
+                    } catch (IOException ignored) {
+                        LOG.error("Some error occured when uploading cover: {}", ignored.toString());
+                    }
+                    coverUploadedResponseString = (coverUploadedResponseString != null && coverUploadedResponseString.length() > 2) ? coverUploadedResponseString : "{}";
 
-            case 3: {
-                groupId = (Integer) params[0];
-                accessToken = String.valueOf(params[1]);
-                cover = String.valueOf(params[2]);
-                break;
-            }
+                    JSONObject coverUploadedResponse = new JSONObject(coverUploadedResponseString);
 
-            default: {
-                LOG.error("Some error occured, cover not uploaded.");
-                return new JSONObject();
-            }
-        }
+                    if (coverUploadedResponse.has("hash") && coverUploadedResponse.has("photo")) {
 
-        // we can upload cover only by file from disk or url
-        if (cover.endsWith(".png") || cover.endsWith(".jpg") || cover.endsWith(".gif") || cover.endsWith(".jpeg")) {
+                        // Берём своё
+                        String hash_field = coverUploadedResponse.getString("hash");
+                        String photo_field = coverUploadedResponse.getString("photo");
 
-            File templatePhoto;
-            String template_name = "template_cover." + FilenameUtils.getExtension(cover);
-            boolean photoFromUrl = false;
-            // from url
-            if (Pattern.matches("https?://.+", cover)) {
+                        // Загружаем в группу
+                        JSONObject params_saveCover = new JSONObject()
+                                .put("hash", hash_field)
+                                .put("photo", photo_field);
 
-                try {
-                    templatePhoto = new File(template_name);
-                    templatePhoto.createNewFile();
-                    Files.setPosixFilePermissions(Paths.get(templatePhoto.getAbsolutePath()), PosixFilePermissions.fromString("rwxrwxrwx"));
-                    FileUtils.copyURLToFile(new URL(cover), templatePhoto, 5000, 5000);
+                        boolean sync = true; // vk, please fix `execute` method!
+                        if (sync) {
+                            JSONObject responseS = api().callSync("photos.saveOwnerCoverPhoto", params_saveCover);
+                            System.out.println("params is " + params_saveCover);
+                            if (responseS.toString().length() < 10 || responseS.toString().contains("error")) {
+                                LOG.error("Some error occured, cover not uploaded: {}", responseS);
+                            }
+                            if (callback.length > 0)
+                                callback[0].onResponse(responseS);
+                        } else {
+                            api().call("photos.saveOwnerCoverPhoto", params_saveCover, response1 -> {
 
-                    photoFromUrl = true;
-                } catch (IOException ignored) {
-                    LOG.error("IOException when downloading file {}, message: {}", cover, ignored.toString());
-                    return new JSONObject().put("response", "Some error occured, cover not uploaded.");
+                                if (response1.toString().length() < 10 || response1.toString().contains("error")) {
+                                    LOG.error("Some error occured, cover not uploaded: {}", response1);
+                                }
+                                if (callback.length > 0)
+                                    callback[0].onResponse(response1);
+                            });
+                        }
+                    } else {
+                        LOG.error("Error occured when uploading cover: no 'photo' or 'hash' param in response {}", coverUploadedResponse);
+                        if (callback.length > 0)
+                            callback[0].onResponse("false");
+                    }
                 }
-            } else {
-                templatePhoto = new File(cover);
-            }
-
-            String getUploadServerQuery = "https://api.vk.com/method/photos.getOwnerCoverPhotoUploadServer?group_id=" + groupId + "&crop_x=0&crop_y=0&crop_x2=1590&crop_y2=400&access_token=" + accessToken + "&v=5.67";
-
-            JSONObject getUploadServerResponse = Connection.getRequestResponse(getUploadServerQuery);
-
-            String coverUploadUrl = "";
-
-            if (getUploadServerResponse.has("response") && getUploadServerResponse.getJSONObject("response").has("upload_url")) {
-                coverUploadUrl = getUploadServerResponse.getJSONObject("response").getString("upload_url");
-            } else {
-                LOG.error("Cover not uploaded. Get upload server response is {}", getUploadServerResponse);
-            }
-
-
-            if (coverUploadUrl.length() < 5) {
-                LOG.error("Cover not uploaded. Bad upload url: {}", getUploadServerResponse);
-                return new JSONObject();
-            }
-
-            String responseOfUploadingPhotoToVk = Connection.getFileUploadAnswerOfVK(
-                    coverUploadUrl,
-                    "photo",
-                    MediaType.parse("image/*"),
-                    templatePhoto
-            );
-
-            JSONObject response = new JSONObject();
-
-            try {
-                response = new JSONObject(responseOfUploadingPhotoToVk);
-            } catch (JSONException ignored) {
-                LOG.error("Bad response of uploading cover: {}, error: {}", responseOfUploadingPhotoToVk, ignored.toString());
-                return response;
-            }
-
-            if (photoFromUrl) {
-                try {
-                    Files.delete(Paths.get(templatePhoto.getAbsolutePath()));
-                } catch (IOException ignored) {
-                }
-            }
-
-            if (response.has("hash") && response.has("photo")) {
-
-                String hashField = response.getString("hash");
-                String photoField = response.getString("photo");
-
-                String save_cover_query = "https://api.vk.com/method/photos.saveOwnerCoverPhoto?hash=" + hashField + "&photo=" + photoField + "&access_token=" + accessToken + "&v=5.67";
-
-                return Connection.getRequestResponse(save_cover_query);
-            } else {
-                LOG.error("Cover not uploaded. No hash and photo params: {}", response);
-            }
-        }
-
-        return new JSONObject().put("response", "Some error occured, cover not uploaded.");
+            });
+        });
     }
 
     /**

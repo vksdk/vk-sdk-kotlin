@@ -19,7 +19,7 @@ public class LongPoll {
     private String server = null;
     private String key = null;
     private Integer ts = null;
-    private Integer pts = null;
+    public Integer pts = null;
 
     private Integer wait = 25;
 
@@ -52,7 +52,9 @@ public class LongPoll {
 
         if (!on) {
             on = true;
-            new Thread(this::startListening).start();
+            Thread threadLongpollListener = new Thread(this::startListening);
+            threadLongpollListener.setName("threadLongpollListener");
+            threadLongpollListener.start();
         }
     }
 
@@ -75,7 +77,9 @@ public class LongPoll {
 
         if (!on) {
             on = true;
-            new Thread(this::startListening).start();
+            Thread threadLongpollListener = new Thread(this::startListening);
+            threadLongpollListener.setName("threadLongpollListener");
+            threadLongpollListener.start();
         }
     }
 
@@ -100,11 +104,11 @@ public class LongPoll {
     /**
      * Setting all necessary parameters
      *
-     * @param need_pts     param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
-     * @param version      param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
-     * @param API          param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
-     * @param wait         param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
-     * @param mode         param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
+     * @param need_pts param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
+     * @param version  param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
+     * @param API      param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
+     * @param wait     param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
+     * @param mode     param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
      */
     private void setData(Integer need_pts, Integer version, Double API, Integer wait, Integer mode) {
 
@@ -169,11 +173,7 @@ public class LongPoll {
 
         while (on) {
 
-            StringBuilder query = new StringBuilder();
-
-            query.append("https://").append(server).append("?act=a_check&key=").append(key).append("&ts=").append(ts).append("&wait=").append(wait).append("&mode=").append(mode).append("&version=").append(version).append("&msgs_limit=100000");
-
-            JSONObject response = Connection.getRequestResponse(query.toString());
+            JSONObject response = Connection.getRequestResponse("https://" + server + "?act=a_check&key=" + key + "&ts=" + ts + "&wait=" + wait + "&mode=" + mode + "&version=" + version + "&msgs_limit=100000");
 
             LOG.info("Response of getting updates: \n{}\n", response);
 
@@ -208,7 +208,7 @@ public class LongPoll {
                     ts = response.getInt("ts");
 
                 if (response.has("pts"))
-                    pts = response.getInt("pts");
+                    this.pts = response.getInt("pts");
 
                 if (this.updatesHandler.callbacksCount() > 0 || this.updatesHandler.commandsCount() > 0) {
 

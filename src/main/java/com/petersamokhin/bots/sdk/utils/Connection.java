@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,7 +17,7 @@ public final class Connection {
 
     private static final Logger LOG = LoggerFactory.getLogger(Connection.class);
 
-    private static final OkHttpClient client = new OkHttpClient.Builder()
+    public static final OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .retryOnConnectionFailure(false)
@@ -117,10 +115,29 @@ public final class Connection {
      */
     public static String getFileUploadAnswerOfVK(String uploadUrl, String fieldName, MediaType mediaType, File file) {
 
-        if (file.exists()) {
+        try {
+            return getFileUploadAnswerOfVK(uploadUrl, fieldName, mediaType, Utils.toByteArray(file.toURI().toURL()));
+        } catch (IOException e) {
+            LOG.error("Bad file provided to uploading to vk: {}", file.getAbsolutePath());
+        }
+
+        return "";
+    }
+
+    /**
+     * Loading of file to VK server
+     * @param uploadUrl upload url
+     * @param fieldName field name
+     * @param mediaType MediaType
+     * @param bytes bytes[]
+     * @return server response
+     */
+    public static String getFileUploadAnswerOfVK(String uploadUrl, String fieldName, MediaType mediaType, byte[] bytes) {
+
+        if (bytes != null) {
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart(fieldName, file.getName(), RequestBody.create(mediaType, file))
+                    .addFormDataPart(fieldName, fieldName + ".png", RequestBody.create(mediaType, bytes))
                     .build();
 
             Request request = new Request.Builder()
@@ -135,14 +152,12 @@ public final class Connection {
                 answerOfUpload = responseBody != null ? responseBody.string() : "";
 
             } catch (IOException ignored) {
-                LOG.error("IOException when processing request (upload file in multipart), fieldName is {} and filepath is {}", fieldName, file.getAbsolutePath());
+                LOG.error("IOException when processing request (upload file in multipart), fieldName is {}");
             }
 
             client.connectionPool().evictAll();
 
             return answerOfUpload;
-        } else {
-            LOG.error("File is not exists: {}", file.getAbsolutePath());
         }
 
         return "{}";
