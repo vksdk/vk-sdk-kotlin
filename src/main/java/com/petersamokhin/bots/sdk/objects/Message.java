@@ -44,7 +44,8 @@ public class Message {
     /**
      * Attahments in format [photo62802565_456241137, photo111_111, doc100_500]
      */
-    private volatile CopyOnWriteArrayList<String> attachments = new CopyOnWriteArrayList<>(), forwardedMessages = new CopyOnWriteArrayList<>(), photosToUpload = new CopyOnWriteArrayList<>(), docsToUpload = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<String> attachments = new CopyOnWriteArrayList<>(), forwardedMessages = new CopyOnWriteArrayList<>(), photosToUpload = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<JSONObject> docsToUpload = new CopyOnWriteArrayList<>();
 
     /**
      * Constructor for sent message
@@ -246,7 +247,7 @@ public class Message {
         return this;
     }
 
-    public Message doc(String doc) {
+    public Message doc(String doc, String... typeOfDoc) {
 
         // Use already loaded photo
         if (Pattern.matches("[htps:/vk.com]?doc-?\\d+_\\d+", doc)) {
@@ -304,10 +305,10 @@ public class Message {
         if (docBytes != null) {
 
             // Getting of server for uploading the photo
-            String getUploadServerQuery = "https://api.vk.com/method/docs.getMessagesUploadServer?access_token=" + accessToken + "&peer_id=" + this.peerId + "&v=5.67";
+            String getUploadServerQuery = "https://api.vk.com/method/docs.getMessagesUploadServer?access_token=" + accessToken + "&peer_id=" + this.peerId + "&v=5.67" + (typeOfDoc.length > 0 ? "&type=" + typeOfDoc[0] : "");
+            LOG.error("getUploadServerQuery is {}", getUploadServerQuery);
             JSONObject getUploadServerResponse = Connection.getRequestResponse(getUploadServerQuery);
             String uploadUrl = getUploadServerResponse.has("response") ? getUploadServerResponse.getJSONObject("response").has("upload_url") ? getUploadServerResponse.getJSONObject("response").getString("upload_url") : null : null;
-
 
             // Some error
             if (uploadUrl == null) {
@@ -316,7 +317,7 @@ public class Message {
             }
 
             // Uploading the photo
-            String uploadingOfDocResponseString = Connection.getFileUploadAnswerOfVK(uploadUrl, "file", MediaType.parse("image/*"), docBytes);
+            String uploadingOfDocResponseString = Connection.getFileUploadAnswerOfVK(uploadUrl, "voice.mp3", MediaType.parse("audio/mpeg"), docBytes);
             JSONObject uploadingOfDocResponse;
 
             try {
@@ -515,10 +516,10 @@ public class Message {
     /**
      * Async uploading photos
      */
-    private void uploadDoc(String doc, ExecuteCallback callback) {
+    private void uploadDoc(JSONObject doc, ExecuteCallback callback) {
 
         String type = null;
-        File docFile = new File(doc);
+        File docFile = new File(doc.getString("doc"));
         if (docFile.exists()) {
             type = "fromFile";
         }
@@ -526,7 +527,7 @@ public class Message {
         URL docUrl = null;
         if (type == null) {
             try {
-                docUrl = new URL(doc);
+                docUrl = new URL(doc.getString("doc"));
                 type = "fromUrl";
             } catch (MalformedURLException ignored) {
                 LOG.error("Error when trying add doc to message: file not found, or url is bad. Your param: {}", doc);
@@ -568,7 +569,7 @@ public class Message {
 
         if (docBytes != null) {
 
-            JSONObject params_getMessagesUploadServer = new JSONObject().put("peer_id", peerId);
+            JSONObject params_getMessagesUploadServer = new JSONObject().put("peer_id", peerId).put("type", doc.getString("type"));
             api.call("docs.getMessagesUploadServer", params_getMessagesUploadServer, response -> {
 
                 if (response.toString().equalsIgnoreCase("false")) {
@@ -607,7 +608,7 @@ public class Message {
                             response_uploadFileString = responseBody != null ? responseBody.string() : "";
 
                             if (response_uploadFileString.length() < 2 || response_uploadFileString.contains("error") || !response_uploadFileString.contains("file")) {
-                                LOG.error("Doc wan't uploaded: {}", response_uploadFileString);
+                                LOG.error("Doc won't uploaded: {}", response_uploadFileString);
                                 callback.onResponse("false");
                                 return;
                             }
@@ -661,7 +662,7 @@ public class Message {
      *
      * @param doc Doc link: url, from disk or already uploaded to VK as doc{owner_id}_{id}
      */
-    public Message docAsync(String doc) {
+    public Message docAsync(String doc, String... type) {
 
         // Use already loaded photo
         if (Pattern.matches("[htps:/vk.com]?doc-?\\d+_\\d+", doc)) {
@@ -669,8 +670,15 @@ public class Message {
             return this;
         }
 
-        this.docsToUpload.add(doc);
+        this.docsToUpload.add(new JSONObject().put("doc", doc).put("type", type));
         return this;
+    }
+
+    public void sendVoiceMessage(String doc, ExecuteCallback... callback) {
+        uploadDoc(new JSONObject().put("doc", doc).put("type", "audio_message"), response -> {
+            this.attachments.addIfAbsent(response.toString());
+            this.send(callback);
+        });
     }
 
     /**
@@ -696,7 +704,7 @@ public class Message {
         }
 
         if (docsToUpload.size() > 0) {
-            String doc = docsToUpload.get(0);
+            JSONObject doc = docsToUpload.get(0);
             docsToUpload.remove(0);
             uploadDoc(doc, response -> {
                 if (!response.toString().equalsIgnoreCase("false")) {

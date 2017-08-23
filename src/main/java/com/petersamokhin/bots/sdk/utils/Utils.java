@@ -210,13 +210,13 @@ public class Utils {
 
     public static byte[] toByteArray(InputStream input) throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        copy((InputStream)input, (OutputStream)output);
+        copy((InputStream) input, (OutputStream) output);
         return output.toByteArray();
     }
 
     public static int copy(InputStream input, OutputStream output) throws IOException {
         long count = copyLarge(input, output);
-        return count > 2147483647L ? -1 : (int)count;
+        return count > 2147483647L ? -1 : (int) count;
     }
 
     public static long copyLarge(InputStream input, OutputStream output) throws IOException {
@@ -230,7 +230,7 @@ public class Utils {
     public static long copyLarge(InputStream input, OutputStream output, byte[] buffer) throws IOException {
         long count;
         int n;
-        for(count = 0L; -1 != (n = input.read(buffer)); count += (long)n) {
+        for (count = 0L; -1 != (n = input.read(buffer)); count += (long) n) {
             output.write(buffer, 0, n);
         }
 
@@ -239,7 +239,69 @@ public class Utils {
 
     public static void close(URLConnection conn) {
         if (conn instanceof HttpURLConnection) {
-            ((HttpURLConnection)conn).disconnect();
+            ((HttpURLConnection) conn).disconnect();
+        }
+    }
+
+    public static void copyURLToFile(URL source, File destination, int connectionTimeout, int readTimeout) throws IOException {
+        URLConnection connection = source.openConnection();
+        connection.setConnectTimeout(connectionTimeout);
+        connection.setReadTimeout(readTimeout);
+        copyInputStreamToFile(connection.getInputStream(), destination);
+    }
+
+    public static void copyInputStreamToFile(InputStream source, File destination) throws IOException {
+        try {
+            copyToFile(source, destination);
+        } finally {
+            closeQuietly(source);
+        }
+    }
+
+    public static void copyToFile(InputStream source, File destination) throws IOException {
+        FileOutputStream output = openOutputStream(destination);
+
+        try {
+            copy(source, output);
+            output.close();
+        } finally {
+            closeQuietly(output);
+        }
+    }
+
+    public static FileOutputStream openOutputStream(File file) throws IOException {
+        return openOutputStream(file, false);
+    }
+
+    public static FileOutputStream openOutputStream(File file, boolean append) throws IOException {
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                throw new IOException("File '" + file + "' exists but is a directory");
+            }
+
+            if (!file.canWrite()) {
+                throw new IOException("File '" + file + "' cannot be written to");
+            }
+        } else {
+            File parent = file.getParentFile();
+            if (parent != null && !parent.mkdirs() && !parent.isDirectory()) {
+                throw new IOException("Directory '" + parent + "' could not be created");
+            }
+        }
+
+        return new FileOutputStream(file, append);
+    }
+
+    public static void closeQuietly(OutputStream output) {
+        closeQuietly((Closeable) output);
+    }
+
+    public static void closeQuietly(Closeable closeable) {
+        try {
+            if (closeable != null) {
+                closeable.close();
+            }
+        } catch (IOException var2) {
         }
 
     }
