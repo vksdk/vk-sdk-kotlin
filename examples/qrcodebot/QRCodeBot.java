@@ -26,7 +26,7 @@ public class Main {
 
         group.onSimpleTextMessage(message -> {
 
-            // Creating file if he is not exists
+            // Creating file if it is not exists
             File QRCodeImage = new File("template_" + message.authorId() + ".png");
             try {
                 QRCodeImage.createNewFile();
