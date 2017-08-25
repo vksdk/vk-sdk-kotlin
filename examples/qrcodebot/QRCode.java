@@ -1,4 +1,4 @@
-package com.petersamokhin.examples;
+package com.petersamokhin.examples.qrcodebot;
 
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;

@@ -1,4 +1,4 @@
-package com.petersamokhin.examples;
+package com.petersamokhin.examples.qrcodebot;
 
 import com.petersamokhin.bots.sdk.clients.Group;
 import com.petersamokhin.bots.sdk.objects.Message;
