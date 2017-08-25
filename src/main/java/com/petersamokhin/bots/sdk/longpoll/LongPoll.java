@@ -4,6 +4,7 @@ import com.petersamokhin.bots.sdk.callbacks.Callback;
 import com.petersamokhin.bots.sdk.clients.Client;
 import com.petersamokhin.bots.sdk.longpoll.responses.GetLongPollServerResponse;
 import com.petersamokhin.bots.sdk.utils.web.Connection;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -195,7 +196,16 @@ public class LongPoll {
 
         while (on) {
 
-            JSONObject response = new JSONObject(Connection.getRequestResponse("https://" + server + "?act=a_check&key=" + key + "&ts=" + ts + "&wait=" + wait + "&mode=" + mode + "&version=" + version + "&msgs_limit=100000"));
+            JSONObject response;
+            String responseString = "";
+
+            try {
+                responseString = Connection.getRequestResponse("https://" + server + "?act=a_check&key=" + key + "&ts=" + ts + "&wait=" + wait + "&mode=" + mode + "&version=" + version + "&msgs_limit=100000");
+                response = new JSONObject(responseString);
+            } catch (JSONException ignored) {
+                LOG.error("Some error occured, no updates got from longpoll server: {}", responseString);
+                continue;
+            }
 
             LOG.info("Response of getting updates: \n{}\n", response);
 
