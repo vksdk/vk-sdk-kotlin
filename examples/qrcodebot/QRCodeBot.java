@@ -2,7 +2,6 @@ package com.petersamokhin.examples;
 
 import com.petersamokhin.bots.sdk.clients.Group;
 import com.petersamokhin.bots.sdk.objects.Message;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
