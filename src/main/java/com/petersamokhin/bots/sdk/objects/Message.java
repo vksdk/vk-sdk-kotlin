@@ -535,7 +535,7 @@ public class Message {
 
     private void uploadDoc(JSONObject doc, ExecuteCallback callback) {
 
-        String type = null;
+        String type = null, fileNameField;
         File docFile = new File(doc.getString("doc"));
         if (docFile.exists()) {
             type = "fromFile";
@@ -559,6 +559,7 @@ public class Message {
             case "fromFile": {
                 try {
                     docBytes = Files.readAllBytes(Paths.get(docFile.toURI()));
+                    fileNameField = docFile.getName();
                 } catch (IOException ignored) {
                     LOG.error("Error when reading file {}", docFile.getAbsolutePath());
                     callback.onResponse("false");
@@ -569,7 +570,14 @@ public class Message {
 
             case "fromUrl": {
                 try {
-                    docBytes = Utils.toByteArray(docUrl);
+                    URLConnection conn = docUrl.openConnection();
+
+                    try {
+                        docBytes = Utils.toByteArray(conn);
+                        fileNameField = Utils.guessFileNameByContentType(conn.getContentType());
+                    } finally {
+                        Utils.close(conn);
+                    }
                 } catch (IOException ignored) {
                     LOG.error("Error when reading URL {}", doc);
                     callback.onResponse("false");
@@ -600,7 +608,7 @@ public class Message {
                 String response_uploadFileString;
 
                 MultipartUtility multipartUtility = new MultipartUtility(uploadUrl);
-                multipartUtility.addBytesPart("file", "file.mp3", docBytes);
+                multipartUtility.addBytesPart("file", fileNameField, docBytes);
                 response_uploadFileString = multipartUtility.finish();
 
                 if (response_uploadFileString.length() < 2 || response_uploadFileString.contains("error") || !response_uploadFileString.contains("file")) {
