@@ -1,6 +1,6 @@
 # MIT License
 
-#### Copyright (c) 2017 <a href="https://petersamokhin.com/">Peter Samokhin</a>
+### Copyright (c) 2017 <a href="https://petersamokhin.com/">Peter Samokhin</a>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
