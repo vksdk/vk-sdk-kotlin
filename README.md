@@ -7,7 +7,7 @@
 С помощью данной библиотеки можно довольно просто взаимодействовать с [VK API](https://vk.com/dev/manuals) для создания ботов и не только. 
 Функционал прекрасно подходит как для сообществ, так и для личных страниц.
 
-Последняя версия: [![vk-bot-java-sdk](https://img.shields.io/badge/maven--central-v0.1.1-blue.svg?style=flat)](https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk)
+Последняя версия: [![vk-bot-java-sdk](https://img.shields.io/badge/maven--central-v0.1.3-blue.svg?style=flat)](https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk)
 
 ## Пример
 
