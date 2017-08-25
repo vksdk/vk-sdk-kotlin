@@ -2,13 +2,15 @@ package com.petersamokhin.bots.sdk.utils.vkapi;
 
 import com.petersamokhin.bots.sdk.callbacks.callbackapi.ExecuteCallback;
 import com.petersamokhin.bots.sdk.clients.Client;
-import com.petersamokhin.bots.sdk.utils.Connection;
 import com.petersamokhin.bots.sdk.utils.Utils;
+import com.petersamokhin.bots.sdk.utils.vkapi.calls.CallAsync;
+import com.petersamokhin.bots.sdk.utils.vkapi.calls.CallSync;
+import com.petersamokhin.bots.sdk.utils.web.Connection;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,7 +98,7 @@ public class API {
             }
 
             if (good) {
-                Call call = new Call(method, parameters, callback);
+                CallAsync call = new CallAsync(method, parameters, callback);
                 executor.execute(call);
             }
         }
@@ -133,6 +135,60 @@ public class API {
     }
 
     /**
+     * Call to 'execute' method, because can not call API.execute inside execute.
+     * More: <a href="https://vk.com/dev/execute">link</a>;
+     */
+    public JSONObject execute(String code) {
+
+        return new JSONObject(callSync("execute", new JSONObject().put("code", code)));
+    }
+
+    /**
+     * Execute float count of calls, up to 25
+     *
+     * @param calls single call to VK API or calls separated by comma.
+     * @see CallAsync
+     */
+    public void execute(CallAsync... calls) {
+        if (calls.length < 26) {
+            for (CallAsync call : calls) {
+                executor.execute(call);
+            }
+        } else {
+            CallAsync[] newCalls = new CallAsync[25];
+            System.arraycopy(calls, 0, newCalls, 0, 25);
+            for (CallAsync call : newCalls) {
+                executor.execute(call);
+            }
+        }
+    }
+
+    /**
+     * Execute float count of calls, up to 25
+     *
+     * @param calls single call to VK API or calls separated by comma.
+     * @return JSONArray with responses of calls
+     * @see CallSync
+     */
+    public JSONArray execute(CallSync... calls) {
+
+        StringBuilder code = new StringBuilder("return [");
+
+        for (int i = 0; i < calls.length; i++) {
+            String codeTmp = executor.codeForExecute(calls[i]);
+            code.append(codeTmp);
+            if (i < calls.length - 1) {
+                code.append(',');
+            }
+        }
+        code.append("];");
+
+        JSONObject response = new JSONObject(callSync("execute", new JSONObject().put("code", code.toString())));
+
+        return response.getJSONArray("response");
+    }
+
+    /**
      * Call to VK API
      *
      * @param method Method name
@@ -142,7 +198,7 @@ public class API {
      * and will be called in execute method, that can call 25 methods by one call
      */
     @Deprecated
-    public JSONObject callSync(String method, Object params) {
+    public String callSync(String method, Object params) {
 
         if (params != null) {
 
@@ -168,7 +224,7 @@ public class API {
 
             return Connection.getRequestResponse(query);
         }
-        return new JSONObject();
+        return "error";
     }
 
     /**
@@ -179,7 +235,7 @@ public class API {
      * @return JSONObject response of VK answer
      */
     @Deprecated
-    public JSONObject callSync(String method, Object... params) {
+    public String callSync(String method, Object... params) {
 
         if (params != null && params.length > 0) {
 
@@ -188,6 +244,6 @@ public class API {
             return Connection.getRequestResponse(query);
         }
 
-        return new JSONObject();
+        return "";
     }
 }

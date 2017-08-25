@@ -3,7 +3,7 @@ package com.petersamokhin.bots.sdk.longpoll;
 import com.petersamokhin.bots.sdk.callbacks.Callback;
 import com.petersamokhin.bots.sdk.clients.Client;
 import com.petersamokhin.bots.sdk.longpoll.responses.GetLongPollServerResponse;
-import com.petersamokhin.bots.sdk.utils.Connection;
+import com.petersamokhin.bots.sdk.utils.web.Connection;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,17 @@ public class LongPoll {
         this.updatesHandler = new UpdatesHandler(client);
         this.updatesHandler.start();
         this.client = client;
-        setData(null, null, null, null, null);
+
+        boolean dataSetted = setData(null, null, null, null, null);
+
+        while (!dataSetted) {
+            LOG.error("Some error occured when trying to get longpoll settings, aborting. Trying again in 1 sec.");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+            }
+            dataSetted = setData(null, null, null, null, null);
+        }
 
         if (!on) {
             on = true;
@@ -73,7 +83,17 @@ public class LongPoll {
         this.updatesHandler = new UpdatesHandler(client);
         this.updatesHandler.start();
         this.client = client;
-        setData(need_pts, version, API, wait, mode);
+
+        boolean dataSetted = setData(need_pts, version, API, wait, mode);
+
+        while(!dataSetted) {
+            LOG.error("Some error occured when trying to get longpoll settings, aborting. Trying again in 1 sec.");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+            }
+            dataSetted = setData(need_pts, version, API, wait, mode);
+        }
 
         if (!on) {
             on = true;
@@ -110,7 +130,7 @@ public class LongPoll {
      * @param wait     param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
      * @param mode     param, info: <a href="https://vk.com/dev/using_longpoll">link</a>
      */
-    private void setData(Integer need_pts, Integer version, Double API, Integer wait, Integer mode) {
+    private boolean setData(Integer need_pts, Integer version, Double API, Integer wait, Integer mode) {
 
         this.need_pts = need_pts == null ? this.need_pts : need_pts;
         this.version = version == null ? this.version : version;
@@ -121,14 +141,16 @@ public class LongPoll {
         GetLongPollServerResponse serverResponse = getLongPollServer(client.getAccessToken());
 
         if (serverResponse == null) {
-            LOG.error("Some error occured, can't start.");
-            return;
+            LOG.error("Some error occured, bad response returned from getting LongPoll server settings (server, key, ts, pts).");
+            return false;
         }
 
         this.server = serverResponse.getServer();
         this.key = serverResponse.getKey();
         this.ts = serverResponse.getTs();
         this.pts = serverResponse.getPts();
+
+        return true;
     }
 
     /**
@@ -142,7 +164,7 @@ public class LongPoll {
         StringBuilder query = new StringBuilder();
         query.append("https://api.vk.com/method/messages.getLongPollServer?need_pts=").append(need_pts).append("&lp_version=").append(version).append("&access_token=").append(access_token).append("&v=").append(API);
 
-        JSONObject response = Connection.getRequestResponse(query.toString());
+        JSONObject response = new JSONObject(Connection.getRequestResponse(query.toString()));
 
         LOG.info("GetLongPollServerResponse: \n{}\n", response);
 
@@ -173,7 +195,7 @@ public class LongPoll {
 
         while (on) {
 
-            JSONObject response = Connection.getRequestResponse("https://" + server + "?act=a_check&key=" + key + "&ts=" + ts + "&wait=" + wait + "&mode=" + mode + "&version=" + version + "&msgs_limit=100000");
+            JSONObject response = new JSONObject(Connection.getRequestResponse("https://" + server + "?act=a_check&key=" + key + "&ts=" + ts + "&wait=" + wait + "&mode=" + mode + "&version=" + version + "&msgs_limit=100000"));
 
             LOG.info("Response of getting updates: \n{}\n", response);
 

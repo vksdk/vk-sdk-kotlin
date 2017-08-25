@@ -7,15 +7,16 @@ import com.petersamokhin.bots.sdk.objects.Message;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
+import static com.petersamokhin.bots.sdk.clients.Client.service;
+import static com.petersamokhin.bots.sdk.clients.Client.sheduler;
 
 /**
  * Class for handling all updates in other thread
  */
 public class UpdatesHandler extends Thread {
-
-    private static final ExecutorService service = Executors.newCachedThreadPool();
-    private static final ScheduledExecutorService sheduler = Executors.newSingleThreadScheduledExecutor();
 
     private volatile Queue queue = new Queue();
 
@@ -66,13 +67,19 @@ public class UpdatesHandler extends Thread {
 
             // Handling new message
             case 4: {
-                service.submit(() -> handleMessageUpdate(currentUpdate));
+
+                int messageFlags = currentUpdate.getInt(2);
+
+                // check if message is received
+                if ((messageFlags & 2) == 0) {
+                    service.submit(() -> handleMessageUpdate(currentUpdate));
+                }
                 break;
             }
 
             // Handling update (user started typing)
             case 61: {
-                service.submit(() -> handleTypingUpdate(currentUpdate));
+                handleTypingUpdate(currentUpdate);
                 break;
             }
         }
@@ -82,132 +89,128 @@ public class UpdatesHandler extends Thread {
      * Handle new message
      */
     private void handleMessageUpdate(JSONArray updateObject) {
-        int messageFlags = updateObject.getInt(2);
+
         boolean messageIsAlreadyHandled = false;
 
-        // Check if message is received
-        if ((messageFlags & 2) == 0) {
+        Message message = new Message(
+                this.client,
+                updateObject.getInt(1),
+                updateObject.getInt(2),
+                updateObject.getInt(3),
+                updateObject.getInt(4),
+                updateObject.getString(5),
+                (updateObject.length() > 6 ? (updateObject.get(6).toString().startsWith("{") ? new JSONObject(updateObject.get(6).toString()) : null) : null),
+                updateObject.length() > 7 ? updateObject.getInt(7) : null
+        );
 
-            Message message = new Message(
-                    this.client,
-                    updateObject.getInt(1),
-                    updateObject.getInt(2),
-                    updateObject.getInt(3),
-                    updateObject.getInt(4),
-                    updateObject.getString(5),
-                    (updateObject.length() > 6 ? (updateObject.get(6).toString().startsWith("{") ? new JSONObject(updateObject.get(6).toString()) : null) : null),
-                    updateObject.length() > 7 ? updateObject.getInt(7) : null
-            );
+        if (sendTyping) {
+            this.client.api().call("messages.setActivity", "{type:'typing',peer_id:" + message.authorId() + "}", response -> {
+            });
+        }
 
-            if (sendTyping) {
-                this.client.api().call("messages.setActivity", "{type:'typing',peer_id:" + message.authorId() + "}", response -> {
-                });
+        // check for commands
+        if (this.client.commands.size() > 0) {
+            messageIsAlreadyHandled = handleCommands(message);
+        }
+
+        if (message.hasFwds()) {
+            if (callbacks.containsKey("OnMessageWithFwdsCallback")) {
+                ((OnMessageWithFwdsCallback) callbacks.get("OnMessageWithFwdsCallback")).onMessage(message);
+                messageIsAlreadyHandled = true;
             }
+        }
 
-            // check for commands
-            if (this.client.commands.size() > 0) {
-                messageIsAlreadyHandled = handleCommands(message);
-            }
+        if (!messageIsAlreadyHandled) {
+            switch (message.messageType()) {
 
-            if (message.hasFwds()) {
-                if (callbacks.containsKey("OnMessageWithFwdsCallback")) {
-                    ((OnMessageWithFwdsCallback) callbacks.get("OnMessageWithFwdsCallback")).onMessage(message);
-                    messageIsAlreadyHandled = true;
+                case "voiceMessage": {
+                    if (callbacks.containsKey("OnVoiceMessageCallback")) {
+                        ((OnVoiceMessageCallback) callbacks.get("OnVoiceMessageCallback")).OnVoiceMessage(message);
+                        messageIsAlreadyHandled = true;
+                    }
+                    break;
+                }
+
+                case "stickerMessage": {
+                    if (callbacks.containsKey("OnStickerMessageCallback")) {
+                        ((OnStickerMessageCallback) callbacks.get("OnStickerMessageCallback")).OnStickerMessage(message);
+                        messageIsAlreadyHandled = true;
+                    }
+                    break;
+                }
+
+                case "gifMessage": {
+                    if (callbacks.containsKey("OnGifMessageCallback")) {
+                        ((OnGifMessageCallback) callbacks.get("OnGifMessageCallback")).OnGifMessage(message);
+                        messageIsAlreadyHandled = true;
+                    }
+                    break;
+                }
+
+                case "audioMessage": {
+                    if (callbacks.containsKey("OnAudioMessageCallback")) {
+                        ((OnAudioMessageCallback) callbacks.get("OnAudioMessageCallback")).onAudioMessage(message);
+                        messageIsAlreadyHandled = true;
+                    }
+                    break;
+                }
+
+                case "videoMessage": {
+                    if (callbacks.containsKey("OnVideoMessageCallback")) {
+                        ((OnVideoMessageCallback) callbacks.get("OnVideoMessageCallback")).onVideoMessage(message);
+                        messageIsAlreadyHandled = true;
+                    }
+                    break;
+                }
+
+                case "docMessage": {
+                    if (callbacks.containsKey("OnDocMessageCallback")) {
+                        ((OnDocMessageCallback) callbacks.get("OnDocMessageCallback")).OnDocMessage(message);
+                        messageIsAlreadyHandled = true;
+                    }
+                    break;
+                }
+
+                case "wallMessage": {
+                    if (callbacks.containsKey("OnWallMessageCallback")) {
+                        ((OnVoiceMessageCallback) callbacks.get("OnWallMessageCallback")).OnVoiceMessage(message);
+                        messageIsAlreadyHandled = true;
+                    }
+                    break;
+                }
+
+                case "photoMessage": {
+                    if (callbacks.containsKey("OnPhotoMessageCallback")) {
+                        ((OnPhotoMessageCallback) callbacks.get("OnPhotoMessageCallback")).onPhotoMessage(message);
+                        messageIsAlreadyHandled = true;
+                    }
+                    break;
+                }
+
+                case "linkMessage": {
+                    if (callbacks.containsKey("OnLinkMessageCallback")) {
+                        ((OnLinkMessageCallback) callbacks.get("OnLinkMessageCallback")).OnLinkMessage(message);
+                        messageIsAlreadyHandled = true;
+                    }
+                    break;
+                }
+
+                case "simpleTextMessage": {
+                    if (callbacks.containsKey("OnSimpleTextMessageCallback")) {
+                        ((OnSimpleTextMessageCallback) callbacks.get("OnSimpleTextMessageCallback")).OnSimpleTextMessage(message);
+                        messageIsAlreadyHandled = true;
+                    }
+                    break;
                 }
             }
+        }
 
-            if (!messageIsAlreadyHandled) {
-                switch (message.messageType()) {
+        if (callbacks.containsKey("OnMessageCallback") && !messageIsAlreadyHandled) {
+            ((OnMessageCallback) callbacks.get("OnMessageCallback")).onMessage(message);
+        }
 
-                    case "voiceMessage": {
-                        if (callbacks.containsKey("OnVoiceMessageCallback")) {
-                            ((OnVoiceMessageCallback) callbacks.get("OnVoiceMessageCallback")).OnVoiceMessage(message);
-                            messageIsAlreadyHandled = true;
-                        }
-                        break;
-                    }
-
-                    case "stickerMessage": {
-                        if (callbacks.containsKey("OnStickerMessageCallback")) {
-                            ((OnStickerMessageCallback) callbacks.get("OnStickerMessageCallback")).OnStickerMessage(message);
-                            messageIsAlreadyHandled = true;
-                        }
-                        break;
-                    }
-
-                    case "gifMessage": {
-                        if (callbacks.containsKey("OnGifMessageCallback")) {
-                            ((OnGifMessageCallback) callbacks.get("OnGifMessageCallback")).OnGifMessage(message);
-                            messageIsAlreadyHandled = true;
-                        }
-                        break;
-                    }
-
-                    case "audioMessage": {
-                        if (callbacks.containsKey("OnAudioMessageCallback")) {
-                            ((OnAudioMessageCallback) callbacks.get("OnAudioMessageCallback")).onAudioMessage(message);
-                            messageIsAlreadyHandled = true;
-                        }
-                        break;
-                    }
-
-                    case "videoMessage": {
-                        if (callbacks.containsKey("OnVideoMessageCallback")) {
-                            ((OnVideoMessageCallback) callbacks.get("OnVideoMessageCallback")).onVideoMessage(message);
-                            messageIsAlreadyHandled = true;
-                        }
-                        break;
-                    }
-
-                    case "docMessage": {
-                        if (callbacks.containsKey("OnDocMessageCallback")) {
-                            ((OnDocMessageCallback) callbacks.get("OnDocMessageCallback")).OnDocMessage(message);
-                            messageIsAlreadyHandled = true;
-                        }
-                        break;
-                    }
-
-                    case "wallMessage": {
-                        if (callbacks.containsKey("OnWallMessageCallback")) {
-                            ((OnVoiceMessageCallback) callbacks.get("OnWallMessageCallback")).OnVoiceMessage(message);
-                            messageIsAlreadyHandled = true;
-                        }
-                        break;
-                    }
-
-                    case "photoMessage": {
-                        if (callbacks.containsKey("OnPhotoMessageCallback")) {
-                            ((OnPhotoMessageCallback) callbacks.get("OnPhotoMessageCallback")).onPhotoMessage(message);
-                            messageIsAlreadyHandled = true;
-                        }
-                        break;
-                    }
-
-                    case "linkMessage": {
-                        if (callbacks.containsKey("OnLinkMessageCallback")) {
-                            ((OnLinkMessageCallback) callbacks.get("OnLinkMessageCallback")).OnLinkMessage(message);
-                            messageIsAlreadyHandled = true;
-                        }
-                        break;
-                    }
-
-                    case "simpleTextMessage": {
-                        if (callbacks.containsKey("OnSimpleTextMessageCallback")) {
-                            ((OnSimpleTextMessageCallback) callbacks.get("OnSimpleTextMessageCallback")).OnSimpleTextMessage(message);
-                            messageIsAlreadyHandled = true;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            if (callbacks.containsKey("OnMessageCallback") && !messageIsAlreadyHandled) {
-                ((OnMessageCallback) callbacks.get("OnMessageCallback")).onMessage(message);
-            }
-
-            if (callbacks.containsKey("OnEveryMessageCallback")) {
-                ((OnEveryMessageCallback) callbacks.get("OnEveryMessageCallback")).OnEveryMessage(message);
-            }
+        if (callbacks.containsKey("OnEveryMessageCallback")) {
+            ((OnEveryMessageCallback) callbacks.get("OnEveryMessageCallback")).OnEveryMessage(message);
         }
     }
 

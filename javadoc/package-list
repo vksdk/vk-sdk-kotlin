@@ -17,3 +17,6 @@ com.petersamokhin.bots.sdk.longpoll.responses
 com.petersamokhin.bots.sdk.objects
 com.petersamokhin.bots.sdk.utils
 com.petersamokhin.bots.sdk.utils.vkapi
+com.petersamokhin.bots.sdk.utils.vkapi.calls
+com.petersamokhin.bots.sdk.utils.vkapi.docs
+com.petersamokhin.bots.sdk.utils.web

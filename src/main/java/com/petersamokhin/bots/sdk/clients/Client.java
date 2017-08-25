@@ -7,6 +7,9 @@ import com.petersamokhin.bots.sdk.utils.vkapi.API;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Main client class, that contains all necessary methods and fields
@@ -14,6 +17,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public abstract class Client {
 
+    /*
+     * Executor services for threadsafing and fast work
+     */
+    public static final ExecutorService service = Executors.newCachedThreadPool();
+    public static final ScheduledExecutorService sheduler = Executors.newSingleThreadScheduledExecutor();
+
+    /*
+     * Main params
+     */
     private String accessToken;
     private Integer id;
     private static API api;

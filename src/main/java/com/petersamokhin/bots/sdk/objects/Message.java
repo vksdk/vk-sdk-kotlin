@@ -2,10 +2,11 @@ package com.petersamokhin.bots.sdk.objects;
 
 import com.petersamokhin.bots.sdk.callbacks.callbackapi.ExecuteCallback;
 import com.petersamokhin.bots.sdk.clients.Client;
-import com.petersamokhin.bots.sdk.utils.Connection;
 import com.petersamokhin.bots.sdk.utils.Utils;
 import com.petersamokhin.bots.sdk.utils.vkapi.API;
-import okhttp3.*;
+import com.petersamokhin.bots.sdk.utils.vkapi.docs.DocTypes;
+import com.petersamokhin.bots.sdk.utils.web.Connection;
+import com.petersamokhin.bots.sdk.utils.web.MultipartUtility;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -39,7 +41,7 @@ public class Message {
      * Attachments in format of received event from longpoll server
      * More: <a href="https://vk.com/dev/using_longpoll_2">link</a>
      */
-    private JSONObject attachmentsJO;
+    private JSONObject attachmentsOfReceivedMessage;
 
     /**
      * Attahments in format [photo62802565_456241137, photo111_111, doc100_500]
@@ -146,6 +148,11 @@ public class Message {
         return this;
     }
 
+    /**
+     * Synchronous adding photo to the message
+     *
+     * @param photo String URL, link to vk doc or path to file
+     */
     public Message photo(String photo) {
 
         // Use already loaded photo
@@ -205,7 +212,7 @@ public class Message {
 
             // Getting of server for uploading the photo
             String getUploadServerQuery = "https://api.vk.com/method/photos.getMessagesUploadServer?access_token=" + accessToken + "&peer_id=" + this.peerId + "&v=5.67";
-            JSONObject getUploadServerResponse = Connection.getRequestResponse(getUploadServerQuery);
+            JSONObject getUploadServerResponse = new JSONObject(Connection.getRequestResponse(getUploadServerQuery));
             String uploadUrl = getUploadServerResponse.has("response") ? getUploadServerResponse.getJSONObject("response").has("upload_url") ? getUploadServerResponse.getJSONObject("response").getString("upload_url") : null : null;
 
 
@@ -216,7 +223,10 @@ public class Message {
             }
 
             // Uploading the photo
-            String uploadingOfPhotoResponseString = Connection.getFileUploadAnswerOfVK(uploadUrl, "photo", MediaType.parse("image/*"), photoBytes);
+            MultipartUtility multipartUtility = new MultipartUtility(uploadUrl);
+            multipartUtility.addBytesPart("photo", "photo.png", photoBytes);
+            String uploadingOfPhotoResponseString = multipartUtility.finish();
+
             JSONObject uploadingOfPhotoResponse;
 
             try {
@@ -239,7 +249,7 @@ public class Message {
 
             // Saving the photo
             String saveMessagesPhotoQuery = "https://api.vk.com/method/photos.saveMessagesPhoto?access_token=" + accessToken + "&v=5.67&server=" + server + "&photo=" + photo_param + "&hash=" + hash;
-            JSONObject saveMessagesPhotoResponse = Connection.getRequestResponse(saveMessagesPhotoQuery);
+            JSONObject saveMessagesPhotoResponse = new JSONObject(Connection.getRequestResponse(saveMessagesPhotoQuery));
             String photoAsAttach = saveMessagesPhotoResponse.has("response") ? "photo" + saveMessagesPhotoResponse.getJSONArray("response").getJSONObject(0).getInt("owner_id") + "_" + saveMessagesPhotoResponse.getJSONArray("response").getJSONObject(0).getInt("id") : "";
 
             this.attachments.add(photoAsAttach);
@@ -247,7 +257,13 @@ public class Message {
         return this;
     }
 
-    public Message doc(String doc, String... typeOfDoc) {
+    /**
+     * Synchronous adding doc to the message
+     *
+     * @param doc       String URL, link to vk doc or path to file
+     * @param typeOfDoc Type of doc, 'audio_message' or 'graffiti' ('doc' as default)
+     */
+    public Message doc(String doc, DocTypes typeOfDoc) {
 
         // Use already loaded photo
         if (Pattern.matches("[htps:/vk.com]?doc-?\\d+_\\d+", doc)) {
@@ -273,12 +289,14 @@ public class Message {
         }
 
         byte[] docBytes;
+        String fileNameField;
 
         switch (type) {
 
             case "fromFile": {
                 try {
                     docBytes = Files.readAllBytes(Paths.get(docFile.toURI()));
+                    fileNameField = docFile.getName();
                 } catch (IOException ignored) {
                     LOG.error("Error when reading file {}", docFile.getAbsolutePath());
                     return this;
@@ -288,7 +306,14 @@ public class Message {
 
             case "fromUrl": {
                 try {
-                    docBytes = Utils.toByteArray(docUrl);
+                    URLConnection conn = docUrl.openConnection();
+
+                    try {
+                        docBytes = Utils.toByteArray(conn);
+                        fileNameField = Utils.guessFileNameByContentType(conn.getContentType());
+                    } finally {
+                        Utils.close(conn);
+                    }
                 } catch (IOException ignored) {
                     LOG.error("Error {} occured when reading URL {}", ignored.toString(), doc);
                     return this;
@@ -305,9 +330,8 @@ public class Message {
         if (docBytes != null) {
 
             // Getting of server for uploading the photo
-            String getUploadServerQuery = "https://api.vk.com/method/docs.getMessagesUploadServer?access_token=" + accessToken + "&peer_id=" + this.peerId + "&v=5.67" + (typeOfDoc.length > 0 ? "&type=" + typeOfDoc[0] : "");
-            LOG.error("getUploadServerQuery is {}", getUploadServerQuery);
-            JSONObject getUploadServerResponse = Connection.getRequestResponse(getUploadServerQuery);
+            String getUploadServerQuery = "https://api.vk.com/method/docs.getMessagesUploadServer?access_token=" + accessToken + "&peer_id=" + this.peerId + "&v=5.67" + "&type=" + typeOfDoc.getType();
+            JSONObject getUploadServerResponse = new JSONObject(Connection.getRequestResponse(getUploadServerQuery));
             String uploadUrl = getUploadServerResponse.has("response") ? getUploadServerResponse.getJSONObject("response").has("upload_url") ? getUploadServerResponse.getJSONObject("response").getString("upload_url") : null : null;
 
             // Some error
@@ -317,7 +341,12 @@ public class Message {
             }
 
             // Uploading the photo
-            String uploadingOfDocResponseString = Connection.getFileUploadAnswerOfVK(uploadUrl, "voice.mp3", MediaType.parse("audio/mpeg"), docBytes);
+            String uploadingOfDocResponseString;
+
+            MultipartUtility multipartUtility = new MultipartUtility(uploadUrl);
+            multipartUtility.addBytesPart("file", fileNameField, docBytes);
+            uploadingOfDocResponseString = multipartUtility.finish();
+
             JSONObject uploadingOfDocResponse;
 
             try {
@@ -338,18 +367,31 @@ public class Message {
 
             // Saving the photo
             String saveMessagesDocQuery = "https://api.vk.com/method/docs.save?access_token=" + accessToken + "&v=5.67&file=" + file;
-            JSONObject saveMessagesDocResponse = Connection.getRequestResponse(saveMessagesDocQuery);
+            JSONObject saveMessagesDocResponse = new JSONObject(Connection.getRequestResponse(saveMessagesDocQuery));
             String docAsAttach = saveMessagesDocResponse.has("response") ? "doc" + saveMessagesDocResponse.getJSONArray("response").getJSONObject(0).getInt("owner_id") + "_" + saveMessagesDocResponse.getJSONArray("response").getJSONObject(0).getInt("id") : "";
 
             this.attachments.add(docAsAttach);
+        } else {
+            LOG.error("Got file or url of doc to be uploaded, but some error occured and readed 0 bytes.");
         }
+
+        return this;
+    }
+
+    /**
+     * Synchronous adding doc to the message
+     *
+     * @param doc String URL, link to vk doc or path to file
+     */
+    public Message doc(String doc) {
+        this.doc(doc, DocTypes.DOC);
         return this;
     }
 
     /**
      * Attach photo to message
      * <p>
-     * Works slower that sync photo adding, but calling from execute
+     * Works slower that sync photo adding, but will be called from execute
      *
      * @param photo Photo link: url, from disk or already uploaded to VK as photo{owner_id}_{id}
      */
@@ -434,81 +476,55 @@ public class Message {
 
                 String uploadUrl = new JSONObject(response.toString()).getString("upload_url");
 
-                RequestBody requestBody = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("photo", "photo.png", RequestBody.create(MediaType.parse("image/*"), photoBytes))
-                        .build();
+                MultipartUtility multipartUtility = new MultipartUtility(uploadUrl);
+                multipartUtility.addBytesPart("photo", "photo.png", photoBytes);
 
-                Request request = new Request.Builder()
-                        .url(uploadUrl)
-                        .post(requestBody)
-                        .build();
+                String response_uploadFileString = multipartUtility.finish();
+
+                if (response_uploadFileString.length() < 2 || response_uploadFileString.contains("error") || !response_uploadFileString.contains("photo")) {
+                    LOG.error("Photo wan't uploaded: {}", response_uploadFileString);
+                    callback.onResponse("false");
+                    return;
+                }
+
+                JSONObject getPhotoStringResponse;
 
                 try {
-                    Connection.client.newCall(request).enqueue(new Callback() {
-
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                            LOG.error("Photo not uploaded: {}", e.toString());
-                            callback.onResponse(false);
-                        }
-
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-
-                            String response_uploadFileString;
-                            ResponseBody responseBody = response.body();
-                            response_uploadFileString = responseBody != null ? responseBody.string() : "";
-
-                            if (response_uploadFileString.length() < 2 || response_uploadFileString.contains("error") || !response_uploadFileString.contains("photo")) {
-                                LOG.error("Photo wan't uploaded: {}", response_uploadFileString);
-                                callback.onResponse("false");
-                                return;
-                            }
-
-                            JSONObject getPhotoStringResponse;
-
-                            try {
-                                getPhotoStringResponse = new JSONObject(response_uploadFileString);
-                            } catch (JSONException ignored) {
-                                LOG.error("Bad response of uploading photo: {}", response_uploadFileString);
-                                callback.onResponse("false");
-                                return;
-                            }
-
-                            if (!getPhotoStringResponse.has("photo") || !getPhotoStringResponse.has("server") || !getPhotoStringResponse.has("hash")) {
-                                LOG.error("Bad response of uploading photo, no 'photo', 'server' of 'hash' param: {}", getPhotoStringResponse.toString());
-                                callback.onResponse("false");
-                                return;
-                            }
-
-                            String photoParam = getPhotoStringResponse.getString("photo");
-                            Object serverParam = getPhotoStringResponse.get("server");
-                            String hashParam = getPhotoStringResponse.getString("hash");
-
-                            JSONObject params_photosSaveMessagesPhoto = new JSONObject().put("photo", photoParam).put("server", serverParam + "").put("hash", hashParam);
-
-                            api.call("photos.saveMessagesPhoto", params_photosSaveMessagesPhoto, response1 -> {
-
-
-                                if (response1.toString().equalsIgnoreCase("false")) {
-                                    LOG.error("Error when saving uploaded photo: response is 'false', see execution errors.");
-                                    callback.onResponse("false");
-                                    return;
-                                }
-
-                                JSONObject response_saveMessagesPhotoe = new JSONArray(response1.toString()).getJSONObject(0);
-
-                                int ownerId = response_saveMessagesPhotoe.getInt("owner_id"), id = response_saveMessagesPhotoe.getInt("id");
-
-                                String attach = "photo" + ownerId + '_' + id;
-                                callback.onResponse(attach);
-                            });
-                        }
-                    });
-                } finally {
-                    Connection.client.connectionPool().evictAll();
+                    getPhotoStringResponse = new JSONObject(response_uploadFileString);
+                } catch (JSONException ignored) {
+                    LOG.error("Bad response of uploading photo: {}", response_uploadFileString);
+                    callback.onResponse("false");
+                    return;
                 }
+
+                if (!getPhotoStringResponse.has("photo") || !getPhotoStringResponse.has("server") || !getPhotoStringResponse.has("hash")) {
+                    LOG.error("Bad response of uploading photo, no 'photo', 'server' of 'hash' param: {}", getPhotoStringResponse.toString());
+                    callback.onResponse("false");
+                    return;
+                }
+
+                String photoParam = getPhotoStringResponse.getString("photo");
+                Object serverParam = getPhotoStringResponse.get("server");
+                String hashParam = getPhotoStringResponse.getString("hash");
+
+                JSONObject params_photosSaveMessagesPhoto = new JSONObject().put("photo", photoParam).put("server", serverParam + "").put("hash", hashParam);
+
+                api.call("photos.saveMessagesPhoto", params_photosSaveMessagesPhoto, response1 -> {
+
+
+                    if (response1.toString().equalsIgnoreCase("false")) {
+                        LOG.error("Error when saving uploaded photo: response is 'false', see execution errors.");
+                        callback.onResponse("false");
+                        return;
+                    }
+
+                    JSONObject response_saveMessagesPhotoe = new JSONArray(response1.toString()).getJSONObject(0);
+
+                    int ownerId = response_saveMessagesPhotoe.getInt("owner_id"), id = response_saveMessagesPhotoe.getInt("id");
+
+                    String attach = "photo" + ownerId + '_' + id;
+                    callback.onResponse(attach);
+                });
             });
         }
     }
@@ -516,6 +532,7 @@ public class Message {
     /**
      * Async uploading photos
      */
+
     private void uploadDoc(JSONObject doc, ExecuteCallback callback) {
 
         String type = null;
@@ -580,79 +597,53 @@ public class Message {
 
                 String uploadUrl = new JSONObject(response.toString()).getString("upload_url");
 
-                RequestBody requestBody = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        // dont need to know the file media type and extension, only field name and bytes
-                        .addFormDataPart("file", "file.png", RequestBody.create(MediaType.parse("image/*"), docBytes))
-                        .build();
+                String response_uploadFileString;
 
-                Request request = new Request.Builder()
-                        .url(uploadUrl)
-                        .post(requestBody)
-                        .build();
+                MultipartUtility multipartUtility = new MultipartUtility(uploadUrl);
+                multipartUtility.addBytesPart("file", "file.mp3", docBytes);
+                response_uploadFileString = multipartUtility.finish();
 
+                if (response_uploadFileString.length() < 2 || response_uploadFileString.contains("error") || !response_uploadFileString.contains("file")) {
+                    LOG.error("Doc won't uploaded: {}", response_uploadFileString);
+                    callback.onResponse("false");
+                    return;
+                }
+
+                JSONObject getFileStringResponse;
 
                 try {
-                    Connection.client.newCall(request).enqueue(new Callback() {
-
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                            LOG.error("Doc not uploaded: {}", e.toString());
-                            callback.onResponse("false");
-                        }
-
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            String response_uploadFileString;
-                            ResponseBody responseBody = response.body();
-                            response_uploadFileString = responseBody != null ? responseBody.string() : "";
-
-                            if (response_uploadFileString.length() < 2 || response_uploadFileString.contains("error") || !response_uploadFileString.contains("file")) {
-                                LOG.error("Doc won't uploaded: {}", response_uploadFileString);
-                                callback.onResponse("false");
-                                return;
-                            }
-
-                            JSONObject getFileStringResponse;
-
-                            try {
-                                getFileStringResponse = new JSONObject(response_uploadFileString);
-                            } catch (JSONException ignored) {
-                                LOG.error("Bad response of uploading file: {}", response_uploadFileString);
-                                callback.onResponse("false");
-                                return;
-                            }
-
-                            if (!getFileStringResponse.has("file")) {
-                                LOG.error("Bad response of uploading doc, no 'file' param: {}", getFileStringResponse.toString());
-                                callback.onResponse("false");
-                                return;
-                            }
-
-                            String fileParam = getFileStringResponse.getString("file");
-
-                            JSONObject params_photosSaveMessagesPhoto = new JSONObject().put("file", fileParam);
-
-                            api.call("docs.save", params_photosSaveMessagesPhoto, response1 -> {
-
-                                if (response1.toString().equalsIgnoreCase("false")) {
-                                    LOG.error("Error when saving uploaded doc: response is 'false', see execution errors.");
-                                    callback.onResponse("false");
-                                    return;
-                                }
-
-                                JSONObject response_saveMessagesPhotoe = new JSONArray(response1.toString()).getJSONObject(0);
-
-                                int ownerId = response_saveMessagesPhotoe.getInt("owner_id"), id = response_saveMessagesPhotoe.getInt("id");
-
-                                String attach = "doc" + ownerId + '_' + id;
-                                callback.onResponse(attach);
-                            });
-                        }
-                    });
-                } finally {
-                    Connection.client.connectionPool().evictAll();
+                    getFileStringResponse = new JSONObject(response_uploadFileString);
+                } catch (JSONException ignored) {
+                    LOG.error("Bad response of uploading file: {}", response_uploadFileString);
+                    callback.onResponse("false");
+                    return;
                 }
+
+                if (!getFileStringResponse.has("file")) {
+                    LOG.error("Bad response of uploading doc, no 'file' param: {}", getFileStringResponse.toString());
+                    callback.onResponse("false");
+                    return;
+                }
+
+                String fileParam = getFileStringResponse.getString("file");
+
+                JSONObject params_photosSaveMessagesPhoto = new JSONObject().put("file", fileParam);
+
+                api.call("docs.save", params_photosSaveMessagesPhoto, response1 -> {
+
+                    if (response1.toString().equalsIgnoreCase("false")) {
+                        LOG.error("Error when saving uploaded doc: response is 'false', see execution errors.");
+                        callback.onResponse("false");
+                        return;
+                    }
+
+                    JSONObject response_saveMessagesPhotoe = new JSONArray(response1.toString()).getJSONObject(0);
+
+                    int ownerId = response_saveMessagesPhotoe.getInt("owner_id"), id = response_saveMessagesPhotoe.getInt("id");
+
+                    String attach = "doc" + ownerId + '_' + id;
+                    callback.onResponse(attach);
+                });
             });
         }
     }
@@ -662,7 +653,7 @@ public class Message {
      *
      * @param doc Doc link: url, from disk or already uploaded to VK as doc{owner_id}_{id}
      */
-    public Message docAsync(String doc, String... type) {
+    public Message docAsync(String doc, DocTypes type) {
 
         // Use already loaded photo
         if (Pattern.matches("[htps:/vk.com]?doc-?\\d+_\\d+", doc)) {
@@ -670,15 +661,29 @@ public class Message {
             return this;
         }
 
-        this.docsToUpload.add(new JSONObject().put("doc", doc).put("type", type));
+        this.docsToUpload.add(new JSONObject().put("doc", doc).put("type", type.getType()));
         return this;
     }
 
+    /**
+     * Attach doc to message
+     *
+     * @param doc Doc link: url, from disk or already uploaded to VK as doc{owner_id}_{id}
+     */
+    public Message docAsync(String doc) {
+
+        this.docAsync(doc, DocTypes.DOC);
+        return this;
+    }
+
+    /**
+     * Send voice message
+     *
+     * @param doc      URL or path to file
+     * @param callback response will returns to callback
+     */
     public void sendVoiceMessage(String doc, ExecuteCallback... callback) {
-        uploadDoc(new JSONObject().put("doc", doc).put("type", "audio_message"), response -> {
-            this.attachments.addIfAbsent(response.toString());
-            this.send(callback);
-        });
+        this.doc(doc, DocTypes.AUDIO_MESSAGE).send(callback);
     }
 
     /**
@@ -687,7 +692,6 @@ public class Message {
      * @param callback will be called with response object
      */
     public void send(ExecuteCallback... callback) {
-
 
         if (photosToUpload.size() > 0) {
             String photo = photosToUpload.get(0);
@@ -780,7 +784,7 @@ public class Message {
     public boolean hasFwds() {
         boolean answer = false;
 
-        if (attachmentsJO.has("fwd"))
+        if (attachmentsOfReceivedMessage.has("fwd"))
             answer = true;
 
         return answer;
@@ -791,7 +795,7 @@ public class Message {
      */
     public JSONArray getForwardedMessages() {
         if (hasFwds()) {
-            JSONObject response = api.callSync("messages.getById", "message_ids", getMessageId());
+            JSONObject response = new JSONObject(api.callSync("messages.getById", "message_ids", getMessageId()));
 
             if (response.has("response") && response.getJSONObject("response").getJSONArray("items").getJSONObject(0).has("fwd_messages")) {
                 return response.getJSONObject("response").getJSONArray("items").getJSONObject(0).getJSONArray("fwd_messages");
@@ -806,7 +810,7 @@ public class Message {
      */
     public JSONArray getAttachments() {
 
-        JSONObject response = api.callSync("messages.getById", "message_ids", getMessageId());
+        JSONObject response = new JSONObject(api.callSync("messages.getById", "message_ids", getMessageId()));
 
         if (response.has("response") && response.getJSONObject("response").getJSONArray("items").getJSONObject(0).has("attachments"))
             return response.getJSONObject("response").getJSONArray("items").getJSONObject(0).getJSONArray("attachments");
@@ -887,20 +891,20 @@ public class Message {
             put("summary", 0);
         }};
 
-        if (attachmentsJO.toString().contains("sticker")) {
+        if (attachmentsOfReceivedMessage.toString().contains("sticker")) {
             answer.put("sticker", 1);
             answer.put("summary", 1);
             return answer;
         } else {
-            if (attachmentsJO.toString().contains("audiomsg")) {
+            if (attachmentsOfReceivedMessage.toString().contains("audiomsg")) {
                 answer.put("voice", 1);
                 answer.put("summary", 1);
                 return answer;
             } else {
-                for (String key : attachmentsJO.keySet()) {
+                for (String key : attachmentsOfReceivedMessage.keySet()) {
                     if (key.startsWith("attach") && key.endsWith("type")) {
 
-                        String value = attachmentsJO.getString(key);
+                        String value = attachmentsOfReceivedMessage.getString(key);
                         switch (value) {
 
                             case "photo": {
@@ -1039,7 +1043,7 @@ public class Message {
 
     private void setAttachments(JSONObject attachments) {
 
-        this.attachmentsJO = attachments;
+        this.attachmentsOfReceivedMessage = attachments;
     }
 
     public Integer getRandomId() {
@@ -1060,8 +1064,8 @@ public class Message {
 
     private String[] getForwardedMessagesIds() {
 
-        if (attachmentsJO.has("fwd")) {
-            return attachmentsJO.getString("fwd").split(",");
+        if (attachmentsOfReceivedMessage.has("fwd")) {
+            return attachmentsOfReceivedMessage.getString("fwd").split(",");
         }
 
         return new String[]{};
@@ -1076,7 +1080,7 @@ public class Message {
                 ",\"timestamp\":" + timestamp +
                 ",\"random_id\":" + randomId +
                 ",\"text\":\"" + text + '\"' +
-                ",\"attachments\":" + attachmentsJO.toString() +
+                ",\"attachments\":" + attachmentsOfReceivedMessage.toString() +
                 '}';
     }
 }

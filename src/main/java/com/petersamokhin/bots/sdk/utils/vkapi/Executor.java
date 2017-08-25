@@ -1,6 +1,9 @@
 package com.petersamokhin.bots.sdk.utils.vkapi;
 
-import com.petersamokhin.bots.sdk.utils.Connection;
+import com.petersamokhin.bots.sdk.utils.vkapi.calls.Call;
+import com.petersamokhin.bots.sdk.utils.vkapi.calls.CallAsync;
+import com.petersamokhin.bots.sdk.utils.vkapi.calls.CallSync;
+import com.petersamokhin.bots.sdk.utils.web.Connection;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -12,10 +15,10 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
+
+import static com.petersamokhin.bots.sdk.clients.Client.sheduler;
 
 /**
  * Best way to use VK API: you can call up to 25 vk api methods by call execute once
@@ -36,13 +39,12 @@ public class Executor {
     /**
      * Queue of requests
      */
-    private volatile List<Call> queue = new ArrayList<>();
+    private volatile List<CallAsync> queue = new ArrayList<>();
 
     private final String URL = "https://api.vk.com/method/execute?code=";
     private final String accessToken;
-    private final String V = "&v=" + 5.67;
+    private final String V = "&v=" + 5.68;
 
-    private static final ScheduledExecutorService sheduler = Executors.newSingleThreadScheduledExecutor();
 
     /**
      * Init executor
@@ -71,10 +73,10 @@ public class Executor {
     private void executing() {
 
 
-        List<Call> tmpQueue = new ArrayList<>();
+        List<CallAsync> tmpQueue = new ArrayList<>();
         int count = 0;
 
-        for (Iterator<Call> iterator = queue.iterator(); iterator.hasNext() && count < 25; count++) {
+        for (Iterator<CallAsync> iterator = queue.iterator(); iterator.hasNext() && count < 25; count++) {
             tmpQueue.add(iterator.next());
         }
 
@@ -92,20 +94,20 @@ public class Executor {
         }
         calls.append(']');
 
-        String code = "return null;";
-        try {
-            code = URLEncoder.encode(calls.toString(), "UTF-8");
-        } catch (UnsupportedEncodingException ignored) {
-        }
+        String code = calls.toString();
 
         // Execute
         if (count > 0) {
-            String vkCallQuery = URL + "return " + code + ";" + accessToken + V;
-            JSONObject response = Connection.getRequestResponse(vkCallQuery);
+            String vkCallQuery = null;
+            try {
+                vkCallQuery = URL + URLEncoder.encode("return " + code + ";", "UTF-8") + accessToken + V;
+            } catch (UnsupportedEncodingException ignored) {
+            }
+            JSONObject response = new JSONObject(Connection.getRequestResponse(vkCallQuery));
 
             if (response.has("execute_errors")) {
                 try {
-                    LOG.error("Errors when exeturing " + URLDecoder.decode(code, "UTF-8") + ", error: {}", response.get("execute_errors").toString());
+                    LOG.error("Errors when executing " + URLDecoder.decode(code, "UTF-8") + ", error: {}", response.get("execute_errors").toString());
                 } catch (UnsupportedEncodingException ignored) {
                 }
             }
@@ -133,8 +135,10 @@ public class Executor {
      * @param call Call object
      * @return String 'API.method.name({param:value})'
      * @see Call
+     * @see CallAsync
+     * @see CallSync
      */
-    private String codeForExecute(Call call) {
+    public String codeForExecute(Call call) {
 
         return "API." + call.getMethodName() + '(' + call.getParams().toString() + ')';
     }
@@ -144,7 +148,7 @@ public class Executor {
      *
      * @param call Call to be executed.
      */
-    public void execute(Call call) {
+    public void execute(CallAsync call) {
         queue.add(call);
     }
 }

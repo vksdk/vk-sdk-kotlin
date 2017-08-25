@@ -177,6 +177,26 @@ public class Utils {
         return 0;
     }
 
+    public static String guessFileNameByContentType(String contentType) {
+
+        contentType = contentType
+                .replace("mpeg", "mp3")
+                .replace("svg+xml", "svg")
+                .replace("javascript", "js")
+                .replace("plain", "txt")
+                .replace("markdown", "md");
+
+        String mainType = contentType.substring(0, contentType.indexOf('/'));
+        if (contentType.contains(" ")) {
+            contentType = contentType.substring(0, contentType.indexOf(' '));
+        }
+        String subType = contentType.substring(contentType.lastIndexOf('/') + 1);
+        if (subType.contains("-") || subType.contains(".") || subType.contains("+"))
+            subType = "unknown";
+
+        return mainType + '.' + subType;
+    }
+
     /*
      * Methods from commons-lang library of Apache
      * Added to not use the library for several methods

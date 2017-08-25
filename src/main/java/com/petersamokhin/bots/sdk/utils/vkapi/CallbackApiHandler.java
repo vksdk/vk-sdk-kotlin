@@ -75,7 +75,7 @@ public class CallbackApiHandler {
 
             if (type.equals("confirmation")) {
                 LOG.info("New confirmation request: {}", req);
-                return group.api().callSync("groups.getCallbackConfirmationCode", "group_id", group.getId()).getJSONObject("response").getString("code");
+                return new JSONObject(group.api().callSync("groups.getCallbackConfirmationCode", "group_id", group.getId())).getJSONObject("response").getString("code");
 
             } else {
                 handle(req);
@@ -107,7 +107,7 @@ public class CallbackApiHandler {
             LOG.error("Server is not set: trying to set...");
             boolean server_ok = false;
             while (!server_ok) {
-                JSONObject response = group.api().callSync("groups.setCallbackServer", "group_id", group.getId(), "server_url", settings.getHost() + settings.getPath()).getJSONObject("response");
+                JSONObject response = new JSONObject(group.api().callSync("groups.setCallbackServer", "group_id", group.getId(), "server_url", settings.getHost() + settings.getPath())).getJSONObject("response");
                 LOG.error("New attempt to set server. Response: {}", response);
                 if (response.getString("state").equals("ok")) {
                     server_ok = true;
@@ -126,7 +126,7 @@ public class CallbackApiHandler {
             if (type.equals("confirmation")) {
 
                 LOG.info("New confirmation request: {}", req);
-                return group.api().callSync("groups.getCallbackConfirmationCode", "group_id", group.getId()).getJSONObject("response").getString("code");
+                return new JSONObject(group.api().callSync("groups.getCallbackConfirmationCode", "group_id", group.getId())).getJSONObject("response").getString("code");
 
             } else {
 
