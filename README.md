@@ -7,7 +7,7 @@
 С помощью данной библиотеки можно довольно просто взаимодействовать с [VK API](https://vk.com/dev/manuals) для создания ботов и не только. 
 Функционал прекрасно подходит как для сообществ, так и для личных страниц.
 
-Последняя версия: [![vk-bot-java-sdk](https://img.shields.io/badge/maven--central-v0.1.1-blue.svg?style=flat)](https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk)
+Последняя версия: [![vk-bot-java-sdk](https://img.shields.io/badge/maven--central-v0.1.3-blue.svg?style=flat)](https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk)
 
 ## Пример
 
@@ -43,43 +43,9 @@ group.onVoiceMessage(message ->
          .send()
 );
 ```
-## Функционал: версия 0.1.1 (8.08.2017)
-* [Старый функционал](https://github.com/petersamokhin/vk-bot-java-sdk#Функционал-версия-001-30072017) по возможности оптимизирован и протестирован
-* Улучшено взаимодействие с VK API: теперь все запросы становятся в очередь и выполняются с помощью метода [execute](https://vk.com/dev/execute), позволяющего за одно выполнение метода делать до 25 запросов к API. Без него можно делать всего до трёх запросов в секунду. Ответ от VK вернётся через callback:
-```java
-// Постарался предусмотреть все возможные варианты вызова этого метода
-// Данный вариант мне кажется самым удобным
-// В виде списка параметров можно передавать Map, JSONObject, строку и так далее
-group.api().call("users.get", "{user_ids:[1,2,3]}", response ->
-    System.out.println("Response: " + response.toString())
-);
-```
-* Добавлена возможность работать с [Callback API](https://vk.com/dev/callback_api) ВКонтакте:
-```java
-// Самый простой способ - все настройки по дефолту
-// Указываем только путь для прослушки запросов
-group.callbackApi("/callback").onGroupJoin(newSubscriber ->
-    System.out.println("Новый подписчик: https://vk.com/id" + newSubscriber.getInt("user_id"))
-);
-
-// Или же настраиваем всё по-своему
-// В данном случае настройка Callback API у сообщества будет проведена автоматически
-// Параметры: 
-// 1 - адрес сервера; 
-// 2 - порт (если у вас установлен другой сервер, настройте переадресацию на нужный порт);
-// 3 - путь, который будем слушать; отвечать ли "ok" серверу ВК сразу, или после выполнения всех действий по обработке запроса;
-// 4 - настраивать ли автоматически получение уведомлений для вызываемых коллбэков
-// Пример: вы вызвали onGroupJoin, и сразу же, если вы забыли в админке группы сами установить получение событий такого типа,
-// Настройка проведётся автоматически
-CallbackApiSettings settings = new CallbackApiSettings("https://petersamokhin.com", 80, "/callback", false, true);
-group.setCallbackApiSettings(settings);
- 
-// Возвращён будет только object из ответа 
-// (помимо него в ответе от ВК присутствует тип запроса и id группы)
-group.onGroupJoin(newSubscriber ->
-    System.out.println("Новый подписчик: https://vk.com/id" + newSubscriber.getInt("user_id"))
-);
-```
+## Функционал: версия 0.1.3 (25.08.2017)
+* Работа с личными сообщениями сообществ и личных страниц — необходим только [access_token](https://vk.com/dev/access_token).
+* Возможность обработки сообщений только нужного типа (голосовые, простые текстовые, со стикером, и так далее)
 * Можно, также, реагировать не только на сообщения с определенными вложениями, но и на сообщения, содержащие только определенные команды:
 ```java
 // Самый простой вариант для одной команды
@@ -93,13 +59,18 @@ group.onCommand(new String[]{"/start", "/bot", "hello"}, message ->
 );
 ```
 * При прикреплении фотографий и документов к сообщению используется новый метод API, позволяющий загружать вложения напрямую в диалог. Таким образом все вложения отправляются как бы от имени пользователя, и никаких лимитов нет.
-
-## Функционал: версия 0.0.1 (30.07.2017) 
-
-* Работа с личными сообщениями сообществ и личных страниц — необходим только [access_token](https://vk.com/dev/access_token).
-* Возможность обработки сообщений только нужного типа (голосовые, простые текстовые, со стикером, и так далее)
-* Возможность реагировать на то, что пользователь начал печатать.
-* Возможность прикрепить картинку/документ/etc по ссылке:
+* В случае загрузки фото, документа, обложки и прочего по ссылке, файл не будет скачан, а напрямую, как массив байт, будет передан и загружен в VK. Благодаря этому достигнута высокая скорость обработки сообщений.
+* Возможность реагировать на то, что пользователь начал печатать и автоматически начинать печатать всем пользователям, от которых пришло сообщение (статус ___...набирает сообщение...___ будет показан в течение 10 секунд, либо пока вы не отправите сообщение):
+```java
+// Реагируем на печать
+group.onTyping(userId -> {
+    System.out.println("Пользователь https://vk.com/id" + userId + " начал печатать");
+});
+    
+// Печатаем сами
+group.enableTyping(true);
+```
+* Возможность прикрепить картинку/документ/etc по ссылке/с диска/из VK:
 ```java
 // Можно так
 message.doc("doc62802565_447117479").send();
@@ -114,16 +85,74 @@ message.doc("https://www.petersamokhin.com/files/test.txt").send();
 ```java
 // В эту же группу, если при инициализации были указаны и access_token, и ID группы
 group.uploadCover("https://www.petersamokhin.com/files/vk-bot-java-sdk/cover.png");
+```
+* Улучшено и упрощено взаимодействие с VK API: все запросы, делаемые с помощью библиотеки, напрямую или косвенно (отправкой сообщений и т.д.), становятся в очередь и выполняются с помощью метода `execute`, но можно и напрямую использовать этот метод и отдавать несколько запросов для одновременного их выполнения, синхронно или асинхронно:
+```java
+// Обращаемся к VK API
+// Запрос будет поставлен в очередь и ответ вернётся в коллбэк
+// Таким образом можно выполнять до 75 обращений к VK API в секунду
+group.api().call("users.get", "{user_ids:[1,2,3]}", response -> {
+     System.out.println(response);
+});
 
-// В эту же группу, если ID не был указан при инициализации (используем access_token)
-group.uploadCover(151083290, "https://www.petersamokhin.com/files/vk-bot-java-sdk/cover.png");
+// Асинхронно ставим запросы к API в очередь
+JSONObject params_0 = new JSONObject();
+params_0.put("user_ids", new JSONArray("[1,2,3]"));
+params_0.put("fields", "photo_max_orig");
+        
+CallAsync call = new CallAsync("users.get", params_0, response -> {
+    System.out.println(response);
+});
 
-// В какую-то другую группу, если знаем её ID и access_token
-group.uploadCover(151083290, "access_token", "https://www.petersamokhin.com/files/vk-bot-java-sdk/cover.png");
+JSONObject params_1 = new JSONObject();
+params_1.put("offset", 100);
+params_1.put("count", 50);
+
+CallAsync call_1 = new CallAsync("messages.get", params_1, response -> {
+    System.out.println(response);
+});
+
+// Выполняем столько запросов, сколько нам нужно
+// Перечислив их через запятую в качестве параметров
+group.api().execute(call_0, call_1);
+
+// Или же синхронно
+// Тогда ответы от ВК будут в массиве
+// Под теми же индексами, в каком порядке были переданы запросы
+JSONObject params_0 = new JSONObject();
+params_0.put("user_ids", new JSONArray("[1,2,3]"));
+params_0.put("fields", "photo_max_orig");
+
+CallSync call_0 = new CallSync("users.get", params_0);
+
+JSONObject params_1 = new JSONObject();
+params_1.put("offset", 100);
+params_1.put("count", 50);
+
+CallSync call_1 = new CallSync("messages.get", params_1);
+
+// Выводим на экран ответ на call_1
+System.out.println(responses.get(1));
+```
+* Работаем с [Callback API](https://vk.com/dev/callback_api) ВКонтакте:
+```java
+// Самый простой способ - все настройки по дефолту
+// Указываем только путь для прослушки запросов
+// Полную и подробную настройку провести тоже можно при необходимости
+group.callbackApi("/callback").onGroupJoin(newSubscriber ->
+    System.out.println("Новый подписчик: https://vk.com/id" + newSubscriber.getInt("user_id"))
+);
+ 
+// Возвращён будет только object из ответа 
+// (помимо него в ответе от ВК присутствует тип запроса и id группы)
+group.onGroupJoin(newSubscriber ->
+    System.out.println("Новый подписчик: https://vk.com/id" + newSubscriber.getInt("user_id"))
+);
 ```
 * Возможность как использовать настройки по умолчанию и написать бота в две строчки кода, так и возможность провести тонкую настройку, указать любой параметр, полностью управлять всем процессом и получать лог событий в консоль.
-* Библиотека полностью и довольно подробно продукоментирована. В этом репозитории можно увидеть комментарии почти к каждому методу и каждому параметру, а также скомпилированы **javadoc**.
-
+* В последнем обновлении библиотека стала полностью потокобезопасна благодаря внедрению `java.util.concurrent` пакета: производительность увеличена в разы, задержек при обработке сообщений нет, старые баги исправлены.
+* Библиотека полностью и довольно подробно продукоментирована. В этом репозитории можно увидеть комментарии почти к каждому методу и каждому параметру, а также скомпилированы <a href="https://www.petersamokhin.com/files/vk-bot-java-sdk/javadoc/index.html">javadoc</a>.
+* Убраны лишние зависимости, библиотека является самодостаточной настолько, насколько это было возможно (используется только **slf4j** и **log4j** для логгирования и **sparkjava** для обработки запросов.
 ## Подготовка
 * Для начала необходимо создать сообщество, если бот будет работать от его имени
   * Сделать это можно [здесь](https://vk.com/groups)
@@ -139,26 +168,26 @@ group.uploadCover(151083290, "access_token", "https://www.petersamokhin.com/file
 <dependency>
     <groupId>com.petersamokhin</groupId>
     <artifactId>vk-bot-java-sdk</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.3</version>
 </dependency>
 ```
 #### Для gradle 
 Добавить строки, что ниже, в **build.gradle** в dependencies:
 ```gradle
-compile group: 'com.petersamokhin', name: 'vk-bot-java-sdk', version: '0.1.1'
+compile group: 'com.petersamokhin', name: 'vk-bot-java-sdk', version: '0.1.3'
 ```
 ### Любые другие системы сборок
-Поскольку библиотека загружена в центральный репозиторий, на сайте поиска по репозиторию описаны способы подключения библиотеки с помощью любой из систем сборок: https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk/0.1.1
+Поскольку библиотека загружена в центральный репозиторий, на сайте поиска по репозиторию описаны способы подключения библиотеки с помощью любой из систем сборок: https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk/
 
 ---
 #### Без систем сборок (добавляем библиотеку в classpath)
 Здесь немного проще, но это не значит, что лучше. Вопрос удобства.
 
-* Скачиваем (все зависимости включены в сборку): [библиотека (3.8 MB)](https://www.petersamokhin.com/files/vk-bot-java-sdk/vk-bot-java-sdk-0.1.1-jar-with-dependencies.jar) | [md5](https://www.petersamokhin.com/files/vk-bot-java-sdk/vk-bot-java-sdk-0.1.1-jar-with-dependencies.jar.md5)
+* Скачиваем (все зависимости включены в сборку): [библиотека (3.2 MB)](https://www.petersamokhin.com/files/vk-bot-java-sdk/vk-bot-java-sdk-0.1.3-jar-with-dependencies.jar) | [md5](https://www.petersamokhin.com/files/vk-bot-java-sdk/vk-bot-java-sdk-0.1.3-jar-with-dependencies.jar.md5)
 * Теперь для использования библиотеки в проекте, нужно всего лишь добавить её в `classpath`:
   * Если компилируете через терминал, то команда будет выглядеть следующим образом: 
   ```bash
-  javac -cp "/root/vk-bot-java-sdk-0.1.1-jar-with-dependencies.jar" Bot.jar 
+  javac -cp "/root/vk-bot-java-sdk-0.1.3-jar-with-dependencies.jar" Bot.jar 
   ```
   * Если используете **IntelliJ IDEA**, то нужно зайти в **Project Structure...** | **Libraries**, нажать `+` и добавить скачанный файл в список библиотек:
   ![Cover](https://petersamokhin.com/files/vk-bot-java-sdk/git_screen_2.png)
