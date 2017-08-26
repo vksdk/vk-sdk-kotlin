@@ -33,8 +33,7 @@ public final class Connection {
             conn.setReadTimeout(30000);
 
             conn.setRequestMethod("GET");
-
-            conn.setRequestProperty("User-Agent", "VKAndroidApp/4.9-1118 (Android 5.1; SDK 22; armeabi-v7a; UMI IRON; ru)");
+            conn.setRequestProperty("Accept-Charset", "utf-8");
 
             int responseCode = conn.getResponseCode();
 
@@ -63,8 +62,8 @@ public final class Connection {
     /**
      * Make POST-request
      *
-     * @param urlString  URL
-     * @param body Request body
+     * @param urlString URL
+     * @param body      Request body
      * @return String response body
      */
     public static String postRequestResponse(String urlString, String body) {

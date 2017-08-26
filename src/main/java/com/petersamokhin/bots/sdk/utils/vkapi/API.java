@@ -11,6 +11,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -183,7 +185,11 @@ public class API {
         }
         code.append("];");
 
-        JSONObject response = new JSONObject(callSync("execute", new JSONObject().put("code", code.toString())));
+        JSONObject response = null;
+        try {
+            response = new JSONObject(callSync("execute", new JSONObject().put("code", URLEncoder.encode(code.toString(), "UTF-8"))));
+        } catch (UnsupportedEncodingException ignored) {
+        }
 
         return response.getJSONArray("response");
     }

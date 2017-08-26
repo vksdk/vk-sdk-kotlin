@@ -327,6 +327,13 @@ public class Message {
             }
         }
 
+        docFromBytes(docBytes, typeOfDoc, fileNameField);
+
+        return this;
+    }
+
+    public Message docFromBytes(byte[] docBytes, DocTypes typeOfDoc, String fileNameField) {
+
         if (docBytes != null) {
 
             // Getting of server for uploading the photo

@@ -40,6 +40,12 @@ public class LongPoll {
     private Client client;
 
     /**
+     * If true, all updates from longpoll server
+     * will be logged to level 'INFO'
+     */
+    private volatile boolean logUpdates = false;
+
+    /**
      * Simple default constructor that requires only access token
      *
      * @param client client with your access token key, more: <a href="https://vk.com/dev/access_token">link</a>
@@ -200,14 +206,15 @@ public class LongPoll {
             String responseString = "";
 
             try {
-                responseString = Connection.getRequestResponse("https://" + server + "?act=a_check&key=" + key + "&ts=" + ts + "&wait=" + wait + "&mode=" + mode + "&version=" + version + "&msgs_limit=100000");
+                String query = "https://" + server + "?act=a_check&key=" + key + "&ts=" + ts + "&wait=" + wait + "&mode=" + mode + "&version=" + version + "&msgs_limit=100000";
+                responseString = Connection.getRequestResponse(query);
                 response = new JSONObject(responseString);
             } catch (JSONException ignored) {
                 LOG.error("Some error occured, no updates got from longpoll server: {}", responseString);
                 continue;
             }
 
-            LOG.info("Response of getting updates: \n{}\n", response);
+            if (logUpdates) LOG.info("Response of getting updates: \n{}\n", response);
 
             if (response.has("failed")) {
 
@@ -263,5 +270,9 @@ public class LongPoll {
      */
     public void enableTyping(boolean enable) {
         this.updatesHandler.sendTyping = enable;
+    }
+
+    public void enableLoggingUpdates(boolean enable) {
+        this.logUpdates = enable;
     }
 }

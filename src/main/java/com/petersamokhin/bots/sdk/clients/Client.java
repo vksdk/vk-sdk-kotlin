@@ -169,6 +169,15 @@ public abstract class Client {
         this.commands.add(new Command(list, callback));
     }
 
+
+    /**
+     * If true, all updates from longpoll server
+     * will be logged to level 'INFO'
+     */
+    public void enableLoggingUpdates(boolean enable) {
+        this.longPoll().enableLoggingUpdates(enable);
+    }
+
     /**
      * Command object
      */

@@ -230,7 +230,7 @@ public class UpdatesHandler extends Thread {
      * @param name     Callback name
      * @param callback Callback
      */
-    public void registerCallback(String name, Callback callback) {
+    void registerCallback(String name, Callback callback) {
         this.callbacks.put(name, callback);
     }
 
