@@ -34,7 +34,7 @@ public class LongPoll {
     private Integer need_pts = 1;
     private Double API = 5.67;
 
-    private volatile boolean on = false;
+    private volatile boolean longpollIsOn = false;
 
     private UpdatesHandler updatesHandler;
     private Client client;
@@ -67,8 +67,8 @@ public class LongPoll {
             dataSetted = setData(null, null, null, null, null);
         }
 
-        if (!on) {
-            on = true;
+        if (!longpollIsOn) {
+            longpollIsOn = true;
             Thread threadLongpollListener = new Thread(this::startListening);
             threadLongpollListener.setName("threadLongpollListener");
             threadLongpollListener.start();
@@ -93,7 +93,7 @@ public class LongPoll {
 
         boolean dataSetted = setData(need_pts, version, API, wait, mode);
 
-        while(!dataSetted) {
+        while (!dataSetted) {
             LOG.error("Some error occured when trying to get longpoll settings, aborting. Trying again in 1 sec.");
             try {
                 Thread.sleep(1000);
@@ -102,8 +102,8 @@ public class LongPoll {
             dataSetted = setData(need_pts, version, API, wait, mode);
         }
 
-        if (!on) {
-            on = true;
+        if (!longpollIsOn) {
+            longpollIsOn = true;
             Thread threadLongpollListener = new Thread(this::startListening);
             threadLongpollListener.setName("threadLongpollListener");
             threadLongpollListener.start();
@@ -115,7 +115,7 @@ public class LongPoll {
      * off old before.
      */
     public void off() {
-        on = false;
+        longpollIsOn = false;
     }
 
     /**
@@ -171,7 +171,14 @@ public class LongPoll {
         StringBuilder query = new StringBuilder();
         query.append("https://api.vk.com/method/messages.getLongPollServer?need_pts=").append(need_pts).append("&lp_version=").append(version).append("&access_token=").append(access_token).append("&v=").append(API);
 
-        JSONObject response = new JSONObject(Connection.getRequestResponse(query.toString()));
+        JSONObject response;
+
+        try {
+            response = new JSONObject(Connection.getRequestResponse(query.toString()));
+        } catch (JSONException e) {
+            LOG.error("Bad responce of getting longpoll server.");
+            return null;
+        }
 
         LOG.info("GetLongPollServerResponse: \n{}\n", response);
 
@@ -200,10 +207,10 @@ public class LongPoll {
 
         LOG.info("Started listening to events from VK LongPoll server...");
 
-        while (on) {
+        while (longpollIsOn) {
 
             JSONObject response;
-            String responseString = "";
+            String responseString = "{}";
 
             try {
                 String query = "https://" + server + "?act=a_check&key=" + key + "&ts=" + ts + "&wait=" + wait + "&mode=" + mode + "&version=" + version + "&msgs_limit=100000";
@@ -211,10 +218,16 @@ public class LongPoll {
                 response = new JSONObject(responseString);
             } catch (JSONException ignored) {
                 LOG.error("Some error occured, no updates got from longpoll server: {}", responseString);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignored1) {
+                }
                 continue;
             }
 
-            if (logUpdates) LOG.info("Response of getting updates: \n{}\n", response);
+            if (logUpdates) {
+                LOG.info("Response of getting updates: \n{}\n", response);
+            }
 
             if (response.has("failed")) {
 

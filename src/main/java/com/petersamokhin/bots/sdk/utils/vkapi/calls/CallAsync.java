@@ -1,6 +1,6 @@
 package com.petersamokhin.bots.sdk.utils.vkapi.calls;
 
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.ExecuteCallback;
+import com.petersamokhin.bots.sdk.callbacks.Callback;
 import org.json.JSONObject;
 
 import java.util.Objects;
@@ -10,15 +10,15 @@ import java.util.Objects;
  */
 public class CallAsync extends Call {
 
-    private ExecuteCallback callback;
+    private Callback<Object> callback;
 
-    public CallAsync(String methodName, JSONObject params, ExecuteCallback callback) {
+    public CallAsync(String methodName, JSONObject params, Callback<Object> callback) {
         this.methodName = methodName;
         this.params = params;
         this.callback = callback;
     }
 
-    public ExecuteCallback getCallback() {
+    public Callback<Object> getCallback() {
         return callback;
     }
 

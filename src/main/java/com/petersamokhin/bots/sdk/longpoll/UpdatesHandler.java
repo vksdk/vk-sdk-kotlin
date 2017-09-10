@@ -1,7 +1,6 @@
 package com.petersamokhin.bots.sdk.longpoll;
 
 import com.petersamokhin.bots.sdk.callbacks.Callback;
-import com.petersamokhin.bots.sdk.callbacks.messages.*;
 import com.petersamokhin.bots.sdk.clients.Client;
 import com.petersamokhin.bots.sdk.objects.Message;
 import org.json.JSONArray;
@@ -115,7 +114,7 @@ public class UpdatesHandler extends Thread {
 
         if (message.hasFwds()) {
             if (callbacks.containsKey("OnMessageWithFwdsCallback")) {
-                ((OnMessageWithFwdsCallback) callbacks.get("OnMessageWithFwdsCallback")).onMessage(message);
+                callbacks.get("OnMessageWithFwdsCallback").onResult(message);
                 messageIsAlreadyHandled = true;
             }
         }
@@ -125,7 +124,7 @@ public class UpdatesHandler extends Thread {
 
                 case "voiceMessage": {
                     if (callbacks.containsKey("OnVoiceMessageCallback")) {
-                        ((OnVoiceMessageCallback) callbacks.get("OnVoiceMessageCallback")).OnVoiceMessage(message);
+                        callbacks.get("OnVoiceMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
                     }
                     break;
@@ -133,7 +132,7 @@ public class UpdatesHandler extends Thread {
 
                 case "stickerMessage": {
                     if (callbacks.containsKey("OnStickerMessageCallback")) {
-                        ((OnStickerMessageCallback) callbacks.get("OnStickerMessageCallback")).OnStickerMessage(message);
+                        callbacks.get("OnStickerMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
                     }
                     break;
@@ -141,7 +140,7 @@ public class UpdatesHandler extends Thread {
 
                 case "gifMessage": {
                     if (callbacks.containsKey("OnGifMessageCallback")) {
-                        ((OnGifMessageCallback) callbacks.get("OnGifMessageCallback")).OnGifMessage(message);
+                        callbacks.get("OnGifMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
                     }
                     break;
@@ -149,7 +148,7 @@ public class UpdatesHandler extends Thread {
 
                 case "audioMessage": {
                     if (callbacks.containsKey("OnAudioMessageCallback")) {
-                        ((OnAudioMessageCallback) callbacks.get("OnAudioMessageCallback")).onAudioMessage(message);
+                        callbacks.get("OnAudioMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
                     }
                     break;
@@ -157,7 +156,7 @@ public class UpdatesHandler extends Thread {
 
                 case "videoMessage": {
                     if (callbacks.containsKey("OnVideoMessageCallback")) {
-                        ((OnVideoMessageCallback) callbacks.get("OnVideoMessageCallback")).onVideoMessage(message);
+                        callbacks.get("OnVideoMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
                     }
                     break;
@@ -165,7 +164,7 @@ public class UpdatesHandler extends Thread {
 
                 case "docMessage": {
                     if (callbacks.containsKey("OnDocMessageCallback")) {
-                        ((OnDocMessageCallback) callbacks.get("OnDocMessageCallback")).OnDocMessage(message);
+                        callbacks.get("OnDocMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
                     }
                     break;
@@ -173,7 +172,7 @@ public class UpdatesHandler extends Thread {
 
                 case "wallMessage": {
                     if (callbacks.containsKey("OnWallMessageCallback")) {
-                        ((OnVoiceMessageCallback) callbacks.get("OnWallMessageCallback")).OnVoiceMessage(message);
+                        callbacks.get("OnWallMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
                     }
                     break;
@@ -181,7 +180,7 @@ public class UpdatesHandler extends Thread {
 
                 case "photoMessage": {
                     if (callbacks.containsKey("OnPhotoMessageCallback")) {
-                        ((OnPhotoMessageCallback) callbacks.get("OnPhotoMessageCallback")).onPhotoMessage(message);
+                        callbacks.get("OnPhotoMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
                     }
                     break;
@@ -189,7 +188,7 @@ public class UpdatesHandler extends Thread {
 
                 case "linkMessage": {
                     if (callbacks.containsKey("OnLinkMessageCallback")) {
-                        ((OnLinkMessageCallback) callbacks.get("OnLinkMessageCallback")).OnLinkMessage(message);
+                        callbacks.get("OnLinkMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
                     }
                     break;
@@ -197,7 +196,7 @@ public class UpdatesHandler extends Thread {
 
                 case "simpleTextMessage": {
                     if (callbacks.containsKey("OnSimpleTextMessageCallback")) {
-                        ((OnSimpleTextMessageCallback) callbacks.get("OnSimpleTextMessageCallback")).OnSimpleTextMessage(message);
+                        callbacks.get("OnSimpleTextMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
                     }
                     break;
@@ -206,11 +205,11 @@ public class UpdatesHandler extends Thread {
         }
 
         if (callbacks.containsKey("OnMessageCallback") && !messageIsAlreadyHandled) {
-            ((OnMessageCallback) callbacks.get("OnMessageCallback")).onMessage(message);
+            callbacks.get("OnMessageCallback").onResult(message);
         }
 
         if (callbacks.containsKey("OnEveryMessageCallback")) {
-            ((OnEveryMessageCallback) callbacks.get("OnEveryMessageCallback")).OnEveryMessage(message);
+            callbacks.get("OnEveryMessageCallback").onResult(message);
         }
     }
 
@@ -220,7 +219,7 @@ public class UpdatesHandler extends Thread {
     private void handleTypingUpdate(JSONArray updateObject) {
 
         if (callbacks.containsKey("OnTypingCallback")) {
-            ((OnTypingCallback) callbacks.get("OnTypingCallback")).OnTyping(updateObject.getInt(1));
+            callbacks.get("OnTypingCallback").onResult(updateObject.getInt(1));
         }
     }
 
@@ -260,7 +259,7 @@ public class UpdatesHandler extends Thread {
         for (Client.Command command : this.client.commands) {
             for (int i = 0; i < command.getCommands().length; i++) {
                 if (message.getText().toLowerCase().contains(command.getCommands()[i].toString().toLowerCase())) {
-                    command.getCallback().OnCommand(message);
+                    command.getCallback().onResult(message);
                     is = true;
                 }
             }

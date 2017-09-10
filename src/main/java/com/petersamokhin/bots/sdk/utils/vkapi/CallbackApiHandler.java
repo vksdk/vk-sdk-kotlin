@@ -48,7 +48,7 @@ public class CallbackApiHandler {
     /**
      * Simple constructor
      *
-     * @param path  path to listening: /callback
+     * @param path path to listening: /callback
      */
     public CallbackApiHandler(String path) {
 

@@ -1,19 +1,6 @@
 package com.petersamokhin.bots.sdk.clients;
 
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.ExecuteCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.audios.OnAudioNewCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.boards.OnBoardPostDeleteCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.boards.OnBoardPostEditCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.boards.OnBoardPostNewCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.group.*;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.market.OnMarketCommentDeleteCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.messages.OnMessageAllowCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.messages.OnMessageDenyCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.messages.OnMessageNewCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.messages.OnMessageReplyCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.photos.*;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.videos.*;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.wall.*;
+import com.petersamokhin.bots.sdk.callbacks.Callback;
 import com.petersamokhin.bots.sdk.utils.Utils;
 import com.petersamokhin.bots.sdk.utils.vkapi.CallbackApiHandler;
 import com.petersamokhin.bots.sdk.utils.vkapi.CallbackApiSettings;
@@ -57,7 +44,7 @@ public class Group extends Client {
     /**
      * Upload group cover by file from url or from disk
      */
-    public void uploadCover(String cover, ExecuteCallback callback) {
+    public void uploadCover(String cover, Callback<Object> callback) {
 
         if (this.getId() == null || this.getId() == 0) {
             LOG.error("Please, provide group_id when initialising the client, because it's impossible to upload cover to group not knowing it id.");
@@ -94,7 +81,7 @@ public class Group extends Client {
      * @param bytes    bytes[]
      * @param callback response will return to callback
      */
-    private void updateCoverByFile(byte[] bytes, ExecuteCallback... callback) {
+    private void updateCoverByFile(byte[] bytes, Callback<Object>... callback) {
 
         JSONObject params_getUploadServer = new JSONObject()
                 .put("group_id", getId())
@@ -132,21 +119,22 @@ public class Group extends Client {
                         LOG.error("Some error occured, cover not uploaded: {}", responseS);
                     }
                     if (callback.length > 0)
-                        callback[0].onResponse(responseS);
+                        callback[0].onResult(responseS);
                 } else {
                     api().call("photos.saveOwnerCoverPhoto", params_saveCover, response1 -> {
 
                         if (response1.toString().length() < 10 || response1.toString().contains("error")) {
                             LOG.error("Some error occured, cover not uploaded: {}", response1);
                         }
-                        if (callback.length > 0)
-                            callback[0].onResponse(response1);
+                        if (callback.length > 0) {
+                            callback[0].onResult(response1);
+                        }
                     });
                 }
             } else {
                 LOG.error("Error occured when uploading cover: no 'photo' or 'hash' param in response {}", coverUploadedResponse);
                 if (callback.length > 0)
-                    callback[0].onResponse("false");
+                    callback[0].onResult("false");
             }
         });
     }
@@ -197,143 +185,143 @@ public class Group extends Client {
 
     /* Callback API */
 
-    public void onAudioNew(OnAudioNewCallback callback) {
+    public void onAudioNew(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("audio_new", callback);
     }
 
-    public void onBoardPostDelete(OnBoardPostDeleteCallback callback) {
+    public void onBoardPostDelete(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("board_post_delete", callback);
     }
 
-    public void onBoardPostEdit(OnBoardPostEditCallback callback) {
+    public void onBoardPostEdit(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("board_post_edit", callback);
     }
 
-    public void onBoardPostNew(OnBoardPostNewCallback callback) {
+    public void onBoardPostNew(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("board_post_new", callback);
     }
 
-    public void onBoardPostRestore(OnBoardPostDeleteCallback callback) {
+    public void onBoardPostRestore(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("board_post_restore", callback);
     }
 
-    public void onGroupChangePhoto(OnGroupChangePhotoCallback callback) {
+    public void onGroupChangePhoto(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("group_change_photo", callback);
     }
 
-    public void onGroupChangeSettings(OnGroupChangeSettingsCallback callback) {
+    public void onGroupChangeSettings(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("group_change_settings", callback);
     }
 
-    public void onGroupJoin(OnGroupJoinCallback callback) {
+    public void onGroupJoin(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("group_join", callback);
     }
 
-    public void onGroupLeave(OnGroupLeaveCallback callback) {
+    public void onGroupLeave(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("group_leave", callback);
     }
 
-    public void onGroupOfficersEdit(OnGroupOfficersEditCallback callback) {
+    public void onGroupOfficersEdit(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("group_officers_edit", callback);
     }
 
-    public void onPollVoteNew(OnPollVoteNewCallback callback) {
+    public void onPollVoteNew(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("poll_vote_new", callback);
     }
 
-    public void onMarketCommentDelete(OnMarketCommentDeleteCallback callback) {
+    public void onMarketCommentDelete(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("market_comment_delete", callback);
     }
 
-    public void onMarketCommentEdit(OnMarketCommentDeleteCallback callback) {
+    public void onMarketCommentEdit(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("market_comment_edit", callback);
     }
 
-    public void onMarketCommentNew(OnMarketCommentDeleteCallback callback) {
+    public void onMarketCommentNew(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("market_comment_new", callback);
     }
 
-    public void onMarketCommentRestore(OnMarketCommentDeleteCallback callback) {
+    public void onMarketCommentRestore(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("market_comment_restore", callback);
     }
 
-    public void onMessageAllow(OnMessageAllowCallback callback) {
+    public void onMessageAllow(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("message_allow", callback);
     }
 
-    public void onMessageDeny(OnMessageDenyCallback callback) {
+    public void onMessageDeny(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("message_deny", callback);
     }
 
-    public void onMessageNew(OnMessageNewCallback callback) {
+    public void onMessageNew(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("message_new", callback);
     }
 
-    public void onMessageReply(OnMessageReplyCallback callback) {
+    public void onMessageReply(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("message_reply", callback);
     }
 
-    public void onPhotoCommentEdit(OnPhotoCommentEditCallback callback) {
+    public void onPhotoCommentEdit(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("photo_comment_edit", callback);
     }
 
-    public void onPhotoCommentNew(OnPhotoCommentNewCallback callback) {
+    public void onPhotoCommentNew(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("photo_comment_new", callback);
     }
 
-    public void onPhotoCommentRestore(OnPhotoCommentRestoreCallback callback) {
+    public void onPhotoCommentRestore(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("photo_comment_restore", callback);
     }
 
-    public void onPhotoNew(OnPhotoNewCallback callback) {
+    public void onPhotoNew(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("photo_new", callback);
     }
 
-    public void onPhotoCommentDelete(OnPhotoCommentDeleteCallback callback) {
+    public void onPhotoCommentDelete(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("photo_comment_delete", callback);
     }
 
-    public void onVideoCommentEdit(OnVideoCommentEditCallback callback) {
+    public void onVideoCommentEdit(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("video_comment_edit", callback);
     }
 
-    public void onVideoCommentNew(OnVideoCommentNewCallback callback) {
+    public void onVideoCommentNew(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("video_comment_new", callback);
     }
 
-    public void onVideoCommentRestore(OnVideoCommentRestoreCallback callback) {
+    public void onVideoCommentRestore(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("video_comment_restore", callback);
     }
 
-    public void onVideoNew(OnVideoNewCallback callback) {
+    public void onVideoNew(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("video_new", callback);
     }
 
-    public void onVideoCommentDelete(OnVideoCommentDeleteCallback callback) {
+    public void onVideoCommentDelete(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("video_comment_delete", callback);
     }
 
-    public void onWallPostNew(OnWallPostNewCallback callback) {
+    public void onWallPostNew(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("wall_post_new", callback);
     }
 
-    public void onWallReplyDelete(OnWallReplyDeleteCallback callback) {
+    public void onWallReplyDelete(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("wall_reply_delete", callback);
     }
 
-    public void onWallReplyEdit(OnWallReplyEditCallback callback) {
+    public void onWallReplyEdit(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("wall_reply_edit", callback);
     }
 
-    public void onWallReplyNew(OnWallReplyNewCallback callback) {
+    public void onWallReplyNew(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("wall_reply_new", callback);
     }
 
-    public void onWallReplyRestore(OnWallReplyRestoreCallback callback) {
+    public void onWallReplyRestore(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("wall_reply_restore", callback);
     }
 
-    public void onWallRepost(OnWallRepostCallback callback) {
+    public void onWallRepost(Callback<JSONObject> callback) {
         callbackApiHandler.registerCallback("wall_repost", callback);
     }
 }

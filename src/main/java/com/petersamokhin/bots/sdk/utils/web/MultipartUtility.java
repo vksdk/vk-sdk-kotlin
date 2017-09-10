@@ -129,7 +129,6 @@ public class MultipartUtility {
             LOG.error("Some error occured when receiving answer of sending file or bytes in multipart/form-date format: {}", ignored.toString());
         }
 
-
         return response;
     }
 }

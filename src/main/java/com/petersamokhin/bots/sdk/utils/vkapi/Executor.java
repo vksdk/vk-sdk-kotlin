@@ -5,13 +5,13 @@ import com.petersamokhin.bots.sdk.utils.vkapi.calls.CallAsync;
 import com.petersamokhin.bots.sdk.utils.vkapi.calls.CallSync;
 import com.petersamokhin.bots.sdk.utils.web.Connection;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +41,7 @@ public class Executor {
      */
     private volatile List<CallAsync> queue = new ArrayList<>();
 
-    private final String URL = "https://api.vk.com/method/execute?code=";
+    private final String URL = "https://api.vk.com/method/execute";
     private final String accessToken;
     private final String V = "&v=" + 5.68;
 
@@ -63,6 +63,7 @@ public class Executor {
      */
     public Executor(String accessToken) {
         this.accessToken = "&access_token=" + accessToken;
+
         sheduler.scheduleWithFixedDelay(this::executing, 0, delay, TimeUnit.MILLISECONDS);
     }
 
@@ -71,7 +72,6 @@ public class Executor {
      * with first 25 calls from queue.
      */
     private void executing() {
-
 
         List<CallAsync> tmpQueue = new ArrayList<>();
         int count = 0;
@@ -98,12 +98,19 @@ public class Executor {
 
         // Execute
         if (count > 0) {
-            String vkCallQuery = null;
+            String vkCallParams = "code=return " + code + ";" + accessToken + V;
+
+            String responseString = Connection.postRequestResponse(URL, vkCallParams);
+
+            JSONObject response;
+
             try {
-                vkCallQuery = URL + URLEncoder.encode("return " + code + ";", "UTF-8") + accessToken + V;
-            } catch (UnsupportedEncodingException ignored) {
+                response = new JSONObject(responseString);
+            } catch (JSONException e) {
+                tmpQueue.forEach(call -> call.getCallback().onResult("false"));
+                LOG.error("Bad response from executing: {}, params: {}", responseString, vkCallParams);
+                return;
             }
-            JSONObject response = new JSONObject(Connection.getRequestResponse(vkCallQuery));
 
             if (response.has("execute_errors")) {
                 try {
@@ -114,13 +121,13 @@ public class Executor {
 
             if (!response.has("response")) {
                 LOG.error("No 'response' object when executing code, VK response: {}", response);
-                tmpQueue.forEach(call -> call.getCallback().onResponse("false"));
+                tmpQueue.forEach(call -> call.getCallback().onResult("false"));
                 return;
             }
 
             JSONArray responses = response.getJSONArray("response");
 
-            IntStream.range(0, count).forEachOrdered(i -> tmpQueue.get(i).getCallback().onResponse(responses.get(i)));
+            IntStream.range(0, count).forEachOrdered(i -> tmpQueue.get(i).getCallback().onResult(responses.get(i)));
 
             try {
                 Thread.sleep(delay);

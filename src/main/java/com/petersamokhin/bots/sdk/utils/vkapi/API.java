@@ -1,6 +1,6 @@
 package com.petersamokhin.bots.sdk.utils.vkapi;
 
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.ExecuteCallback;
+import com.petersamokhin.bots.sdk.callbacks.Callback;
 import com.petersamokhin.bots.sdk.clients.Client;
 import com.petersamokhin.bots.sdk.utils.Utils;
 import com.petersamokhin.bots.sdk.utils.vkapi.calls.CallAsync;
@@ -8,8 +8,6 @@ import com.petersamokhin.bots.sdk.utils.vkapi.calls.CallSync;
 import com.petersamokhin.bots.sdk.utils.web.Connection;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -20,8 +18,6 @@ import java.util.Map;
  * Simple interacting with VK API
  */
 public class API {
-    private static final Logger LOG = LoggerFactory.getLogger(API.class);
-
     private static Executor executor;
 
     private String URL = "https://api.vk.com/method/", V = "&v=" + 5.67;
@@ -65,7 +61,7 @@ public class API {
      * @param params   Params as string, JSONObject or Map
      * @param callback Callback to return the response
      */
-    public void call(String method, Object params, ExecuteCallback callback) {
+    public void call(String method, Object params, Callback<Object> callback) {
 
         JSONObject parameters = new JSONObject();
 
@@ -113,7 +109,7 @@ public class API {
      * @param method   Method name
      * @param params   Floating count of params
      */
-    public void call(ExecuteCallback callback, String method, Object... params) {
+    public void call(Callback<Object> callback, String method, Object... params) {
 
         if (params != null) {
 

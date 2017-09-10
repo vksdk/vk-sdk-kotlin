@@ -4,9 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -49,13 +49,13 @@ public final class Connection {
             String response = responseSb.toString();
 
             if (!(responseCode == HttpURLConnection.HTTP_OK)) {
-                LOG.error("Response of 'get' request to url {} is not succesful, code is {} and response is {}", url, responseCode);
+                LOG.error("Response of 'get' request to url {} is not succesful, code is {} and response is {}", url, responseCode, response);
             }
 
             return response;
         } catch (IOException ignored) {
             LOG.error("IOException occured when processing request to {}, error is {}", urlString, ignored.toString());
-            return "error";
+            return "{}";
         }
     }
 
@@ -74,14 +74,21 @@ public final class Connection {
 
             conn.setRequestMethod("POST");
             conn.setRequestProperty("User-Agent", "VKAndroidApp/4.9-1118 (Android 5.1; SDK 22; armeabi-v7a; UMI IRON; ru)");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 
             conn.setDoOutput(true);
 
-            DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+            OutputStream os = conn.getOutputStream();
+
+            os.write(body.getBytes("UTF-8"));
+            os.flush();
+            os.close();
+
+            /*DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
 
             wr.writeBytes(body);
             wr.flush();
-            wr.close();
+            wr.close();*/
 
             int responseCode = conn.getResponseCode();
 
@@ -103,7 +110,7 @@ public final class Connection {
             return response;
         } catch (IOException ignored) {
             LOG.error("IOException occured when processing request to {} with body {}, error is {}", urlString, body, ignored.toString());
-            return "error";
+            return "{}";
         }
     }
 }

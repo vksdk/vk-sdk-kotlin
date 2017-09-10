@@ -1,8 +1,8 @@
 package com.petersamokhin.bots.sdk.clients;
 
-import com.petersamokhin.bots.sdk.callbacks.commands.OnCommandCallback;
-import com.petersamokhin.bots.sdk.callbacks.messages.*;
+import com.petersamokhin.bots.sdk.callbacks.Callback;
 import com.petersamokhin.bots.sdk.longpoll.LongPoll;
+import com.petersamokhin.bots.sdk.objects.Message;
 import com.petersamokhin.bots.sdk.utils.vkapi.API;
 
 import java.util.List;
@@ -95,77 +95,77 @@ public abstract class Client {
 
     /* Messages */
 
-    public void onEveryMessage(OnEveryMessageCallback callback) {
+    public void onEveryMessage(Callback<Message> callback) {
         this.longPoll().registerCallback("OnEveryMessageCallback", callback);
     }
 
-    public void onMessageWithFwds(OnMessageWithFwdsCallback callback) {
+    public void onMessageWithFwds(Callback<Message> callback) {
         this.longPoll().registerCallback("OnMessageWithFwdsCallback", callback);
     }
 
-    public void onAudioMessage(OnAudioMessageCallback callback) {
+    public void onAudioMessage(Callback<Message> callback) {
         this.longPoll().registerCallback("OnAudioMessageCallback", callback);
     }
 
-    public void onDocMessage(OnDocMessageCallback callback) {
+    public void onDocMessage(Callback<Message> callback) {
         this.longPoll().registerCallback("OnDocMessageCallback", callback);
     }
 
-    public void onGifMessage(OnGifMessageCallback callback) {
+    public void onGifMessage(Callback<Message> callback) {
         this.longPoll().registerCallback("OnGifMessageCallback", callback);
     }
 
-    public void onLinkMessage(OnLinkMessageCallback callback) {
+    public void onLinkMessage(Callback<Message> callback) {
         this.longPoll().registerCallback("OnLinkMessageCallback", callback);
     }
 
-    public void onMessage(OnMessageCallback callback) {
+    public void onMessage(Callback<Message> callback) {
         this.longPoll().registerCallback("OnMessageCallback", callback);
     }
 
-    public void onPhotoMessage(OnPhotoMessageCallback callback) {
+    public void onPhotoMessage(Callback<Message> callback) {
         this.longPoll().registerCallback("OnPhotoMessageCallback", callback);
     }
 
-    public void onSimpleTextMessage(OnSimpleTextMessageCallback callback) {
+    public void onSimpleTextMessage(Callback<Message> callback) {
         this.longPoll().registerCallback("OnSimpleTextMessageCallback", callback);
     }
 
-    public void onStickerMessage(OnStickerMessageCallback callback) {
+    public void onStickerMessage(Callback<Message> callback) {
         this.longPoll().registerCallback("OnStickerMessageCallback", callback);
     }
 
-    public void onTyping(OnTypingCallback callback) {
+    public void onTyping(Callback<Integer> callback) {
         this.longPoll().registerCallback("OnTypingCallback", callback);
     }
 
-    public void onVideoMessage(OnVideoMessageCallback callback) {
+    public void onVideoMessage(Callback<Message> callback) {
         this.longPoll().registerCallback("OnVideoMessageCallback", callback);
     }
 
-    public void onVoiceMessage(OnVoiceMessageCallback callback) {
+    public void onVoiceMessage(Callback<Message> callback) {
         this.longPoll().registerCallback("OnVoiceMessageCallback", callback);
     }
 
-    public void onWallMessage(OnWallMessageCallback callback) {
+    public void onWallMessage(Callback<Message> callback) {
         this.longPoll().registerCallback("OnWallMessageCallback", callback);
     }
 
     /* Commands */
 
-    public void onCommand(Object command, OnCommandCallback callback) {
+    public void onCommand(Object command, Callback<Message> callback) {
         this.commands.add(new Command(command, callback));
     }
 
-    public void onCommand(OnCommandCallback callback, Object... commands) {
+    public void onCommand(Callback<Message> callback, Object... commands) {
         this.commands.add(new Command(commands, callback));
     }
 
-    public void onCommand(Object[] commands, OnCommandCallback callback) {
+    public void onCommand(Object[] commands, Callback<Message> callback) {
         this.commands.add(new Command(commands, callback));
     }
 
-    public void onCommand(List<?> list, OnCommandCallback callback) {
+    public void onCommand(List<?> list, Callback<Message> callback) {
         this.commands.add(new Command(list, callback));
     }
 
@@ -183,19 +183,19 @@ public abstract class Client {
      */
     public class Command {
         private Object[] commands;
-        private OnCommandCallback callback;
+        private Callback<Message> callback;
 
-        public Command(Object[] commands, OnCommandCallback callback) {
+        public Command(Object[] commands, Callback<Message> callback) {
             this.commands = commands;
             this.callback = callback;
         }
 
-        public Command(Object command, OnCommandCallback callback) {
+        public Command(Object command, Callback<Message> callback) {
             this.commands = new Object[]{command};
             this.callback = callback;
         }
 
-        public Command(List<?> command, OnCommandCallback callback) {
+        public Command(List<?> command, Callback<Message> callback) {
             this.commands = command.toArray();
             this.callback = callback;
         }
@@ -204,7 +204,7 @@ public abstract class Client {
             return commands;
         }
 
-        public OnCommandCallback getCallback() {
+        public Callback<Message> getCallback() {
             return callback;
         }
     }

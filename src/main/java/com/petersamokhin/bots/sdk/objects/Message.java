@@ -215,7 +215,6 @@ public class Message {
             JSONObject getUploadServerResponse = new JSONObject(Connection.getRequestResponse(getUploadServerQuery));
             String uploadUrl = getUploadServerResponse.has("response") ? getUploadServerResponse.getJSONObject("response").has("upload_url") ? getUploadServerResponse.getJSONObject("response").getString("upload_url") : null : null;
 
-
             // Some error
             if (uploadUrl == null) {
                 LOG.error("No upload url in response: {}", getUploadServerResponse);
