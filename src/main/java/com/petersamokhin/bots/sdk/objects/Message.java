@@ -1,6 +1,6 @@
 package com.petersamokhin.bots.sdk.objects;
 
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.ExecuteCallback;
+import com.petersamokhin.bots.sdk.callbacks.Callback;
 import com.petersamokhin.bots.sdk.clients.Client;
 import com.petersamokhin.bots.sdk.utils.Utils;
 import com.petersamokhin.bots.sdk.utils.vkapi.API;
@@ -417,7 +417,7 @@ public class Message {
     /**
      * Async uploading photos
      */
-    private void uploadPhoto(String photo, ExecuteCallback callback) {
+    private void uploadPhoto(String photo, Callback<Object> callback) {
 
         String type = null;
         File photoFile = new File(photo);
@@ -432,7 +432,7 @@ public class Message {
                 type = "fromUrl";
             } catch (MalformedURLException ignored) {
                 LOG.error("Error when trying add photo to message: file not found, or url is bad. Your param: {}", photo);
-                callback.onResponse("false");
+                callback.onResult("false");
                 return;
             }
         }
@@ -445,7 +445,7 @@ public class Message {
                     photoBytes = Files.readAllBytes(Paths.get(photoFile.toURI()));
                 } catch (IOException ignored) {
                     LOG.error("Error when reading file {}", photoFile.getAbsolutePath());
-                    callback.onResponse("false");
+                    callback.onResult("false");
                     return;
                 }
                 break;
@@ -456,7 +456,7 @@ public class Message {
                     photoBytes = Utils.toByteArray(photoUrl);
                 } catch (IOException ignored) {
                     LOG.error("Error {} occured when reading URL {}", ignored.toString(), photo);
-                    callback.onResponse("false");
+                    callback.onResult("false");
                     return;
                 }
                 break;
@@ -464,7 +464,7 @@ public class Message {
 
             default: {
                 LOG.error("Bad 'photo' string: path to file, URL or already uploaded 'photo()_()' was expected.");
-                callback.onResponse("false");
+                callback.onResult("false");
                 return;
             }
         }
@@ -476,7 +476,7 @@ public class Message {
 
                 if (response.toString().equalsIgnoreCase("false")) {
                     LOG.error("Can't get messages upload server, aborting. Photo wont be attached to message.");
-                    callback.onResponse(false);
+                    callback.onResult(false);
                     return;
                 }
 
@@ -489,7 +489,7 @@ public class Message {
 
                 if (response_uploadFileString.length() < 2 || response_uploadFileString.contains("error") || !response_uploadFileString.contains("photo")) {
                     LOG.error("Photo wan't uploaded: {}", response_uploadFileString);
-                    callback.onResponse("false");
+                    callback.onResult("false");
                     return;
                 }
 
@@ -499,13 +499,13 @@ public class Message {
                     getPhotoStringResponse = new JSONObject(response_uploadFileString);
                 } catch (JSONException ignored) {
                     LOG.error("Bad response of uploading photo: {}", response_uploadFileString);
-                    callback.onResponse("false");
+                    callback.onResult("false");
                     return;
                 }
 
                 if (!getPhotoStringResponse.has("photo") || !getPhotoStringResponse.has("server") || !getPhotoStringResponse.has("hash")) {
                     LOG.error("Bad response of uploading photo, no 'photo', 'server' of 'hash' param: {}", getPhotoStringResponse.toString());
-                    callback.onResponse("false");
+                    callback.onResult("false");
                     return;
                 }
 
@@ -520,7 +520,7 @@ public class Message {
 
                     if (response1.toString().equalsIgnoreCase("false")) {
                         LOG.error("Error when saving uploaded photo: response is 'false', see execution errors.");
-                        callback.onResponse("false");
+                        callback.onResult("false");
                         return;
                     }
 
@@ -529,7 +529,7 @@ public class Message {
                     int ownerId = response_saveMessagesPhotoe.getInt("owner_id"), id = response_saveMessagesPhotoe.getInt("id");
 
                     String attach = "photo" + ownerId + '_' + id;
-                    callback.onResponse(attach);
+                    callback.onResult(attach);
                 });
             });
         }
@@ -539,7 +539,7 @@ public class Message {
      * Async uploading photos
      */
 
-    private void uploadDoc(JSONObject doc, ExecuteCallback callback) {
+    private void uploadDoc(JSONObject doc, Callback<Object> callback) {
 
         String type = null, fileNameField;
         File docFile = new File(doc.getString("doc"));
@@ -554,7 +554,7 @@ public class Message {
                 type = "fromUrl";
             } catch (MalformedURLException ignored) {
                 LOG.error("Error when trying add doc to message: file not found, or url is bad. Your param: {}", doc);
-                callback.onResponse("false");
+                callback.onResult("false");
                 return;
             }
         }
@@ -568,7 +568,7 @@ public class Message {
                     fileNameField = docFile.getName();
                 } catch (IOException ignored) {
                     LOG.error("Error when reading file {}", docFile.getAbsolutePath());
-                    callback.onResponse("false");
+                    callback.onResult("false");
                     return;
                 }
                 break;
@@ -586,7 +586,7 @@ public class Message {
                     }
                 } catch (IOException ignored) {
                     LOG.error("Error when reading URL {}", doc);
-                    callback.onResponse("false");
+                    callback.onResult("false");
                     return;
                 }
                 break;
@@ -605,7 +605,7 @@ public class Message {
 
                 if (response.toString().equalsIgnoreCase("false")) {
                     LOG.error("Can't get messages upload server, aborting. Doc wont be attached to message.");
-                    callback.onResponse("false");
+                    callback.onResult("false");
                     return;
                 }
 
@@ -619,7 +619,7 @@ public class Message {
 
                 if (response_uploadFileString.length() < 2 || response_uploadFileString.contains("error") || !response_uploadFileString.contains("file")) {
                     LOG.error("Doc won't uploaded: {}", response_uploadFileString);
-                    callback.onResponse("false");
+                    callback.onResult("false");
                     return;
                 }
 
@@ -629,13 +629,13 @@ public class Message {
                     getFileStringResponse = new JSONObject(response_uploadFileString);
                 } catch (JSONException ignored) {
                     LOG.error("Bad response of uploading file: {}", response_uploadFileString);
-                    callback.onResponse("false");
+                    callback.onResult("false");
                     return;
                 }
 
                 if (!getFileStringResponse.has("file")) {
                     LOG.error("Bad response of uploading doc, no 'file' param: {}", getFileStringResponse.toString());
-                    callback.onResponse("false");
+                    callback.onResult("false");
                     return;
                 }
 
@@ -647,7 +647,7 @@ public class Message {
 
                     if (response1.toString().equalsIgnoreCase("false")) {
                         LOG.error("Error when saving uploaded doc: response is 'false', see execution errors.");
-                        callback.onResponse("false");
+                        callback.onResult("false");
                         return;
                     }
 
@@ -656,7 +656,7 @@ public class Message {
                     int ownerId = response_saveMessagesPhotoe.getInt("owner_id"), id = response_saveMessagesPhotoe.getInt("id");
 
                     String attach = "doc" + ownerId + '_' + id;
-                    callback.onResponse(attach);
+                    callback.onResult(attach);
                 });
             });
         }
@@ -696,7 +696,7 @@ public class Message {
      * @param doc      URL or path to file
      * @param callback response will returns to callback
      */
-    public void sendVoiceMessage(String doc, ExecuteCallback... callback) {
+    public void sendVoiceMessage(String doc, Callback<Object>... callback) {
         this.doc(doc, DocTypes.AUDIO_MESSAGE).send(callback);
     }
 
@@ -705,7 +705,7 @@ public class Message {
      *
      * @param callback will be called with response object
      */
-    public void send(ExecuteCallback... callback) {
+    public void send(Callback<Object>... callback) {
 
         if (photosToUpload.size() > 0) {
             String photo = photosToUpload.get(0);
@@ -756,7 +756,7 @@ public class Message {
 
         api.call("messages.send", params, response -> {
             if (callback.length > 0) {
-                callback[0].onResponse(response);
+                callback[0].onResult(response);
             }
             if (!(response instanceof Integer)) {
                 LOG.error("Message not sent: {}", response);
