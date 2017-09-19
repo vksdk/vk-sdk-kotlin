@@ -1,23 +1,6 @@
 package com.petersamokhin.bots.sdk.utils.vkapi;
 
 import com.petersamokhin.bots.sdk.callbacks.Callback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.audios.OnAudioNewCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.boards.OnBoardPostDeleteCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.boards.OnBoardPostEditCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.boards.OnBoardPostNewCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.boards.OnBoardPostRestoreCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.group.*;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.market.OnMarketCommentDeleteCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.market.OnMarketCommentEditCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.market.OnMarketCommentNewCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.market.OnMarketCommentRestoreCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.messages.OnMessageAllowCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.messages.OnMessageDenyCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.messages.OnMessageNewCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.messages.OnMessageReplyCallback;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.photos.*;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.videos.*;
-import com.petersamokhin.bots.sdk.callbacks.callbackapi.wall.*;
 import com.petersamokhin.bots.sdk.clients.Group;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -178,211 +161,211 @@ public class CallbackApiHandler {
 
                 case "message_new": {
                     if (callbacks.containsKey("message_new")) {
-                        ((OnMessageNewCallback) callbacks.get("message_new")).callback(object);
+                        callbacks.get("message_new").onResult(object);
                     }
                     break;
                 }
                 case "message_reply": {
                     if (callbacks.containsKey("message_reply")) {
-                        ((OnMessageReplyCallback) callbacks.get("message_reply")).callback(object);
+                        callbacks.get("message_reply").onResult(object);
                     }
                     break;
                 }
                 case "message_allow": {
                     if (callbacks.containsKey("message_allow")) {
-                        ((OnMessageAllowCallback) callbacks.get("message_allow")).callback(object);
+                        callbacks.get("message_allow").onResult(object);
                     }
                     break;
                 }
                 case "message_deny": {
                     if (callbacks.containsKey("message_deny")) {
-                        ((OnMessageDenyCallback) callbacks.get("message_deny")).callback(object);
+                        callbacks.get("message_deny").onResult(object);
                     }
                     break;
                 }
                 case "photo_new": {
                     if (callbacks.containsKey("photo_new")) {
-                        ((OnPhotoNewCallback) callbacks.get("photo_new")).callback(object);
+                        callbacks.get("photo_new").onResult(object);
                     }
                     break;
                 }
                 case "photo_comment_new": {
                     if (callbacks.containsKey("photo_comment_new")) {
-                        ((OnPhotoCommentNewCallback) callbacks.get("photo_comment_new")).callback(object);
+                        callbacks.get("photo_comment_new").onResult(object);
                     }
                     break;
                 }
                 case "photo_comment_edit": {
                     if (callbacks.containsKey("photo_comment_edit")) {
-                        ((OnPhotoCommentEditCallback) callbacks.get("photo_comment_edit")).callback(object);
+                        callbacks.get("photo_comment_edit").onResult(object);
                     }
                     break;
                 }
                 case "photo_comment_restore": {
                     if (callbacks.containsKey("photo_comment_restore")) {
-                        ((OnPhotoCommentRestoreCallback) callbacks.get("photo_comment_restore")).callback(object);
+                        callbacks.get("photo_comment_restore").onResult(object);
                     }
                     break;
                 }
                 case "photo_comment_delete": {
                     if (callbacks.containsKey("photo_comment_delete")) {
-                        ((OnPhotoCommentDeleteCallback) callbacks.get("photo_comment_delete")).callback(object);
+                        callbacks.get("photo_comment_delete").onResult(object);
                     }
                     break;
                 }
                 case "audio_new": {
                     if (callbacks.containsKey("audio_new")) {
-                        ((OnAudioNewCallback) callbacks.get("audio_new")).callback(object);
+                        callbacks.get("audio_new").onResult(object);
                     }
                     break;
                 }
                 case "video_new": {
                     if (callbacks.containsKey("video_new")) {
-                        ((OnVideoNewCallback) callbacks.get("video_new")).callback(object);
+                        callbacks.get("video_new").onResult(object);
                     }
                     break;
                 }
                 case "video_comment_new": {
                     if (callbacks.containsKey("video_comment_new")) {
-                        ((OnVideoCommentNewCallback) callbacks.get("video_comment_new")).callback(object);
+                        callbacks.get("video_comment_new").onResult(object);
                     }
                     break;
                 }
                 case "video_comment_edit": {
                     if (callbacks.containsKey("video_comment_edit")) {
-                        ((OnVideoCommentEditCallback) callbacks.get("video_comment_edit")).callback(object);
+                        callbacks.get("video_comment_edit").onResult(object);
                     }
                     break;
                 }
                 case "video_comment_restore": {
                     if (callbacks.containsKey("video_comment_restore")) {
-                        ((OnVideoCommentRestoreCallback) callbacks.get("video_comment_restore")).callback(object);
+                        callbacks.get("video_comment_restore").onResult(object);
                     }
                     break;
                 }
                 case "video_comment_delete": {
                     if (callbacks.containsKey("video_comment_delete")) {
-                        ((OnVideoCommentDeleteCallback) callbacks.get("video_comment_delete")).callback(object);
+                        callbacks.get("video_comment_delete").onResult(object);
                     }
                     break;
                 }
                 case "wall_post_new": {
                     if (callbacks.containsKey("wall_post_new")) {
-                        ((OnWallPostNewCallback) callbacks.get("wall_post_new")).callback(object);
+                        callbacks.get("wall_post_new").onResult(object);
                     }
                     break;
                 }
                 case "wall_repost": {
                     if (callbacks.containsKey("wall_repost")) {
-                        ((OnWallRepostCallback) callbacks.get("wall_repost")).callback(object);
+                        callbacks.get("wall_repost").onResult(object);
                     }
                     break;
                 }
                 case "wall_reply_new": {
                     if (callbacks.containsKey("wall_reply_new")) {
-                        ((OnWallReplyNewCallback) callbacks.get("wall_reply_new")).callback(object);
+                        callbacks.get("wall_reply_new").onResult(object);
                     }
                     break;
                 }
                 case "wall_reply_edit": {
                     if (callbacks.containsKey("wall_reply_edit")) {
-                        ((OnWallReplyEditCallback) callbacks.get("wall_reply_edit")).callback(object);
+                        callbacks.get("wall_reply_edit").onResult(object);
                     }
                     break;
                 }
                 case "wall_reply_restore": {
                     if (callbacks.containsKey("wall_reply_restore")) {
-                        ((OnWallReplyRestoreCallback) callbacks.get("wall_reply_restore")).callback(object);
+                        callbacks.get("wall_reply_restore").onResult(object);
                     }
                     break;
                 }
                 case "wall_reply_delete": {
                     if (callbacks.containsKey("wall_reply_delete")) {
-                        ((OnWallReplyDeleteCallback) callbacks.get("wall_reply_delete")).callback(object);
+                        callbacks.get("wall_reply_delete").onResult(object);
                     }
                     break;
                 }
                 case "board_post_new": {
                     if (callbacks.containsKey("board_post_new")) {
-                        ((OnBoardPostNewCallback) callbacks.get("board_post_new")).callback(object);
+                        callbacks.get("board_post_new").onResult(object);
                     }
                     break;
                 }
                 case "board_post_edit": {
                     if (callbacks.containsKey("board_post_edit")) {
-                        ((OnBoardPostEditCallback) callbacks.get("board_post_edit")).callback(object);
+                        callbacks.get("board_post_edit").onResult(object);
                     }
                     break;
                 }
                 case "board_post_restore": {
                     if (callbacks.containsKey("board_post_restore")) {
-                        ((OnBoardPostRestoreCallback) callbacks.get("board_post_restore")).callback(object);
+                        callbacks.get("board_post_restore").onResult(object);
                     }
                     break;
                 }
                 case "board_post_delete": {
                     if (callbacks.containsKey("board_post_delete")) {
-                        ((OnBoardPostDeleteCallback) callbacks.get("board_post_delete")).callback(object);
+                        callbacks.get("board_post_delete").onResult(object);
                     }
                     break;
                 }
                 case "market_comment_new": {
                     if (callbacks.containsKey("market_comment_new")) {
-                        ((OnMarketCommentNewCallback) callbacks.get("market_comment_new")).callback(object);
+                        callbacks.get("market_comment_new").onResult(object);
                     }
                     break;
                 }
                 case "market_comment_edit": {
                     if (callbacks.containsKey("market_comment_edit")) {
-                        ((OnMarketCommentEditCallback) callbacks.get("market_comment_edit")).callback(object);
+                        callbacks.get("market_comment_edit").onResult(object);
                     }
                     break;
                 }
                 case "market_comment_restore": {
                     if (callbacks.containsKey("market_comment_restore")) {
-                        ((OnMarketCommentRestoreCallback) callbacks.get("market_comment_restore")).callback(object);
+                        callbacks.get("market_comment_restore").onResult(object);
                     }
                     break;
                 }
                 case "market_comment_delete": {
                     if (callbacks.containsKey("market_comment_delete")) {
-                        ((OnMarketCommentDeleteCallback) callbacks.get("market_comment_delete")).callback(object);
+                        callbacks.get("market_comment_delete").onResult(object);
                     }
                     break;
                 }
                 case "group_leave": {
                     if (callbacks.containsKey("group_leave")) {
-                        ((OnGroupLeaveCallback) callbacks.get("group_leave")).callback(object);
+                        callbacks.get("group_leave").onResult(object);
                     }
                     break;
                 }
                 case "group_join": {
                     if (callbacks.containsKey("group_join")) {
-                        ((OnGroupJoinCallback) callbacks.get("group_join")).callback(object);
+                        callbacks.get("group_join").onResult(object);
                     }
                     break;
                 }
                 case "poll_vote_new": {
                     if (callbacks.containsKey("poll_vote_new")) {
-                        ((OnPollVoteNewCallback) callbacks.get("poll_vote_new")).callback(object);
+                        callbacks.get("poll_vote_new").onResult(object);
                     }
                     break;
                 }
                 case "group_officers_edit": {
                     if (callbacks.containsKey("group_officers_edit")) {
-                        ((OnGroupOfficersEditCallback) callbacks.get("group_officers_edit")).callback(object);
+                        callbacks.get("group_officers_edit").onResult(object);
                     }
                     break;
                 }
                 case "group_change_settings": {
                     if (callbacks.containsKey("group_change_settings")) {
-                        ((OnGroupChangeSettingsCallback) callbacks.get("group_change_settings")).callback(object);
+                        callbacks.get("group_change_settings").onResult(object);
                     }
                     break;
                 }
                 case "group_change_photo": {
                     if (callbacks.containsKey("group_change_photo")) {
-                        ((OnGroupChangePhotoCallback) callbacks.get("group_change_photo")).callback(object);
+                        callbacks.get("group_change_photo").onResult(object);
                     }
                     break;
                 }
