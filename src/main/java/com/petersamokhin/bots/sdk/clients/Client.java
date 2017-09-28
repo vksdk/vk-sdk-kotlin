@@ -1,9 +1,14 @@
 package com.petersamokhin.bots.sdk.clients;
 
 import com.petersamokhin.bots.sdk.callbacks.Callback;
+import com.petersamokhin.bots.sdk.callbacks.CallbackDouble;
+import com.petersamokhin.bots.sdk.callbacks.CallbackFourth;
+import com.petersamokhin.bots.sdk.callbacks.CallbackTriple;
 import com.petersamokhin.bots.sdk.longpoll.LongPoll;
 import com.petersamokhin.bots.sdk.objects.Message;
 import com.petersamokhin.bots.sdk.utils.vkapi.API;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -15,6 +20,7 @@ import java.util.concurrent.ScheduledExecutorService;
  * Main client class, that contains all necessary methods and fields
  * for base work with VK and longpoll server
  */
+@SuppressWarnings("unused")
 public abstract class Client {
 
     /*
@@ -93,7 +99,41 @@ public abstract class Client {
         this.longPoll().enableTyping(enable);
     }
 
+    /* On every event */
+
+    public void onLongPollEvent(Callback<JSONArray> callback) {
+        this.longPoll().registerCallback("OnEveryLongPollEventCallback", callback);
+    }
+
+    /* Chats */
+    public void onChatJoin(CallbackTriple<Integer, Integer, Integer> callback) {
+        this.longPoll().registerChatCallback("OnChatJoinCallback", callback);
+    }
+
+    public void onChatLeave(CallbackTriple<Integer, Integer, Integer> callback) {
+        this.longPoll().registerChatCallback("OnChatLeaveCallback", callback);
+    }
+
+    public void onChatTitleChanged(CallbackFourth<String, String, Integer, Integer> callback) {
+        this.longPoll().registerChatCallback("OnChatTitleChangedCallback", callback);
+    }
+
+    public void onChatPhotoChanged(CallbackTriple<JSONObject, Integer, Integer> callback) {
+        this.longPoll().registerChatCallback("onChatPhotoChangedCallback", callback);
+    }
+
+    public void onChatPhotoRemoved(CallbackDouble<Integer, Integer> callback) {
+        this.longPoll().registerChatCallback("onChatPhotoRemovedCallback", callback);
+    }
+
+    public void onChatCreated(CallbackTriple<String, Integer, Integer> callback) {
+        this.longPoll().registerChatCallback("onChatCreatedCallback", callback);
+    }
+
     /* Messages */
+    public void onChatMessage(Callback<Message> callback) {
+        this.longPoll().registerCallback("OnChatMessageCallback", callback);
+    }
 
     public void onEveryMessage(Callback<Message> callback) {
         this.longPoll().registerCallback("OnEveryMessageCallback", callback);
@@ -225,5 +265,13 @@ public abstract class Client {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "Client{" +
+                "accessToken='" + accessToken + '\'' +
+                ", id=" + id +
+                '}';
     }
 }

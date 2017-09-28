@@ -1,5 +1,6 @@
 package com.petersamokhin.bots.sdk.longpoll;
 
+import com.petersamokhin.bots.sdk.callbacks.AbstractCallback;
 import com.petersamokhin.bots.sdk.callbacks.Callback;
 import com.petersamokhin.bots.sdk.clients.Client;
 import com.petersamokhin.bots.sdk.longpoll.responses.GetLongPollServerResponse;
@@ -126,6 +127,16 @@ public class LongPoll {
      */
     public void registerCallback(String name, Callback callback) {
         updatesHandler.registerCallback(name, callback);
+    }
+
+    /**
+     * Add callback to the map
+     *
+     * @param name     Callback name
+     * @param callback Callback
+     */
+    public void registerChatCallback(String name, AbstractCallback callback) {
+        updatesHandler.registerChatCallback(name, callback);
     }
 
     /**
@@ -262,7 +273,7 @@ public class LongPoll {
                 if (response.has("pts"))
                     this.pts = response.getInt("pts");
 
-                if (this.updatesHandler.callbacksCount() > 0 || this.updatesHandler.commandsCount() > 0) {
+                if (this.updatesHandler.callbacksCount() > 0 || this.updatesHandler.commandsCount() > 0 || this.updatesHandler.chatCallbacksCount() > 0) {
 
                     if (response.has("ts") && response.has("updates")) {
 
@@ -270,6 +281,10 @@ public class LongPoll {
 
                     } else {
                         LOG.error("Bad response from VK LongPoll server: no `ts` or `updates` array: {}", response);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignored) {
+                        }
                     }
                 }
             }

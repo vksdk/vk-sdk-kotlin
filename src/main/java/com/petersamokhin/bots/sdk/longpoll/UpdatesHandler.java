@@ -1,6 +1,6 @@
 package com.petersamokhin.bots.sdk.longpoll;
 
-import com.petersamokhin.bots.sdk.callbacks.Callback;
+import com.petersamokhin.bots.sdk.callbacks.*;
 import com.petersamokhin.bots.sdk.clients.Client;
 import com.petersamokhin.bots.sdk.objects.Message;
 import org.json.JSONArray;
@@ -22,9 +22,10 @@ public class UpdatesHandler extends Thread {
     volatile boolean sendTyping = false;
 
     /**
-     * Map with callbacks
+     * Maps with callbacks
      */
     private ConcurrentHashMap<String, Callback> callbacks = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, AbstractCallback> chatCallbacks = new ConcurrentHashMap<>();
 
     /**
      * Client with access_token
@@ -73,35 +74,166 @@ public class UpdatesHandler extends Thread {
                 if ((messageFlags & 2) == 0) {
                     service.submit(() -> handleMessageUpdate(currentUpdate));
                 }
+
+                // handle every
+                handleEveryLongPollUpdate(currentUpdate);
                 break;
             }
 
             // Handling update (user started typing)
             case 61: {
                 handleTypingUpdate(currentUpdate);
+
+                // handle every
+                handleEveryLongPollUpdate(currentUpdate);
                 break;
             }
+
+            // Handling other
+            default: {
+                handleEveryLongPollUpdate(currentUpdate);
+            }
+        }
+    }
+
+    /**
+     * Handle chat events
+     */
+    @SuppressWarnings("unchecked")
+    private void handleChatEvents(JSONArray updateObject) {
+
+        Integer chatId = updateObject.getInt(3) - 2000000000;
+
+        JSONObject attachments = (updateObject.length() > 6 ? (updateObject.get(6).toString().startsWith("{") ? new JSONObject(updateObject.get(6).toString()) : null) : null);
+
+        // Return if no attachments
+        // Because there no events,
+        // and because simple chat messages will be handled
+        if (attachments == null) return;
+
+        if (attachments.has("source_act")) {
+            String sourceAct = attachments.getString("source_act");
+
+            Integer from = Integer.parseInt(attachments.getString("from"));
+
+            switch (sourceAct) {
+                case "chat_create": {
+
+                    String title = attachments.getString("source_text");
+
+                    if (chatCallbacks.containsKey("onChatCreatedCallback")) {
+                        ((CallbackTriple<String, Integer, Integer>) chatCallbacks.get("onChatCreatedCallback")).onEvent(title, from, chatId);
+                    }
+                    break;
+                }
+                case "chat_title_update": {
+
+                    String oldTitle = attachments.getString("source_old_text");
+                    String newTitle = attachments.getString("source_text");
+
+                    if (chatCallbacks.containsKey("OnChatTitleChangedCallback")) {
+                        ((CallbackFourth<String, String, Integer, Integer>) chatCallbacks.get("OnChatTitleChangedCallback")).onEvent(oldTitle, newTitle, from, chatId);
+                    }
+                    break;
+                }
+                case "chat_photo_update": {
+
+                    JSONObject photo = new JSONObject(client.api().callSync("messages.getById", "message_ids", updateObject.getInt(1))).getJSONObject("response").getJSONArray("items").getJSONObject(0).getJSONArray("attachments").getJSONObject(0).getJSONObject("photo");
+
+                    if (chatCallbacks.containsKey("onChatPhotoChangedCallback")) {
+                        ((CallbackTriple<JSONObject, Integer, Integer>) chatCallbacks.get("onChatPhotoChangedCallback")).onEvent(photo, from, chatId);
+                    }
+
+                    break;
+                }
+                case "chat_invite_user": {
+
+                    Integer user = Integer.valueOf(attachments.getString("source_mid"));
+
+                    if (chatCallbacks.containsKey("OnChatJoinCallback")) {
+                        ((CallbackTriple<Integer, Integer, Integer>) chatCallbacks.get("OnChatJoinCallback")).onEvent(from, user, chatId);
+                    }
+                    break;
+                }
+                case "chat_kick_user": {
+
+                    Integer user = Integer.valueOf(attachments.getString("source_mid"));
+
+                    if (chatCallbacks.containsKey("OnChatLeaveCallback")) {
+                        ((CallbackTriple<Integer, Integer, Integer>) chatCallbacks.get("OnChatLeaveCallback")).onEvent(from, user, chatId);
+                    }
+                    break;
+                }
+                case "chat_photo_remove": {
+
+                    if (chatCallbacks.containsKey("onChatPhotoRemovedCallback")) {
+                        ((CallbackDouble<Integer, Integer>) chatCallbacks.get("onChatPhotoRemovedCallback")).onEvent(from, chatId);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Handle every longpoll event
+     */
+    @SuppressWarnings("unchecked")
+    private void handleEveryLongPollUpdate(JSONArray updateObject) {
+        if (callbacks.containsKey("OnEveryLongPollEventCallback")) {
+            callbacks.get("OnEveryLongPollEventCallback").onResult(updateObject);
         }
     }
 
     /**
      * Handle new message
      */
+    @SuppressWarnings("unchecked")
     private void handleMessageUpdate(JSONArray updateObject) {
 
+        // Flag
         boolean messageIsAlreadyHandled = false;
+
+        // All necessary data
+        Integer messageId = updateObject.getInt(1),
+                messageFlags = updateObject.getInt(2),
+                peerId = updateObject.getInt(3),
+                chatId = 0,
+                timestamp = updateObject.getInt(4);
+
+        String messageText = updateObject.getString(5);
+
+        JSONObject attachments = (updateObject.length() > 6 ? (updateObject.get(6).toString().startsWith("{") ? new JSONObject(updateObject.get(6).toString()) : null) : null);
+
+        Integer randomId = updateObject.length() > 7 ? updateObject.getInt(7) : null;
+
+        // Check for chat
+        if (peerId > 2000000000) {
+            chatId = peerId;
+            if (attachments != null) {
+                peerId = Integer.parseInt(attachments.getString("from"));
+            }
+        }
 
         Message message = new Message(
                 this.client,
-                updateObject.getInt(1),
-                updateObject.getInt(2),
-                updateObject.getInt(3),
-                updateObject.getInt(4),
-                updateObject.getString(5),
-                (updateObject.length() > 6 ? (updateObject.get(6).toString().startsWith("{") ? new JSONObject(updateObject.get(6).toString()) : null) : null),
-                updateObject.length() > 7 ? updateObject.getInt(7) : null
+                messageId,
+                messageFlags,
+                peerId,
+                timestamp,
+                messageText,
+                attachments,
+                randomId
         );
 
+        if (chatId > 0) {
+            message.setChatId(chatId);
+
+            // chat events
+            handleChatEvents(updateObject);
+        }
+
+        // Send typing
         if (sendTyping) {
             this.client.api().call("messages.setActivity", "{type:'typing',peer_id:" + message.authorId() + "}", response -> {
             });
@@ -208,6 +340,10 @@ public class UpdatesHandler extends Thread {
             callbacks.get("OnMessageCallback").onResult(message);
         }
 
+        if (callbacks.containsKey("OnChatMessageCallback") && !messageIsAlreadyHandled) {
+            callbacks.get("OnChatMessageCallback").onResult(message);
+        }
+
         if (callbacks.containsKey("OnEveryMessageCallback")) {
             callbacks.get("OnEveryMessageCallback").onResult(message);
         }
@@ -216,6 +352,7 @@ public class UpdatesHandler extends Thread {
     /**
      * Handle dialog with typing user
      */
+    @SuppressWarnings("unchecked")
     private void handleTypingUpdate(JSONArray updateObject) {
 
         if (callbacks.containsKey("OnTypingCallback")) {
@@ -234,10 +371,27 @@ public class UpdatesHandler extends Thread {
     }
 
     /**
+     * Add callback to the map
+     *
+     * @param name     Callback name
+     * @param callback Callback
+     */
+    void registerChatCallback(String name, AbstractCallback callback) {
+        this.chatCallbacks.put(name, callback);
+    }
+
+    /**
      * Returns count of callbacks
      */
     int callbacksCount() {
         return this.callbacks.size();
+    }
+
+    /**
+     * Returns count of callbacks
+     */
+    int chatCallbacksCount() {
+        return this.chatCallbacks.size();
     }
 
     /**

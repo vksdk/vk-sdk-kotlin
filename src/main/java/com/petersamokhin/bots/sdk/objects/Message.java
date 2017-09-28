@@ -33,7 +33,7 @@ public class Message {
 
     private static final Logger LOG = LoggerFactory.getLogger(Message.class);
 
-    private Integer messageId, flags, peerId, timestamp, randomId, stickerId;
+    private Integer messageId, flags, peerId, timestamp, randomId, stickerId, chatId;
     private String text, accessToken, title;
     private API api;
 
@@ -68,7 +68,7 @@ public class Message {
         setText(text);
         setAttachments(attachments);
         setRandomId(randomId);
-        setTitle(attachments.getString("title"));
+        setTitle(attachments.has("title") ? attachments.getString("title") : " ... ");
 
         api = client.api();
     }
@@ -962,44 +962,26 @@ public class Message {
         return answer;
     }
 
+    /* Public getters */
+
     public Integer getMessageId() {
         return messageId;
-    }
-
-    private void setMessageId(Integer messageId) {
-        this.messageId = messageId;
     }
 
     public Integer getFlags() {
         return flags;
     }
 
-    private void setFlags(Integer flags) {
-        this.flags = flags;
-    }
-
     public Integer authorId() {
         return peerId;
-    }
-
-    private void setPeerId(Integer peerId) {
-        this.peerId = peerId;
     }
 
     public Integer getTimestamp() {
         return timestamp;
     }
 
-    private void setTimestamp(Integer timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public String getText() {
         return text;
-    }
-
-    private void setText(String text) {
-        this.text = text;
     }
 
     public JSONArray getPhotos() {
@@ -1012,6 +994,28 @@ public class Message {
         }
 
         return answer;
+    }
+
+    /* Private setters */
+
+    private void setMessageId(Integer messageId) {
+        this.messageId = messageId;
+    }
+
+    private void setFlags(Integer flags) {
+        this.flags = flags;
+    }
+
+    private void setPeerId(Integer peerId) {
+        this.peerId = peerId;
+    }
+
+    private void setTimestamp(Integer timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    private void setText(String text) {
+        this.text = text;
     }
 
     /**
@@ -1049,6 +1053,18 @@ public class Message {
         }
 
         return answer;
+    }
+
+    public boolean isMessageFromChat() {
+        return chatId > 0;
+    }
+
+    public Integer chatId() {
+        return chatId;
+    }
+
+    public void setChatId(Integer chatId) {
+        this.chatId = chatId;
     }
 
     public void setAccessToken(String accessToken) {
