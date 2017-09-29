@@ -2,6 +2,7 @@ package com.petersamokhin.bots.sdk.longpoll;
 
 import com.petersamokhin.bots.sdk.callbacks.*;
 import com.petersamokhin.bots.sdk.clients.Client;
+import com.petersamokhin.bots.sdk.objects.Chat;
 import com.petersamokhin.bots.sdk.objects.Message;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -102,7 +103,7 @@ public class UpdatesHandler extends Thread {
     @SuppressWarnings("unchecked")
     private void handleChatEvents(JSONArray updateObject) {
 
-        Integer chatId = updateObject.getInt(3) - 2000000000;
+        Integer chatId = updateObject.getInt(3);
 
         JSONObject attachments = (updateObject.length() > 6 ? (updateObject.get(6).toString().startsWith("{") ? new JSONObject(updateObject.get(6).toString()) : null) : null);
 
@@ -209,7 +210,7 @@ public class UpdatesHandler extends Thread {
 
         // Check for chat
         if (peerId > 2000000000) {
-            chatId = peerId;
+            chatId = peerId - 2000000000;
             if (attachments != null) {
                 peerId = Integer.parseInt(attachments.getString("from"));
             }
@@ -228,6 +229,7 @@ public class UpdatesHandler extends Thread {
 
         if (chatId > 0) {
             message.setChatId(chatId);
+            message.setChatIdLong(Chat.CHAT_PREFIX + chatId);
 
             // chat events
             handleChatEvents(updateObject);

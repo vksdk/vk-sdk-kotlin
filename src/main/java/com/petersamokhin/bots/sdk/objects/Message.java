@@ -33,7 +33,7 @@ public class Message {
 
     private static final Logger LOG = LoggerFactory.getLogger(Message.class);
 
-    private Integer messageId, flags, peerId, timestamp, randomId, stickerId, chatId;
+    private Integer messageId, flags, peerId, timestamp, randomId, stickerId, chatId, chatIdLong;
     private String text, accessToken, title;
     private API api;
 
@@ -996,6 +996,10 @@ public class Message {
         return answer;
     }
 
+    public Integer getChatIdLong() {
+        return chatIdLong;
+    }
+
     /* Private setters */
 
     private void setMessageId(Integer messageId) {
@@ -1016,6 +1020,10 @@ public class Message {
 
     private void setText(String text) {
         this.text = text;
+    }
+
+    public void setChatIdLong(Integer chatIdLong) {
+        this.chatIdLong = chatIdLong;
     }
 
     /**

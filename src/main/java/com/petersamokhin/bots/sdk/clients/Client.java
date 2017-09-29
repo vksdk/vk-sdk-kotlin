@@ -5,16 +5,14 @@ import com.petersamokhin.bots.sdk.callbacks.CallbackDouble;
 import com.petersamokhin.bots.sdk.callbacks.CallbackFourth;
 import com.petersamokhin.bots.sdk.callbacks.CallbackTriple;
 import com.petersamokhin.bots.sdk.longpoll.LongPoll;
+import com.petersamokhin.bots.sdk.objects.Chat;
 import com.petersamokhin.bots.sdk.objects.Message;
 import com.petersamokhin.bots.sdk.utils.vkapi.API;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
 
 /**
  * Main client class, that contains all necessary methods and fields
@@ -38,6 +36,7 @@ public abstract class Client {
     private LongPoll longPoll = null;
 
     public CopyOnWriteArrayList<Command> commands = new CopyOnWriteArrayList<>();
+    private ConcurrentHashMap<Integer, Chat> chats = new ConcurrentHashMap<>();
 
     /**
      * Default constructor
@@ -74,6 +73,15 @@ public abstract class Client {
 
         this.longPoll.off();
         this.longPoll = LP;
+    }
+
+    public Chat chat(Integer chatId) {
+
+        if (!this.chats.containsKey(chatId)) {
+            this.chats.put(chatId, new Chat(this, chatId));
+        }
+
+        return this.chats.get(chatId);
     }
 
     /**
