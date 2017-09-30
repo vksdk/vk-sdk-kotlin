@@ -235,12 +235,6 @@ public class UpdatesHandler extends Thread {
             handleChatEvents(updateObject);
         }
 
-        // Send typing
-        if (sendTyping) {
-            this.client.api().call("messages.setActivity", "{type:'typing',peer_id:" + message.authorId() + "}", response -> {
-            });
-        }
-
         // check for commands
         if (this.client.commands.size() > 0) {
             messageIsAlreadyHandled = handleCommands(message);
@@ -250,6 +244,8 @@ public class UpdatesHandler extends Thread {
             if (callbacks.containsKey("OnMessageWithFwdsCallback")) {
                 callbacks.get("OnMessageWithFwdsCallback").onResult(message);
                 messageIsAlreadyHandled = true;
+
+                handleSendTyping(message);
             }
         }
 
@@ -260,6 +256,8 @@ public class UpdatesHandler extends Thread {
                     if (callbacks.containsKey("OnVoiceMessageCallback")) {
                         callbacks.get("OnVoiceMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
+
+                        handleSendTyping(message);
                     }
                     break;
                 }
@@ -268,6 +266,8 @@ public class UpdatesHandler extends Thread {
                     if (callbacks.containsKey("OnStickerMessageCallback")) {
                         callbacks.get("OnStickerMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
+
+                        handleSendTyping(message);
                     }
                     break;
                 }
@@ -276,6 +276,8 @@ public class UpdatesHandler extends Thread {
                     if (callbacks.containsKey("OnGifMessageCallback")) {
                         callbacks.get("OnGifMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
+
+                        handleSendTyping(message);
                     }
                     break;
                 }
@@ -284,6 +286,8 @@ public class UpdatesHandler extends Thread {
                     if (callbacks.containsKey("OnAudioMessageCallback")) {
                         callbacks.get("OnAudioMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
+
+                        handleSendTyping(message);
                     }
                     break;
                 }
@@ -292,6 +296,8 @@ public class UpdatesHandler extends Thread {
                     if (callbacks.containsKey("OnVideoMessageCallback")) {
                         callbacks.get("OnVideoMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
+
+                        handleSendTyping(message);
                     }
                     break;
                 }
@@ -300,6 +306,8 @@ public class UpdatesHandler extends Thread {
                     if (callbacks.containsKey("OnDocMessageCallback")) {
                         callbacks.get("OnDocMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
+
+                        handleSendTyping(message);
                     }
                     break;
                 }
@@ -308,6 +316,8 @@ public class UpdatesHandler extends Thread {
                     if (callbacks.containsKey("OnWallMessageCallback")) {
                         callbacks.get("OnWallMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
+
+                        handleSendTyping(message);
                     }
                     break;
                 }
@@ -316,6 +326,8 @@ public class UpdatesHandler extends Thread {
                     if (callbacks.containsKey("OnPhotoMessageCallback")) {
                         callbacks.get("OnPhotoMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
+
+                        handleSendTyping(message);
                     }
                     break;
                 }
@@ -324,6 +336,8 @@ public class UpdatesHandler extends Thread {
                     if (callbacks.containsKey("OnLinkMessageCallback")) {
                         callbacks.get("OnLinkMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
+
+                        handleSendTyping(message);
                     }
                     break;
                 }
@@ -332,6 +346,8 @@ public class UpdatesHandler extends Thread {
                     if (callbacks.containsKey("OnSimpleTextMessageCallback")) {
                         callbacks.get("OnSimpleTextMessageCallback").onResult(message);
                         messageIsAlreadyHandled = true;
+
+                        handleSendTyping(message);
                     }
                     break;
                 }
@@ -340,6 +356,8 @@ public class UpdatesHandler extends Thread {
 
         if (callbacks.containsKey("OnMessageCallback") && !messageIsAlreadyHandled) {
             callbacks.get("OnMessageCallback").onResult(message);
+
+            handleSendTyping(message);
         }
 
         if (callbacks.containsKey("OnChatMessageCallback") && !messageIsAlreadyHandled) {
@@ -348,6 +366,8 @@ public class UpdatesHandler extends Thread {
 
         if (callbacks.containsKey("OnEveryMessageCallback")) {
             callbacks.get("OnEveryMessageCallback").onResult(message);
+
+            handleSendTyping(message);
         }
     }
 
@@ -417,10 +437,29 @@ public class UpdatesHandler extends Thread {
                 if (message.getText().toLowerCase().contains(command.getCommands()[i].toString().toLowerCase())) {
                     command.getCallback().onResult(message);
                     is = true;
+
+                    handleSendTyping(message);
                 }
             }
         }
 
         return is;
+    }
+
+    /**
+     * Send typing
+     */
+    private void handleSendTyping(Message message) {
+
+        // Send typing
+        if (sendTyping) {
+            if (!message.isMessageFromChat()) {
+                this.client.api().call("messages.setActivity", "{type:'typing',peer_id:" + message.authorId() + "}", response -> {
+                });
+            } else {
+                this.client.api().call("messages.setActivity", "{type:'typing',peer_id:" + message.getChatIdLong() + "}", response -> {
+                });
+            }
+        }
     }
 }
