@@ -209,8 +209,8 @@ public class UpdatesHandler extends Thread {
         Integer randomId = updateObject.length() > 7 ? updateObject.getInt(7) : null;
 
         // Check for chat
-        if (peerId > 2000000000) {
-            chatId = peerId - 2000000000;
+        if (peerId > Chat.CHAT_PREFIX) {
+            chatId = peerId - Chat.CHAT_PREFIX;
             if (attachments != null) {
                 peerId = Integer.parseInt(attachments.getString("from"));
             }

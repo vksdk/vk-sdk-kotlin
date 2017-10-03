@@ -417,7 +417,7 @@ public class Message {
     /**
      * Async uploading photos
      */
-    private void uploadPhoto(String photo, Callback<Object> callback) {
+    public void uploadPhoto(String photo, Callback<Object> callback) {
 
         String type = null;
         File photoFile = new File(photo);
@@ -536,10 +536,9 @@ public class Message {
     }
 
     /**
-     * Async uploading photos
+     * Async uploading doc
      */
-
-    private void uploadDoc(JSONObject doc, Callback<Object> callback) {
+    public void uploadDoc(JSONObject doc, Callback<Object> callback) {
 
         String type = null, fileNameField;
         File docFile = new File(doc.getString("doc"));
@@ -1064,7 +1063,8 @@ public class Message {
     }
 
     public boolean isMessageFromChat() {
-        return chatId > 0;
+
+        return (chatId != null && chatId > 0) || (chatIdLong != null && chatIdLong > 0);
     }
 
     public Integer chatId() {

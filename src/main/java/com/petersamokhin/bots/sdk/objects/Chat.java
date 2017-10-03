@@ -187,4 +187,11 @@ public class Chat {
             });
         }
     }
+
+    public void getChatInfo(Callback<JSONObject> callback) {
+
+        client.api().call("messages.getChat", "{chat_id:" + chatId + "}", response ->
+            callback.onResult((JSONObject) response)
+        );
+    }
 }
