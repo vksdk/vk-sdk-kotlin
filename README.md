@@ -75,6 +75,10 @@ group.onVoiceMessage(message ->
                         .send();
         }
   });
+  
+  user.onChatMessage(message -> {
+      // Handle message, it's from chat
+  });
   ```
   * добавлена возможность обрабатывать события в чате:
   ```java
