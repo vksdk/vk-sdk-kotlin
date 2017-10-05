@@ -84,11 +84,13 @@ group.onVoiceMessage(message ->
   ```java
   // Handle title changing
   user.onChatTitleChanged((oldTitle, newTitle, who, chat) -> {
+  
+      String s = "User https://vk.com/id" + who + " changed title in chat " + chat + " from «" + oldTitle + "» to «" + newTitle + "»";
 
       new Message()
           .from(user)
           .to(chat)
-          .text("User https://vk.com/id" + who + " changed title in chat " + chat + " from «" + oldTitle + "» to «" + newTitle + "»")
+          .text(s)
           .send();
 
       // User https://vk.com/id62802565 changed title in chat 2000000011 from «Test 0» to «Test 1»
