@@ -95,6 +95,8 @@ group.onVoiceMessage(message ->
 
       // User with id 62802565 changed title in chat 2000000011 from «Test 0» to «Test 1»
   });  
+  
+  // also you can handle chat join, chat leave, chat creating, etc
   ```
   И так далее. Во всех методах возвращается полный ID чата, при получении сообщения можно получить оба варианта. Для удобства, это значение (`2000000000`) добавлено в качестве константы, и его можно получить из `com.petersamokhin.bots.sdk.objects.Chat.CHAT_PREFIX`.
 
