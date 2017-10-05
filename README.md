@@ -85,7 +85,7 @@ group.onVoiceMessage(message ->
   // Handle title changing
   user.onChatTitleChanged((oldTitle, newTitle, who, chat) -> {
   
-      String s = "User https://vk.com/id" + who + " changed title in chat " + chat + " from «" + oldTitle + "» to «" + newTitle + "»";
+      String s = "User with id " + who + " changed title in chat " + chat + " from «" + oldTitle + "» to «" + newTitle + "»";
 
       new Message()
           .from(user)
@@ -93,7 +93,7 @@ group.onVoiceMessage(message ->
           .text(s)
           .send();
 
-      // User https://vk.com/id62802565 changed title in chat 2000000011 from «Test 0» to «Test 1»
+      // User with id 62802565 changed title in chat 2000000011 from «Test 0» to «Test 1»
   });  
   ```
   И так далее. Во всех методах возвращается полный ID чата, при получении сообщения можно получить оба варианта. Для удобства, это значение (`2000000000`) добавлено в качестве константы, и его можно получить из `com.petersamokhin.bots.sdk.objects.Chat.CHAT_PREFIX`.
