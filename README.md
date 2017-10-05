@@ -43,6 +43,55 @@ group.onVoiceMessage(message ->
          .send()
 );
 ```
+## Функционал: 0.1.4-alpha
+Эта версия доступна только при прямом скачивании библиотеки отсюда — в центральный репозиторий она будет добавлена чуть позже, в дополненном виде.
+
+* Пофикшено много мелочей, не влияющих на качество работы и производительность, но делающих работу с библиотекой удобнее, и код читаемее.
+* Добавлена работа с чатами — теперь на основе библиотеки легко и быстро можно делать ботов, работающих с чатами:
+  * добавлена возможность обработки сообщений конкретно из чатов и проверка, из чата ли сообщение:
+  ```java
+  user.onMessage(message -> {
+        if (message.isMessageFromChat()) {
+
+            // Get chat id
+            int chatIdLong = message.getChatIdLong(); // 2000000011
+            int chatId = message.chatId();            // 11
+            int sender = message.authorId();          // 62802565
+
+            // Handle message, it's from chat
+            new Message()
+                        .from(user)
+                        .to(chatIdLong)
+                        .text("Hello, chat!")
+                        .send();
+
+        } else {
+
+           // Handle message that not from chat
+           new Message()
+                        .from(user)
+                        .to(message.authorId())
+                        .text("Sorry, I will work only in chats.")
+                        .send();
+        }
+  });
+  ```
+  * добавлена возможность обрабатывать события в чате:
+  ```java
+  // Handle title changing
+  user.onChatTitleChanged((oldTitle, newTitle, who, chat) -> {
+
+            new Message()
+                    .from(user)
+                    .to(chat)
+                    .text("User https://vk.com/id" + who + " changed title in chat " + chat + " from «" + oldTitle + "» to «" + newTitle + "»")
+                    .send();
+
+            // "User https://vk.com/id62802565 changed title in chat 2000000011 from «Test 0» to «Test 1»
+        });  
+  ```
+  И так далее. Во всех методах возвращается полный ID чата, при получении сообщения можно получить оба варианта. Для удобства, это значение (`2000000000`) добавлено в качестве константы, и его можно получить из `com.petersamokhin.bots.sdk.objects.Chat.CHAT_PREFIX`.
+
 ## Функционал: версия 0.1.3 (25.08.2017)
 * Работа с личными сообщениями сообществ и личных страниц — необходим только [access_token](https://vk.com/dev/access_token).
 * Возможность обработки сообщений только нужного типа (голосовые, простые текстовые, со стикером, и так далее)
