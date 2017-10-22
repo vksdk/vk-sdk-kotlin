@@ -84,12 +84,6 @@ public final class Connection {
             os.flush();
             os.close();
 
-            /*DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
-
-            wr.writeBytes(body);
-            wr.flush();
-            wr.close();*/
-
             int responseCode = conn.getResponseCode();
 
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));

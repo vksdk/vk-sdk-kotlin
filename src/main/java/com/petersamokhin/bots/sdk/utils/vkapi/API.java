@@ -8,6 +8,8 @@ import com.petersamokhin.bots.sdk.utils.vkapi.calls.CallSync;
 import com.petersamokhin.bots.sdk.utils.web.Connection;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -18,6 +20,9 @@ import java.util.Map;
  * Simple interacting with VK API
  */
 public class API {
+
+    private static final Logger LOG = LoggerFactory.getLogger(API.class);
+
     private static Executor executor;
 
     private String URL = "https://api.vk.com/method/", V = "&v=" + 5.67;
@@ -63,42 +68,46 @@ public class API {
      */
     public void call(String method, Object params, Callback<Object> callback) {
 
-        JSONObject parameters = new JSONObject();
+        try {
+            JSONObject parameters = new JSONObject();
 
-        if (params != null) {
-            boolean good = false;
+            if (params != null) {
+                boolean good = false;
 
-            // Work with map
-            if (params instanceof Map) {
+                // Work with map
+                if (params instanceof Map) {
 
-                parameters = new JSONObject((Map) params);
-                good = true;
-            }
-
-            // with JO
-            if (params instanceof JSONObject) {
-                parameters = (JSONObject) params;
-                good = true;
-            }
-
-            // or string
-            if (params instanceof String) {
-                String s = params.toString();
-                if (s.startsWith("{")) {
-                    parameters = new JSONObject(s);
+                    parameters = new JSONObject((Map) params);
                     good = true;
-                } else {
-                    if (s.contains("&") && s.contains("=")) {
-                        parameters = Utils.explodeQuery(s);
+                }
+
+                // with JO
+                if (params instanceof JSONObject) {
+                    parameters = (JSONObject) params;
+                    good = true;
+                }
+
+                // or string
+                if (params instanceof String) {
+                    String s = params.toString();
+                    if (s.startsWith("{")) {
+                        parameters = new JSONObject(s);
                         good = true;
+                    } else {
+                        if (s.contains("&") && s.contains("=")) {
+                            parameters = Utils.explodeQuery(s);
+                            good = true;
+                        }
                     }
                 }
-            }
 
-            if (good) {
-                CallAsync call = new CallAsync(method, parameters, callback);
-                executor.execute(call);
+                if (good) {
+                    CallAsync call = new CallAsync(method, parameters, callback);
+                    executor.execute(call);
+                }
             }
+        } catch (Exception e) {
+            LOG.error("Some error occured when calling VK API: {}", e);
         }
     }
 
@@ -111,24 +120,28 @@ public class API {
      */
     public void call(Callback<Object> callback, String method, Object... params) {
 
-        if (params != null) {
+        try {
+            if (params != null) {
 
-            if (params.length == 1) {
-                this.call(method, params[0], callback);
-            }
+                if (params.length == 1) {
+                    this.call(method, params[0], callback);
+                }
 
-            if (params.length > 1) {
+                if (params.length > 1) {
 
-                if (params.length % 2 == 0) {
-                    Map<String, Object> map = new HashMap<>();
+                    if (params.length % 2 == 0) {
+                        Map<String, Object> map = new HashMap<>();
 
-                    for (int i = 0; i < params.length - 1; i += 2) {
-                        map.put(params[i].toString(), params[i + 1]);
+                        for (int i = 0; i < params.length - 1; i += 2) {
+                            map.put(params[i].toString(), params[i + 1]);
+                        }
+
+                        this.call(method, map, callback);
                     }
-
-                    this.call(method, map, callback);
                 }
             }
+        } catch (Exception e) {
+            LOG.error("Some error occured when calling VK API: {}", e);
         }
     }
 
@@ -202,29 +215,33 @@ public class API {
     @Deprecated
     public String callSync(String method, Object params) {
 
-        if (params != null) {
+        try {
+            if (params != null) {
 
-            String paramsString;
+                String paramsString;
 
-            // Work with map
-            if (params instanceof Map) {
+                // Work with map
+                if (params instanceof Map) {
 
-                paramsString = Utils.MapToURLParamsQuery(new JSONObject((Map) params));
+                    paramsString = Utils.MapToURLParamsQuery(new JSONObject((Map) params));
 
-            } else {
+                } else {
 
-                paramsString = String.valueOf(params);
+                    paramsString = String.valueOf(params);
 
-                if (paramsString.startsWith("{")) {
+                    if (paramsString.startsWith("{")) {
 
-                    paramsString = Utils.MapToURLParamsQuery(new JSONObject(paramsString));
+                        paramsString = Utils.MapToURLParamsQuery(new JSONObject(paramsString));
 
+                    }
                 }
+
+                String query = URL + method + "?" + paramsString + accessToken + V;
+
+                return Connection.getRequestResponse(query);
             }
-
-            String query = URL + method + "?" + paramsString + accessToken + V;
-
-            return Connection.getRequestResponse(query);
+        } catch (Exception e) {
+            LOG.error("Some error occured when calling VK API: {}", e);
         }
         return "error";
     }
@@ -239,11 +256,15 @@ public class API {
     @Deprecated
     public String callSync(String method, Object... params) {
 
-        if (params != null && params.length > 0) {
+        try {
+            if (params != null && params.length > 0) {
 
-            String query = URL + method + "?" + Utils.paramsToString(params) + accessToken + V;
+                String query = URL + method + "?" + Utils.paramsToString(params) + accessToken + V;
 
-            return Connection.getRequestResponse(query);
+                return Connection.getRequestResponse(query);
+            }
+        } catch (Exception e) {
+            LOG.error("Some error occured when calling VK API: {}", e);
         }
 
         return "";
