@@ -9,7 +9,7 @@ Functionality is nicely suitable either for communities and personal profiles.
 
 Latest version: [![vk-bot-java-sdk](https://img.shields.io/badge/maven--central-v0.1.3-blue.svg?style=flat)](https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk)
 
-Language: **English** | Russian
+Language: **English** | [Russian](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/README_RU.md)
 
 ## Example
 
