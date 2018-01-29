@@ -9,6 +9,8 @@
 
 Последняя версия: [![vk-bot-java-sdk](https://img.shields.io/badge/maven--central-v0.1.3-blue.svg?style=flat)](https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk)
 
+**Russian** | English
+
 ## Пример
 
 ![Example](https://petersamokhin.com/files/vk-bot-java-sdk/git_screen.png)
