@@ -66,7 +66,7 @@ group.onCommand(new String[]{"/start", "/bot", "hello"}, message ->
 ```java
 // React to user typing
 group.onTyping(userId -> {
-    System.out.println("Ïîëüçîâàòåëü https://vk.com/id" + userId + " íà÷àë ïå÷àòàòü");
+    System.out.println("Пользователь https://vk.com/id" + userId + " начал печатать");
 });
     
 // Let's type too
