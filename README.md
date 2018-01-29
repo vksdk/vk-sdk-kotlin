@@ -1,5 +1,5 @@
 # VK Bot Java SDK
-<a href="https://vk.com/vkbotsdk"><img src="https://petersamokin.com/files/vk-bot-java-sdk/cover.png"></img></a>
+<a href="https://vk.com/vkbotsdk"><img src="https://i.imgur.com/XvMSJa2.png"></img></a>
 ###### Convenient and simple library that helps quickly and easily create a bot for VKontakte https://vk.com/vkbotsdk
 
 ---
@@ -21,7 +21,7 @@ group.onSimpleTextMessage(message ->
      new Message()
          .from(group)
          .to(message.authorId())
-         .text("Что-то скучновато буковки читать. Картинку кинь лучше.")
+         .text("Г—ГІГ®-ГІГ® Г±ГЄГіГ·Г­Г®ГўГ ГІГ® ГЎГіГЄГ®ГўГЄГЁ Г·ГЁГІГ ГІГј. ГЉГ Г°ГІГЁГ­ГЄГі ГЄГЁГ­Гј Г«ГіГ·ГёГҐ.")
          .send()
 );
 
@@ -29,7 +29,7 @@ group.onPhotoMessage(message ->
     new Message()
          .from(group)
          .to(message.authorId())
-         .text("Уже лучше. Но я тоже так могу. Что дальше?")
+         .text("Г“Г¦ГҐ Г«ГіГ·ГёГҐ. ГЌГ® Гї ГІГ®Г¦ГҐ ГІГ ГЄ Г¬Г®ГЈГі. Г—ГІГ® Г¤Г Г«ГјГёГҐ?")
          .photo("/Users/PeterSamokhin/Desktop/topoviy_mem.png")
          .send()
 );
@@ -38,7 +38,7 @@ group.onVoiceMessage(message ->
     new Message()
          .from(group)
          .to(message.authorId())
-         .text("Не охота мне голосовые твои слушать.")
+         .text("ГЌГҐ Г®ГµГ®ГІГ  Г¬Г­ГҐ ГЈГ®Г«Г®Г±Г®ГўГ»ГҐ ГІГўГ®ГЁ Г±Г«ГіГёГ ГІГј.")
          .doc("https://vk.com/doc62802565_447117479")
          .send()
 );
@@ -64,7 +64,7 @@ group.onCommand(new String[]{"/start", "/bot", "hello"}, message ->
 ```java
 // React to user typing
 group.onTyping(userId -> {
-    System.out.println("Пользователь https://vk.com/id" + userId + " начал печатать");
+    System.out.println("ГЏГ®Г«ГјГ§Г®ГўГ ГІГҐГ«Гј https://vk.com/id" + userId + " Г­Г Г·Г Г« ГЇГҐГ·Г ГІГ ГІГј");
 });
     
 // Let's type too
