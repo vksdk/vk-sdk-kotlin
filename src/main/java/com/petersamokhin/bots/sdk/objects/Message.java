@@ -610,11 +610,9 @@ public class Message {
 
                 String uploadUrl = new JSONObject(response.toString()).getString("upload_url");
 
-                String response_uploadFileString;
-
                 MultipartUtility multipartUtility = new MultipartUtility(uploadUrl);
                 multipartUtility.addBytesPart("file", fileNameField, docBytes);
-                response_uploadFileString = multipartUtility.finish();
+                String response_uploadFileString = multipartUtility.finish();
 
                 if (response_uploadFileString.length() < 2 || response_uploadFileString.contains("error") || !response_uploadFileString.contains("file")) {
                     LOG.error("Doc won't uploaded: {}", response_uploadFileString);

@@ -250,7 +250,7 @@ public class Utils {
     public static long copyLarge(InputStream input, OutputStream output, byte[] buffer) throws IOException {
         long count;
         int n;
-        for (count = 0L; -1 != (n = input.read(buffer)); count += (long) n) {
+        for (count = 0L; (n = input.read(buffer)) != -1; count += (long) n) {
             output.write(buffer, 0, n);
         }
 

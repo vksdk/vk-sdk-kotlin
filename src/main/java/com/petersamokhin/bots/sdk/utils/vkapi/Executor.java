@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
-import static com.petersamokhin.bots.sdk.clients.Client.sheduler;
+import static com.petersamokhin.bots.sdk.clients.Client.scheduler;
 
 /**
  * Best way to use VK API: you can call up to 25 vk api methods by call execute once
@@ -29,6 +29,8 @@ import static com.petersamokhin.bots.sdk.clients.Client.sheduler;
 public class Executor {
 
     private static final Logger LOG = LoggerFactory.getLogger(Executor.class);
+
+    public static boolean LOG_REQUESTS = false;
 
     /**
      * We can call 'execute' method no more than three times per second.
@@ -43,7 +45,7 @@ public class Executor {
 
     private final String URL = "https://api.vk.com/method/execute";
     private final String accessToken;
-    private final String V = "&v=" + 5.68;
+    private final String V = "&v=" + 5.69;
 
 
     /**
@@ -64,7 +66,7 @@ public class Executor {
     public Executor(String accessToken) {
         this.accessToken = "&access_token=" + accessToken;
 
-        sheduler.scheduleWithFixedDelay(this::executing, 0, delay, TimeUnit.MILLISECONDS);
+        scheduler.scheduleWithFixedDelay(this::executing, 0, delay, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -102,6 +104,10 @@ public class Executor {
 
             String responseString = Connection.postRequestResponse(URL, vkCallParams);
 
+            if (LOG_REQUESTS) {
+                LOG.error("New executing request response: {}", responseString);
+            }
+
             JSONObject response;
 
             try {
@@ -114,7 +120,7 @@ public class Executor {
 
             if (response.has("execute_errors")) {
                 try {
-                    LOG.error("Errors when executing " + URLDecoder.decode(code, "UTF-8") + ", error: {}", response.get("execute_errors").toString());
+                    LOG.error("Errors when executing: {}, code: {}", response.get("execute_errors").toString(), URLDecoder.decode(code, "UTF-8"));
                 } catch (UnsupportedEncodingException ignored) {
                 }
             }
@@ -128,11 +134,6 @@ public class Executor {
             JSONArray responses = response.getJSONArray("response");
 
             IntStream.range(0, count).forEachOrdered(i -> tmpQueue.get(i).getCallback().onResult(responses.get(i)));
-
-            try {
-                Thread.sleep(delay);
-            } catch (InterruptedException ignored) {
-            }
         }
     }
 
