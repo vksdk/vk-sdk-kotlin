@@ -10,8 +10,8 @@ import org.json.JSONObject;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import static com.petersamokhin.bots.sdk.clients.Client.scheduler;
 import static com.petersamokhin.bots.sdk.clients.Client.service;
-import static com.petersamokhin.bots.sdk.clients.Client.sheduler;
 
 /**
  * Class for handling all updates in other thread
@@ -39,7 +39,7 @@ public class UpdatesHandler extends Thread {
 
     @Override
     public void run() {
-        sheduler.scheduleWithFixedDelay(this::handleCurrentUpdate, 0, 1, TimeUnit.MILLISECONDS);
+        scheduler.scheduleWithFixedDelay(this::handleCurrentUpdate, 0, 1, TimeUnit.MILLISECONDS);
     }
 
     /**

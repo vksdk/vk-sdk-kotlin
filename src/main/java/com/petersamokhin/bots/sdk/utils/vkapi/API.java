@@ -107,7 +107,7 @@ public class API {
                 }
             }
         } catch (Exception e) {
-            LOG.error("Some error occured when calling VK API: {}", e);
+            LOG.error("Some error occured when calling VK API method {} with params {}, error is {}", method, params.toString(), e);
         }
     }
 

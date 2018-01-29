@@ -25,7 +25,7 @@ public abstract class Client {
      * Executor services for threadsafing and fast work
      */
     public static final ExecutorService service = Executors.newCachedThreadPool();
-    public static final ScheduledExecutorService sheduler = Executors.newSingleThreadScheduledExecutor();
+    public static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     /*
      * Main params
