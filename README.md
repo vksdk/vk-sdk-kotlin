@@ -1,6 +1,6 @@
 # VK Bot Java SDK
 <a href="https://vk.com/vkbotsdk"><img src="https://i.imgur.com/XvMSJa2.png"></img></a>
-###### Convenient and simple library that helps quickly and easily create a bot for VKontakte https://vk.com/vkbotsdk
+###### Convenient and simple library that helps quickly and easily create a bot for VK.com https://vk.com/vkbotsdk
 
 ---
 
@@ -23,7 +23,7 @@ group.onSimpleTextMessage(message ->
      new Message()
          .from(group)
          .to(message.authorId())
-         .text("×òî-òî ñêó÷íîâàòî áóêîâêè ÷èòàòü. Êàðòèíêó êèíü ëó÷øå.")
+         .text("Что-то скучновато буковки читать. Картинку кинь лучше.")
          .send()
 );
 
@@ -31,7 +31,7 @@ group.onPhotoMessage(message ->
     new Message()
          .from(group)
          .to(message.authorId())
-         .text("Óæå ëó÷øå. Íî ÿ òîæå òàê ìîãó. ×òî äàëüøå?")
+         .text("Уже лучше. Но я тоже так могу. Что дальше?")
          .photo("/Users/PeterSamokhin/Desktop/topoviy_mem.png")
          .send()
 );
@@ -40,7 +40,7 @@ group.onVoiceMessage(message ->
     new Message()
          .from(group)
          .to(message.authorId())
-         .text("Íå îõîòà ìíå ãîëîñîâûå òâîè ñëóøàòü.")
+         .text("Не охота мне голосовые твои слушать.")
          .doc("https://vk.com/doc62802565_447117479")
          .send()
 );
