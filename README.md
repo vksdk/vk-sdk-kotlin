@@ -45,6 +45,61 @@ group.onVoiceMessage(message ->
          .send()
 );
 ```
+## Ver. 0.1.4-alpha
+This version is only available for downloading here – it will be added to central repo once it gets rid of “alpha” suffix, fixed and complete.
+
+* Fixed small things not affecting performance and quality overall, but making the work easier and the code more legible. 
+* Added chatworking – now you can develop a bot that processes chat messages:
+```java
+  user.onMessage(message -> {
+        if (message.isMessageFromChat()) {
+
+            // Get chat id
+            int chatIdLong = message.getChatIdLong(); // 2000000011
+            int chatId = message.chatId();            // 11
+            int sender = message.authorId();          // 62802565
+
+            // Handle message, it's from chat
+            new Message()
+                        .from(user)
+                        .to(chatIdLong)
+                        .text("Hello, chat!")
+                        .send();
+
+        } else {
+
+           // Handle message that not from chat
+           new Message()
+                        .from(user)
+                        .to(message.authorId())
+                        .text("Sorry, I will work only in chats.")
+                        .send();
+        }
+  });
+  
+  user.onChatMessage(message -> {
+      // Handle message, it's from chat
+  });
+  ```
+* processing chat events:
+```java
+  // Handle title changing
+  user.onChatTitleChanged((oldTitle, newTitle, who, chat) -> {
+  
+      String s = "User with id " + who + " changed title in chat " + chat + " from «" + oldTitle + "» to «" + newTitle + "»";
+
+      new Message()
+          .from(user)
+          .to(chat)
+          .text(s)
+          .send();
+
+      // User with id 62802565 changed title in chat 2000000011 from «Test 0» to «Test 1»
+  });  
+  
+  // also you can handle chat join, chat leave, chat creating, etc
+  ```
+ All methods return full chat ID, but you can switch it. For the sake of convenience, this value (`2000000000`) is added as a constant `com.petersamokhin.bots.sdk.objects.Chat.CHAT_PREFIX`.
 
 ## Ver. 0.1.3 (25.08.2017) functionality
 * Processing direct messages of communities and personal profiles - only [access_token](https://vk.com/dev/access_token) is necessary.
@@ -131,3 +186,4 @@ Done. The library is usable in your project now.
 
 ## Extended description
 [Please, refer to the documentation](https://github.com/petersamokhin/vk-bot-java-sdk/wiki/%D0%94%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F)
+
