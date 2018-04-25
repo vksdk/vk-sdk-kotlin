@@ -1,5 +1,5 @@
 # VK Bot Java SDK
-<a href="https://vk.com/vkbotsdk"><img src="https://petersamokhin.com/files/vk-bot-java-sdk/cover.png"></img></a>
+<a href="https://vk.com/vkbotsdk"><img src="https://i.imgur.com/XvMSJa2.png"></img></a>
 ###### Удобная и простая библиотека, помогающая легко и быстро создать бота для ВКонтакте https://vk.com/vkbotsdk
 
 ---
@@ -13,7 +13,7 @@
 
 ## Пример
 
-![Example](https://petersamokhin.com/files/vk-bot-java-sdk/git_screen.png)
+![Example](https://pp.userapi.com/c836720/v836720502/5f450/LLXsepZc9EE.jpg)
 
 Реализуем возможность получать уведомления только о сообщениях нужного типа:
 ```java
