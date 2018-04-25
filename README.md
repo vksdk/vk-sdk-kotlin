@@ -13,7 +13,7 @@ Language: **English** | [Russian](https://github.com/petersamokhin/vk-bot-java-s
 
 ## Example
 
-![Example](https://petersamokhin.com/files/vk-bot-java-sdk/git_screen.png)
+![Example](https://pp.userapi.com/c836720/v836720502/5f450/LLXsepZc9EE.jpg)
 
 Implementation of accepting messages of only specified types:
 ```java
