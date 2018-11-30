@@ -10,7 +10,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -18,9 +17,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-/**
- * Created by PeterSamokhin on 29/09/2017 02:49
- */
 public class Chat {
 
     public static final Integer CHAT_PREFIX = 2000000000;

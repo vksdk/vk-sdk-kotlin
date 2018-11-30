@@ -9,6 +9,7 @@ import spark.Spark;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public class CallbackApiHandler {
 
     private final String ok = "ok";
 
-    private Map<String, Callback> callbacks = new HashMap<>();
+    private Map<String, Callback<JSONObject>> callbacks = new HashMap<>();
 
     public static volatile boolean autoSetEvents = true;
     private Group group;
@@ -85,7 +86,7 @@ public class CallbackApiHandler {
         Spark.port(settings.getPort());
         LOG.info("Started listening to VK Callback API on port 80.");
 
-        // Set server if it's not setted
+        // Set server if it's not set
         if (settings.getHost() == null || settings.getHost().length() < 2) {
             LOG.error("Server is not set: trying to set...");
             boolean server_ok = false;
@@ -113,13 +114,13 @@ public class CallbackApiHandler {
 
             } else {
 
-                // Autoanswer needed if you want to answer "ok" immediatly
-                // Because if error or something else will occure
+                // Auto-answer needed if you want to answer "ok" immediately
+                // Because if error or something else will occur
                 // VK will repeat requests until you will answer "ok"
                 if (settings.isAutoAnswer()) {
                     HttpServletResponse resp = response.raw();
                     OutputStream os = resp.getOutputStream();
-                    os.write(ok.getBytes("UTF-8"));
+                    os.write(ok.getBytes(StandardCharsets.UTF_8));
                     resp.setStatus(HttpServletResponse.SC_OK);
                     resp.setContentLength(2);
                     os.close();
@@ -137,7 +138,7 @@ public class CallbackApiHandler {
      *
      * @param callback Callback
      */
-    public void registerCallback(String name, Callback callback) {
+    public void registerCallback(String name, Callback<JSONObject> callback) {
 
         if (autoSetEvents) {
             group.api().callSync("groups.setCallbackSettings", "group_id", group.getId(), name, 1);

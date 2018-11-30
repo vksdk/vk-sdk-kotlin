@@ -3,7 +3,7 @@ package com.petersamokhin.bots.sdk.longpoll.responses;
 /**
  * Deserialized object of VK response
  */
-public class GetLongPollServerResponse {
+public class LongPollServerResponse {
 
     private String key;
     private String server;
@@ -17,7 +17,7 @@ public class GetLongPollServerResponse {
      * @param server <a href="https://vk.com/dev/using_longpoll">link</a>
      * @param ts     <a href="https://vk.com/dev/using_longpoll">link</a>
      */
-    public GetLongPollServerResponse(String key, String server, Integer ts) {
+    public LongPollServerResponse(String key, String server, Integer ts) {
         this.key = key;
         this.server = server;
         this.ts = ts;
@@ -31,7 +31,7 @@ public class GetLongPollServerResponse {
      * @param ts     <a href="https://vk.com/dev/using_longpoll">link</a>
      * @param pts    <a href="https://vk.com/dev/using_longpoll">link</a>
      */
-    public GetLongPollServerResponse(String key, String server, Integer ts, Integer pts) {
+    public LongPollServerResponse(String key, String server, Integer ts, Integer pts) {
         this.key = key;
         this.server = server;
         this.ts = ts;

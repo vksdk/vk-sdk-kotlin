@@ -5,9 +5,9 @@ package com.petersamokhin.bots.sdk.utils.vkapi;
  */
 public class CallbackApiSettings {
 
-    private String host = null, path;
-    private int port = 80;
-    private boolean autoAnswer = false;
+    private String host, path;
+    private int port;
+    private boolean autoAnswer;
 
     public CallbackApiSettings(String host, int port, String path, boolean autoAnswer, boolean autoSet) {
         this.host = host;
@@ -17,7 +17,6 @@ public class CallbackApiSettings {
         CallbackApiHandler.autoSetEvents = autoSet;
     }
 
-    /* Getters */
     String getHost() {
         return host;
     }

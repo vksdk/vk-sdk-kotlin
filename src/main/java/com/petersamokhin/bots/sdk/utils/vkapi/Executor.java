@@ -43,10 +43,7 @@ public class Executor {
      */
     private volatile List<CallAsync> queue = new ArrayList<>();
 
-    private final String URL = "https://api.vk.com/method/execute";
     private final String accessToken;
-    private final String V = "&v=" + 5.69;
-
 
     /**
      * Init executor
@@ -100,8 +97,10 @@ public class Executor {
 
         // Execute
         if (count > 0) {
-            String vkCallParams = "code=return " + code + ";" + accessToken + V;
+            String v = "&v=" + 5.69;
+            String vkCallParams = "code=return " + code + ";" + accessToken + v;
 
+            String URL = "https://api.vk.com/method/execute";
             String responseString = Connection.postRequestResponse(URL, vkCallParams);
 
             if (LOG_REQUESTS) {

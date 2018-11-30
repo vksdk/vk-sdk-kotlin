@@ -30,4 +30,5 @@ public class CallSync extends Call {
         return Objects.equals(getMethodName(), call.getMethodName()) &&
                 Objects.equals(getParams().toMap(), call.getParams().toMap());
     }
+
 }

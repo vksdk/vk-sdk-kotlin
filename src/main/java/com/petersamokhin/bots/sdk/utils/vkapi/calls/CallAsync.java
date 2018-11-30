@@ -31,4 +31,5 @@ public class CallAsync extends Call {
                 Objects.equals(getParams().toMap(), call.getParams().toMap()) &&
                 Objects.equals(getCallback(), call.getCallback());
     }
+
 }

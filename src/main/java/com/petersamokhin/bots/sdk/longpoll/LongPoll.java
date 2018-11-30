@@ -3,7 +3,7 @@ package com.petersamokhin.bots.sdk.longpoll;
 import com.petersamokhin.bots.sdk.callbacks.AbstractCallback;
 import com.petersamokhin.bots.sdk.callbacks.Callback;
 import com.petersamokhin.bots.sdk.clients.Client;
-import com.petersamokhin.bots.sdk.longpoll.responses.GetLongPollServerResponse;
+import com.petersamokhin.bots.sdk.longpoll.responses.LongPollServerResponse;
 import com.petersamokhin.bots.sdk.utils.web.Connection;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * com.petersamokhin.bots.sdk.Main class for work with VK longpoll server
+ * com.petersamokhin.bots.sdk.Main class for work with VK long-poll server
  * More: <a href="https://vk.com/dev/using_longpoll">link</a>
  */
 public class LongPoll {
@@ -41,7 +41,7 @@ public class LongPoll {
     private Client client;
 
     /**
-     * If true, all updates from longpoll server
+     * If true, all updates from long-poll server
      * will be logged to level 'INFO'
      */
     private volatile boolean logUpdates = false;
@@ -57,22 +57,22 @@ public class LongPoll {
         this.updatesHandler.start();
         this.client = client;
 
-        boolean dataSetted = setData(null, null, null, null, null);
+        boolean dataSet = setData(null, null, null, null, null);
 
-        while (!dataSetted) {
+        while (!dataSet) {
             LOG.error("Some error occured when trying to get longpoll settings, aborting. Trying again in 1 sec.");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {
             }
-            dataSetted = setData(null, null, null, null, null);
+            dataSet = setData(null, null, null, null, null);
         }
 
         if (!longpollIsOn) {
             longpollIsOn = true;
-            Thread threadLongpollListener = new Thread(this::startListening);
-            threadLongpollListener.setName("threadLongpollListener");
-            threadLongpollListener.start();
+            Thread threadLongPollListener = new Thread(this::startListening);
+            threadLongPollListener.setName("threadLongPollListener");
+            threadLongPollListener.start();
         }
     }
 
@@ -92,27 +92,27 @@ public class LongPoll {
         this.updatesHandler.start();
         this.client = client;
 
-        boolean dataSetted = setData(need_pts, version, API, wait, mode);
+        boolean dataSet = setData(need_pts, version, API, wait, mode);
 
-        while (!dataSetted) {
+        while (!dataSet) {
             LOG.error("Some error occured when trying to get longpoll settings, aborting. Trying again in 1 sec.");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {
             }
-            dataSetted = setData(need_pts, version, API, wait, mode);
+            dataSet = setData(need_pts, version, API, wait, mode);
         }
 
         if (!longpollIsOn) {
             longpollIsOn = true;
-            Thread threadLongpollListener = new Thread(this::startListening);
-            threadLongpollListener.setName("threadLongpollListener");
-            threadLongpollListener.start();
+            Thread threadLongPollListener = new Thread(this::startListening);
+            threadLongPollListener.setName("threadLongPollListener");
+            threadLongPollListener.start();
         }
     }
 
     /**
-     * If you need to set new longpoll server, or restart listening
+     * If you need to set new long-poll server, or restart listening
      * off old before.
      */
     public void off() {
@@ -156,10 +156,10 @@ public class LongPoll {
         this.wait = wait == null ? this.wait : wait;
         this.mode = mode == null ? this.mode : mode;
 
-        GetLongPollServerResponse serverResponse = getLongPollServer(client.getAccessToken());
+        LongPollServerResponse serverResponse = getLongPollServer(client.getAccessToken());
 
         if (serverResponse == null) {
-            LOG.error("Some error occured, bad response returned from getting LongPoll server settings (server, key, ts, pts).");
+            LOG.error("Some error occurred, bad response returned from getting LongPoll server settings (server, key, ts, pts).");
             return false;
         }
 
@@ -172,12 +172,12 @@ public class LongPoll {
     }
 
     /**
-     * First getting of longpoll server params
+     * First getting of long-poll server params
      *
      * @param access_token Access token
      * @return LongPoll params
      */
-    private GetLongPollServerResponse getLongPollServer(String access_token) {
+    private LongPollServerResponse getLongPollServer(String access_token) {
 
         StringBuilder query = new StringBuilder();
         query.append("https://api.vk.com/method/messages.getLongPollServer?need_pts=").append(need_pts).append("&lp_version=").append(version).append("&access_token=").append(access_token).append("&v=").append(API);
@@ -187,11 +187,11 @@ public class LongPoll {
         try {
             response = new JSONObject(Connection.getRequestResponse(query.toString()));
         } catch (JSONException e) {
-            LOG.error("Bad responce of getting longpoll server.");
+            LOG.error("Bad response of getting long-poll server.");
             return null;
         }
 
-        LOG.info("GetLongPollServerResponse: \n{}\n", response);
+        LOG.info("LongPollServerResponse: \n{}\n", response);
 
         if (!response.has("response") || !response.getJSONObject("response").has("key") || !response.getJSONObject("response").has("server") || !response.getJSONObject("response").has("ts")) {
             LOG.error("Bad response of getting longpoll server!\nQuery: {}\n Response: {}", query, response);
@@ -200,7 +200,7 @@ public class LongPoll {
 
         JSONObject data = response.getJSONObject("response");
 
-        return new GetLongPollServerResponse(
+        return new LongPollServerResponse(
                 data.getString("key"),
                 data.getString("server"),
                 data.getInt("ts"),
@@ -210,7 +210,7 @@ public class LongPoll {
 
 
     /**
-     * Listening to events from VK longpoll server
+     * Listening to events from VK long-poll server
      * and call callbacks on events.
      * You can override only necessary methods in callback to get necessary events.
      */
@@ -246,25 +246,14 @@ public class LongPoll {
 
                 LOG.error("Response of VK LongPoll fallen with error code {}", code);
 
-                switch (code) {
-
-                    default: {
-
-                        if (response.has("ts")) {
-                            ts = response.getInt("ts");
-                        }
-
-                        setData(null, null, null, null, null);
-                        break;
-                    }
-
-                    case 4: {
-
-                        version = response.getInt("max_version");
-                        setData(null, null, null, null, null);
-                        break;
-                    }
+                if (code == 4) {
+                    version = response.getInt("max_version");
+                    setData(null, null, null, null, null);
                 }
+                if (response.has("ts")) {
+                    ts = response.getInt("ts");
+                }
+                setData(null, null, null, null, null);
             } else {
 
                 if (response.has("ts"))

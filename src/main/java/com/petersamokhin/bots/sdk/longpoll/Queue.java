@@ -15,7 +15,7 @@ class Queue {
     volatile CopyOnWriteArrayList<JSONArray> updates = new CopyOnWriteArrayList<>();
 
     /**
-     * We add all of updates from longpoll server
+     * We add all of updates from long-poll server
      * to queue
      *
      * @param elements Array of updates

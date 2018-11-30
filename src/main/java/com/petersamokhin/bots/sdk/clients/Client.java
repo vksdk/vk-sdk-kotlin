@@ -16,13 +16,13 @@ import java.util.concurrent.*;
 
 /**
  * Main client class, that contains all necessary methods and fields
- * for base work with VK and longpoll server
+ * for base work with VK and long-poll server
  */
 @SuppressWarnings("unused")
 public abstract class Client {
 
     /*
-     * Executor services for threadsafing and fast work
+     * Executor services for threadsafety and fast work
      */
     public static final ExecutorService service = Executors.newCachedThreadPool();
     public static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -33,7 +33,7 @@ public abstract class Client {
     private String accessToken;
     private Integer id;
     private static API api;
-    private LongPoll longPoll = null;
+    private LongPoll longPoll;
 
     public CopyOnWriteArrayList<Command> commands = new CopyOnWriteArrayList<>();
     private ConcurrentHashMap<Integer, Chat> chats = new ConcurrentHashMap<>();
@@ -67,7 +67,7 @@ public abstract class Client {
     }
 
     /**
-     * If need to set not default longpoll
+     * If need to set not default long-poll
      */
     public void setLongPoll(LongPoll LP) {
 
@@ -85,7 +85,7 @@ public abstract class Client {
     }
 
     /**
-     * Get longpoll of current client
+     * Get long-poll of current client
      */
     public LongPoll longPoll() {
         return longPoll;

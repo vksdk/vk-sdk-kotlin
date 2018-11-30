@@ -38,13 +38,13 @@ public class Message {
     private API api;
 
     /**
-     * Attachments in format of received event from longpoll server
+     * Attachments in format of received event from long-poll server
      * More: <a href="https://vk.com/dev/using_longpoll_2">link</a>
      */
     private JSONObject attachmentsOfReceivedMessage;
 
     /**
-     * Attahments in format [photo62802565_456241137, photo111_111, doc100_500]
+     * Attachments in format [photo62802565_456241137, photo111_111, doc100_500]
      */
     private CopyOnWriteArrayList<String> attachments = new CopyOnWriteArrayList<>(), forwardedMessages = new CopyOnWriteArrayList<>(), photosToUpload = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<JSONObject> docsToUpload = new CopyOnWriteArrayList<>();

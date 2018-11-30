@@ -50,7 +50,7 @@ public class UpdatesHandler extends Thread {
     }
 
     /**
-     * Handle one event from longpoll server
+     * Handle one event from long-poll server
      */
     private void handleCurrentUpdate() {
 
@@ -177,7 +177,7 @@ public class UpdatesHandler extends Thread {
     }
 
     /**
-     * Handle every longpoll event
+     * Handle every long-poll event
      */
     @SuppressWarnings("unchecked")
     private void handleEveryLongPollUpdate(JSONArray updateObject) {

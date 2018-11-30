@@ -107,7 +107,7 @@ public class API {
                 }
             }
         } catch (Exception e) {
-            LOG.error("Some error occured when calling VK API method {} with params {}, error is {}", method, params.toString(), e);
+            LOG.error("Some error occurred when calling VK API method {} with params {}, error is {}", method, params.toString(), e);
         }
     }
 
@@ -141,7 +141,7 @@ public class API {
                 }
             }
         } catch (Exception e) {
-            LOG.error("Some error occured when calling VK API: {}", e);
+            LOG.error("Some error occurred when calling VK API: {}", e);
         }
     }
 
@@ -200,7 +200,10 @@ public class API {
         } catch (UnsupportedEncodingException ignored) {
         }
 
-        return response.getJSONArray("response");
+        if (response != null) {
+            return response.getJSONArray("response");
+        }
+        return null;
     }
 
     /**
@@ -264,7 +267,7 @@ public class API {
                 return Connection.getRequestResponse(query);
             }
         } catch (Exception e) {
-            LOG.error("Some error occured when calling VK API: {}", e);
+            LOG.error("Some error occurred when calling VK API: {}", e);
         }
 
         return "";
