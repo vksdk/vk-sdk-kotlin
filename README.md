@@ -1,10 +1,12 @@
 # VK Bot Java SDK
-<a href="https://vk.com/vkbotsdk"><img src="https://i.imgur.com/XvMSJa2.png"></img></a>
+
+[![vk-bot-java-sdk](https://i.imgur.com/XvMSJa2.png)](https://vk.com/vkbotsdk)
+
 ###### Convenient and simple library that helps quickly and easily create a bot for VK.com https://vk.com/vkbotsdk
 
 ---
 
-Using this library one can interact with [VK API](https://vk.com/dev/manuals) for making bots - and there is more.
+Using this library one can interact with [VK API](https://vk.com/dev/manuals) for making bots &mdash; and there is more.
 Functionality is nicely suitable either for communities and personal profiles.
 
 Latest version: [![vk-bot-java-sdk](https://img.shields.io/badge/maven--central-v0.1.3-blue.svg?style=flat)](https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk)
@@ -102,7 +104,8 @@ This version is only available for downloading here – it will be added to cent
  All methods return full chat ID, but you can switch it. For the sake of convenience, this value (`2000000000`) is added as a constant `com.petersamokhin.bots.sdk.objects.Chat.CHAT_PREFIX`.
 
 ## Ver. 0.1.3 (25.08.2017) functionality
-* Processing direct messages of communities and personal profiles - only [access_token](https://vk.com/dev/access_token) is necessary.
+
+* Processing direct messages of communities and personal profiles &mdash; only [access_token](https://vk.com/dev/access_token) is necessary.
 * Ability to specify needed type of messages, e.g. voice messages, plain-text messages, messages with stickers etc.
 * Also command processing added:
 ```java
@@ -145,6 +148,7 @@ group.uploadCover("https://www.petersamokhin.com/files/vk-bot-java-sdk/cover.png
 ```
 
 ## Preparing
+
 * Firstly, you need to create a community if you are intending to use bot on behalf of it
   * You can do it [there](https://vk.com/groups)
 * Then you need to retrieve **access_token**
@@ -162,16 +166,21 @@ Add following lines to **pom.xml**:
     <version>0.1.3</version>
 </dependency>
 ```
-#### If you are using Gradle
+#### For gradle users
+
 Add following lines to `dependencies` section in your **build.gradle**:
-```gradle
-compile group: 'com.petersamokhin', name: 'vk-bot-java-sdk', version: '0.1.3'
+```groovy
+compile 'com.petersamokhin:vk-bot-java-sdk:0.1.3'
 ```
+
 #### If you are using something else
+
 Please, refer to guidelines for other build systems by Maven: https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk/
 
 ---
-#### If you ARE NOT using any build system 
+
+#### If you **are not** using any build system 
+
 * Download distributive (all dependencies are included): [library (3.2 MB)](https://www.petersamokhin.com/files/vk-bot-java-sdk/vk-bot-java-sdk-0.1.3-jar-with-dependencies.jar) | [md5](https://www.petersamokhin.com/files/vk-bot-java-sdk/vk-bot-java-sdk-0.1.3-jar-with-dependencies.jar.md5)
 * Now, all you need to do is add it to `classpath`:
   * Using shell:
@@ -182,8 +191,9 @@ Please, refer to guidelines for other build systems by Maven: https://mvnreposit
   ![Cover](https://petersamokhin.com/files/vk-bot-java-sdk/git_screen_2.png)
 
 ---
-Done. The library is usable in your project now.
+
+Done. The library is usable in your project now. 
 
 ## Extended description
-[Please, refer to the documentation](https://github.com/petersamokhin/vk-bot-java-sdk/wiki/%D0%94%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F)
 
+[Please, refer to the documentation](https://github.com/petersamokhin/vk-bot-java-sdk/wiki/%D0%94%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F)
