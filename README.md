@@ -7,8 +7,6 @@
 Using this library one can interact with [VK API](https://vk.com/dev/manuals) for making bots - and there is more.
 Functionality is nicely suitable either for communities and personal profiles.
 
-Latest version: [![vk-bot-java-sdk](https://img.shields.io/badge/maven--central-v0.1.3-blue.svg?style=flat)](https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk)
-
 Language: **English** | [Russian](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/README_RU.md)
 
 ## Example
@@ -144,7 +142,7 @@ message.doc("https://www.petersamokhin.com/files/test.txt").send();
 group.uploadCover("https://www.petersamokhin.com/files/vk-bot-java-sdk/cover.png");
 ```
 
-##Keyboard support
+## Keyboard support
 
 Keyboard limits are now 10 lines and 4 buttons per line.
 only 4 colors: primary - blue, default - white,  negative - red, positive - green
@@ -167,6 +165,7 @@ group.onSimpleTextMessage(message -> {
          .send();
  });
 ```
+<img src="https://pp.userapi.com/c851332/v851332017/126d7c/1dwV1hyu98E.jpg"></img>
 Clicked button text will be get in message.getText(). Because payload are not supported you can't distinguish different buttons with equal text.
 message.getText();
 To remove keyboard use Message.clearKeyboard() or call Message.keyboard(...) with empty Keyboard
@@ -176,8 +175,10 @@ To remove keyboard use Message.clearKeyboard() or call Message.keyboard(...) wit
   * You can do it [there](https://vk.com/groups)
 * Then you need to retrieve **access_token**
   * It is very well explained [there](https://vk.com/dev/access_token)]
-
+* To enable keyboard support setup you group
+<img src="https://pp.userapi.com/c851332/v851332017/126d85/PTNQTaLX4Uo.jpg"></img>
 ## Installation
+
 Simplest way to install modified library is install original library and then replace them with new jar file (addition my version to maven in process)
 
 The library is in a central `maven` repo. All you need to do is add a few lines into your build file.
@@ -198,20 +199,3 @@ compile group: 'com.petersamokhin', name: 'vk-bot-java-sdk', version: '0.1.3'
 ```
 #### If you are using something else
 Please, refer to guidelines for other build systems by Maven: https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk/
-
----
-#### If you ARE NOT using any build system 
-* Download distributive (all dependencies are included): [library (3.2 MB)](http://central.maven.org/maven2/com/petersamokhin/vk-bot-java-sdk/0.1.3/vk-bot-java-sdk-0.1.3.jar) | [md5](http://central.maven.org/maven2/com/petersamokhin/vk-bot-java-sdk/0.1.3/vk-bot-java-sdk-0.1.3.jar.md5)
-* Now, all you need to do is add it to `classpath`:
-  * Using shell:
-  ```bash
-  javac -cp "/root/vk-bot-java-sdk-0.1.3.jar" Bot.jar 
-  ```
-  * If you use **IntelliJ IDEA** go to **Project Structure...** | **Libraries**, click `+` and add downloaded .jar to lib list.
-
----
-Done. The library is usable in your project now.
-
-## Extended description
-[Please, refer to the documentation](https://github.com/petersamokhin/vk-bot-java-sdk/wiki/%D0%94%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F)
-
