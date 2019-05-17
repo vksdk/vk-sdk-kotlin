@@ -145,7 +145,8 @@ group.uploadCover("https://www.petersamokhin.com/files/vk-bot-java-sdk/cover.png
 ## Keyboard support
 
 Keyboard limits are now 10 lines and 4 buttons per line.
-only 4 colors: primary - blue, default - white,  negative - red, positive - green
+
+Only 4 colors: primary - blue, default - white,  negative - red, positive - green
 
 ```java
 // First need init keyboard and they buttons
@@ -166,8 +167,8 @@ group.onSimpleTextMessage(message -> {
  });
 ```
 <img src="https://pp.userapi.com/c851332/v851332017/126d7c/1dwV1hyu98E.jpg"></img>
+
 Clicked button text will be get in message.getText(). Because payload are not supported you can't distinguish different buttons with equal text.
-message.getText();
 To remove keyboard use Message.clearKeyboard() or call Message.keyboard(...) with empty Keyboard
 
 ## Preparing
