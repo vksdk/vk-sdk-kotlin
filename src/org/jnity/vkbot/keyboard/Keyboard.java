@@ -22,27 +22,8 @@ public class Keyboard {
         return this;
     }
 
-    public Keyboard addButtonsLine(List<Button> buttons) {
-        if (buttons.size() > MAX_BUTTONS_IN_LINES) {
-            throw new IllegalArgumentException("Too many buttons per line, max is " + MAX_BUTTONS_IN_LINES);
-        }
-        if (buttonsLines.size() == MAX_LINES) {
-            throw new IllegalStateException("Lines limit reached buttons, max is" + MAX_LINES);
-        }
-        buttonsLines.add(buttons);
-        return this;
-    }
-
-    public Keyboard addButtonsLine(Button... buttons) {
-        return addButtonsLine(Arrays.asList(buttons));
-    }
-
-    public Keyboard addButtonsLine(String... buttons) {
-        return addButtonsLine(Arrays.stream(buttons).map(Button::new).collect(Collectors.toList()));
-    }
-
     public Keyboard addButtons(List<Button> buttons) {
-        if (buttonsLines.stream().mapToInt(List::size).sum() + buttons.size() > MAX_BUTTONS) {
+        if (buttonsLines.size() * MAX_BUTTONS_IN_LINES + buttons.size() > MAX_BUTTONS) {
             throw new IllegalArgumentException("Too many buttons, max is " + MAX_BUTTONS);
         }
         int lineCounter = 0;
@@ -56,7 +37,7 @@ public class Keyboard {
                 buttonsLine = new ArrayList<>();
             }
         }
-        if(lineCounter>0) {
+        if (lineCounter > 0) {
             buttonsLines.add(buttonsLine);
         }
         return this;

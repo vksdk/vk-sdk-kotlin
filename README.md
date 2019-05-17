@@ -144,6 +144,33 @@ message.doc("https://www.petersamokhin.com/files/test.txt").send();
 group.uploadCover("https://www.petersamokhin.com/files/vk-bot-java-sdk/cover.png");
 ```
 
+##Keyboard support
+
+Keyboard limits are now 10 lines and 4 buttons per line.
+only 4 colors: primary - blue, default - white,  negative - red, positive - green
+
+```java
+// First need init keyboard and they buttons
+Keyboard keys = Keyboard.of(new Button("sample", ButtonColor.DEFAULT), new Button("text", ButtonColor.NEGATIVE));
+//for buttons with ButtonColor.DEFAULT you can use String as argument
+//addButtons always add one new line and automatically group buttons in 4 per one line.
+//they will not add buttons to existing lines
+keys.addButtons("A","B","C","D","A1");
+//"A1" will be automatically moved to new line
+//then add it to response
+group.onSimpleTextMessage(message -> {
+    new Message()
+         .from(group)
+         .to(message.authorId())
+         .text(message.getText())
+         .keyboard(keys)
+         .send();
+ });
+```
+Clicked button text will be get in message.getText(). Because payload are not supported you can't distinguish different buttons with equal text.
+message.getText();
+To remove keyboard use Message.clearKeyboard() or call Message.keyboard(...) with empty Keyboard
+
 ## Preparing
 * Firstly, you need to create a community if you are intending to use bot on behalf of it
   * You can do it [there](https://vk.com/groups)
@@ -151,6 +178,8 @@ group.uploadCover("https://www.petersamokhin.com/files/vk-bot-java-sdk/cover.png
   * It is very well explained [there](https://vk.com/dev/access_token)]
 
 ## Installation
+Simplest way to install modified library is install original library and then replace them with new jar file (addition my version to maven in process)
+
 The library is in a central `maven` repo. All you need to do is add a few lines into your build file.
 
 #### If you are using Maven
