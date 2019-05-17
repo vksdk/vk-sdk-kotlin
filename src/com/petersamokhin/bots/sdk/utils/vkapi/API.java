@@ -25,7 +25,7 @@ public class API {
 
     private static Executor executor;
 
-    private String URL = "https://api.vk.com/method/", V = "&v=" + 5.67;
+    private String URL = "https://api.vk.com/method/", V = "&v=" + 5.78;
     private String accessToken;
 
     private static boolean executionStarted = false;

@@ -7,6 +7,7 @@ import com.petersamokhin.bots.sdk.utils.vkapi.API;
 import com.petersamokhin.bots.sdk.utils.vkapi.docs.DocTypes;
 import com.petersamokhin.bots.sdk.utils.web.Connection;
 import com.petersamokhin.bots.sdk.utils.web.MultipartUtility;
+import org.jnity.vkbot.keyboard.Keyboard;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +35,7 @@ public class Message {
     private static final Logger LOG = LoggerFactory.getLogger(Message.class);
 
     private Integer messageId, flags, peerId, timestamp, randomId, stickerId, chatId, chatIdLong;
-    private String text, accessToken, title;
+    private String text, accessToken, title, keyboard;
     private API api;
 
     /**
@@ -49,6 +50,7 @@ public class Message {
     private CopyOnWriteArrayList<String> attachments = new CopyOnWriteArrayList<>(), forwardedMessages = new CopyOnWriteArrayList<>(), photosToUpload = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<JSONObject> docsToUpload = new CopyOnWriteArrayList<>();
 
+
     /**
      * Constructor for sent message
      */
@@ -59,7 +61,6 @@ public class Message {
      * Constructor for received message
      */
     public Message(Client client, Integer messageId, Integer flags, Integer peerId, Integer timestamp, String text, JSONObject attachments, Integer randomId) {
-
         setAccessToken(client.getAccessToken());
         setMessageId(messageId);
         setFlags(flags);
@@ -69,7 +70,6 @@ public class Message {
         setAttachments(attachments);
         setRandomId(randomId);
         setTitle(attachments.has("title") ? attachments.getString("title") : " ... ");
-
         api = client.api();
     }
 
@@ -751,6 +751,36 @@ public class Message {
         if (forwardedMessages.size() > 0) params.put("forward_messages", String.join(",", forwardedMessages));
         if (stickerId != null && stickerId > 0) params.put("sticker_id", stickerId);
 
+        /*JSONArray buttonsLine = new JSONArray();
+        JSONObject button1 = new JSONObject();
+        JSONObject action1 = new JSONObject();
+        action1.put("type", "text");
+        action1.put("payload", "{\"button\":1}");
+        action1.put("label", "кнопка 1");
+        button1.put("action", action1);
+        button1.put("color", "negative");
+        buttonsLine.put(button1);
+
+        JSONObject button2 = new JSONObject();
+        JSONObject action2 = new JSONObject();
+        action2.put("type", "text");
+        action2.put("payload", "{\"button\":2}");
+        action2.put("label", "кнопка 2");
+        button2.put("action", action2);
+        button2.put("color", "positive");
+
+        buttonsLine.put(button2);
+        JSONArray buttons = new JSONArray();
+        buttons.put(buttonsLine);
+        JSONObject keyboard = new JSONObject();
+
+        keyboard.put("one_time", true);
+        keyboard.put("buttons", buttons);
+
+        params.put("keyboard", keyboard.toString());
+        params.put("keyboard", keyboard);*/
+        if(keyboard != null)
+            params.put("keyboard", keyboard);
         api.call("messages.send", params, response -> {
             if (callback.length > 0) {
                 callback[0].onResult(response);
@@ -1118,5 +1148,15 @@ public class Message {
                 ",\"text\":\"" + text + '\"' +
                 ",\"attachments\":" + attachmentsOfReceivedMessage.toString() +
                 '}';
+    }
+
+    public Message keyboard(Keyboard keyboard) {
+        this.keyboard = keyboard.toString();
+        return this;
+    }
+
+    public Message clearKeyboard() {
+        this.keyboard = "{\"buttons\":[],\"one_time\":true}";
+        return this;
     }
 }
