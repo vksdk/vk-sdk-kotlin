@@ -8,7 +8,6 @@ import com.petersamokhin.bots.sdk.utils.vkapi.API;
 import com.petersamokhin.bots.sdk.utils.vkapi.docs.DocTypes;
 import com.petersamokhin.bots.sdk.utils.web.Connection;
 import com.petersamokhin.bots.sdk.utils.web.MultipartUtility;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -699,9 +698,10 @@ public class Message {
         this.doc(doc, DocTypes.AUDIO_MESSAGE).send(callback);
     }
 
-
     public Message keyboard(Keyboard keyboard) {
-        this.keyboard = keyboard.toString();
+        if (keyboard != null) {
+            this.keyboard = keyboard.toString();
+        }
         return this;
     }
 
@@ -1133,5 +1133,4 @@ public class Message {
                 ",\"attachments\":" + attachmentsOfReceivedMessage.toString() +
                 '}';
     }
-
 }

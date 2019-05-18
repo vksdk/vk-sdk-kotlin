@@ -18,7 +18,7 @@ Language: **English** | [Russian](https://github.com/petersamokhin/vk-bot-java-s
 Implementation of accepting messages of only specified types:
 ```java
 Group group = new Group(151083290, "access_token");
-
+    
 group.onSimpleTextMessage(message ->
      new Message()
          .from(group)
@@ -48,7 +48,7 @@ group.onVoiceMessage(message ->
 ## Ver. 0.1.4-alpha
 This version is only available for downloading here – it will be added to central repo once it gets rid of “alpha” suffix, fixed and complete.
 
-* Fixed small things not affecting performance and quality overall, but making the work easier and the code more legible.
+* Fixed small things not affecting performance and quality overall, but making the work easier and the code more legible. 
 * Added chatworking – now you can develop a bot that processes chat messages:
 ```java
   user.onMessage(message -> {
@@ -76,7 +76,7 @@ This version is only available for downloading here – it will be added to cent
                         .send();
         }
   });
-
+  
   user.onChatMessage(message -> {
       // Handle message, it's from chat
   });
@@ -85,7 +85,7 @@ This version is only available for downloading here – it will be added to cent
 ```java
   // Handle title changing
   user.onChatTitleChanged((oldTitle, newTitle, who, chat) -> {
-
+  
       String s = "User with id " + who + " changed title in chat " + chat + " from «" + oldTitle + "» to «" + newTitle + "»";
 
       new Message()
@@ -95,8 +95,8 @@ This version is only available for downloading here – it will be added to cent
           .send();
 
       // User with id 62802565 changed title in chat 2000000011 from «Test 0» to «Test 1»
-  });
-
+  });  
+  
   // also you can handle chat join, chat leave, chat creating, etc
   ```
  All methods return full chat ID, but you can switch it. For the sake of convenience, this value (`2000000000`) is added as a constant `com.petersamokhin.bots.sdk.objects.Chat.CHAT_PREFIX`.
@@ -107,7 +107,7 @@ This version is only available for downloading here – it will be added to cent
 * Also command processing added:
 ```java
 // Simple example
-group.onCommand("/start", message ->
+group.onCommand("/start", message -> 
     // do something with message
 );
 
@@ -123,7 +123,7 @@ group.onCommand(new String[]{"/start", "/bot", "hello"}, message ->
 group.onTyping(userId -> {
     System.out.println("Пользователь https://vk.com/id" + userId + " начал печатать");
 });
-
+    
 // Let's type too
 group.enableTyping(true);
 ```
