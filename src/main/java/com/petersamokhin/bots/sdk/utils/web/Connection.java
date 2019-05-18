@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 /**
  * Web work: get and post requests
@@ -37,7 +38,7 @@ public final class Connection {
 
             int responseCode = conn.getResponseCode();
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), Charset.forName("UTF-8")));
             String inputLine;
             StringBuilder responseSb = new StringBuilder();
 
