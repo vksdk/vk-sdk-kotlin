@@ -7,6 +7,8 @@
 Using this library one can interact with [VK API](https://vk.com/dev/manuals) for making bots - and there is more.
 Functionality is nicely suitable either for communities and personal profiles.
 
+Latest version: [![vk-bot-java-sdk](https://img.shields.io/badge/maven--central-v0.1.3-blue.svg?style=flat)](https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk)
+
 Language: **English** | [Russian](https://github.com/petersamokhin/vk-bot-java-sdk/blob/master/README_RU.md)
 
 ## Example
@@ -16,7 +18,7 @@ Language: **English** | [Russian](https://github.com/petersamokhin/vk-bot-java-s
 Implementation of accepting messages of only specified types:
 ```java
 Group group = new Group(151083290, "access_token");
-    
+
 group.onSimpleTextMessage(message ->
      new Message()
          .from(group)
@@ -46,7 +48,7 @@ group.onVoiceMessage(message ->
 ## Ver. 0.1.4-alpha
 This version is only available for downloading here – it will be added to central repo once it gets rid of “alpha” suffix, fixed and complete.
 
-* Fixed small things not affecting performance and quality overall, but making the work easier and the code more legible. 
+* Fixed small things not affecting performance and quality overall, but making the work easier and the code more legible.
 * Added chatworking – now you can develop a bot that processes chat messages:
 ```java
   user.onMessage(message -> {
@@ -74,7 +76,7 @@ This version is only available for downloading here – it will be added to cent
                         .send();
         }
   });
-  
+
   user.onChatMessage(message -> {
       // Handle message, it's from chat
   });
@@ -83,7 +85,7 @@ This version is only available for downloading here – it will be added to cent
 ```java
   // Handle title changing
   user.onChatTitleChanged((oldTitle, newTitle, who, chat) -> {
-  
+
       String s = "User with id " + who + " changed title in chat " + chat + " from «" + oldTitle + "» to «" + newTitle + "»";
 
       new Message()
@@ -93,8 +95,8 @@ This version is only available for downloading here – it will be added to cent
           .send();
 
       // User with id 62802565 changed title in chat 2000000011 from «Test 0» to «Test 1»
-  });  
-  
+  });
+
   // also you can handle chat join, chat leave, chat creating, etc
   ```
  All methods return full chat ID, but you can switch it. For the sake of convenience, this value (`2000000000`) is added as a constant `com.petersamokhin.bots.sdk.objects.Chat.CHAT_PREFIX`.
@@ -105,7 +107,7 @@ This version is only available for downloading here – it will be added to cent
 * Also command processing added:
 ```java
 // Simple example
-group.onCommand("/start", message -> 
+group.onCommand("/start", message ->
     // do something with message
 );
 
@@ -121,7 +123,7 @@ group.onCommand(new String[]{"/start", "/bot", "hello"}, message ->
 group.onTyping(userId -> {
     System.out.println("Пользователь https://vk.com/id" + userId + " начал печатать");
 });
-    
+
 // Let's type too
 group.enableTyping(true);
 ```
@@ -150,11 +152,12 @@ Only 4 colors: primary - blue, default - white,  negative - red, positive - gree
 
 ```java
 // First need init keyboard and they buttons
-Keyboard keys = Keyboard.of(new Button("sample", ButtonColor.DEFAULT), new Button("text", ButtonColor.NEGATIVE));
+Keyboard keys = Keyboard.of(new Button("sample", ButtonColor.DEFAULT), 
+                            new Button("text", ButtonColor.NEGATIVE));
 //for buttons with ButtonColor.DEFAULT you can use String as argument
 //addButtons always add one new line and automatically group buttons in 4 per one line.
 //they will not add buttons to existing lines
-keys.addButtons("A","B","C","D","A1");
+keys.addButtons("A", "B", "C", "D", "A1");
 //"A1" will be automatically moved to new line
 //then add it to response
 group.onSimpleTextMessage(message -> {
@@ -166,6 +169,9 @@ group.onSimpleTextMessage(message -> {
          .send();
  });
 ```
+
+That code will create keyboard like in image.
+
 <img src="https://pp.userapi.com/c851332/v851332017/126d7c/1dwV1hyu98E.jpg"></img>
 
 Clicked button text will be get in message.getText(). Because payload are not supported you can't distinguish different buttons with equal text.
@@ -177,11 +183,9 @@ To remove keyboard use Message.clearKeyboard() or call Message.keyboard(...) wit
 * Then you need to retrieve **access_token**
   * It is very well explained [there](https://vk.com/dev/access_token)]
 * To enable keyboard support setup you group
-<img src="https://pp.userapi.com/c851332/v851332017/126d85/PTNQTaLX4Uo.jpg"></img>
+  <img src="https://pp.userapi.com/c851332/v851332017/126d85/PTNQTaLX4Uo.jpg"></img>
+
 ## Installation
-
-Simplest way to install modified library is install original library and then replace them with new jar file (addition my version to maven in process)
-
 The library is in a central `maven` repo. All you need to do is add a few lines into your build file.
 
 #### If you are using Maven
@@ -200,3 +204,20 @@ compile group: 'com.petersamokhin', name: 'vk-bot-java-sdk', version: '0.1.3'
 ```
 #### If you are using something else
 Please, refer to guidelines for other build systems by Maven: https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk/
+
+---
+#### If you ARE NOT using any build system
+* Download distributive (all dependencies are included): [library (3.2 MB)](http://central.maven.org/maven2/com/petersamokhin/vk-bot-java-sdk/0.1.3/vk-bot-java-sdk-0.1.3.jar) | [md5](http://central.maven.org/maven2/com/petersamokhin/vk-bot-java-sdk/0.1.3/vk-bot-java-sdk-0.1.3.jar.md5)
+* Now, all you need to do is add it to `classpath`:
+  * Using shell:
+  ```bash
+  javac -cp "/root/vk-bot-java-sdk-0.1.3.jar" Bot.jar
+  ```
+  * If you use **IntelliJ IDEA** go to **Project Structure...** | **Libraries**, click `+` and add downloaded .jar to lib list.
+
+---
+Done. The library is usable in your project now.
+
+## Extended description
+[Please, refer to the documentation](https://github.com/petersamokhin/vk-bot-java-sdk/wiki/%D0%94%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F)
+

@@ -1,7 +1,7 @@
 package com.petersamokhin.bots.sdk.keyboard;
 
 /**
- * Enum that represent available color for vk buttons
+ * Enum that represent color available for VK buttons
  *
  * @author Igor Mikhailov
  */
