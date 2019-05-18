@@ -33,7 +33,7 @@ public class LongPoll {
 
     private Integer version = 2;
     private Integer need_pts = 1;
-    private Double API = 5.67;
+    private Double API = 5.69;
 
     private volatile boolean longpollIsOn = false;
 

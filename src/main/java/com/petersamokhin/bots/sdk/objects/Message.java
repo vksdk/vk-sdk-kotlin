@@ -2,11 +2,13 @@ package com.petersamokhin.bots.sdk.objects;
 
 import com.petersamokhin.bots.sdk.callbacks.Callback;
 import com.petersamokhin.bots.sdk.clients.Client;
+import com.petersamokhin.bots.sdk.keyboard.Keyboard;
 import com.petersamokhin.bots.sdk.utils.Utils;
 import com.petersamokhin.bots.sdk.utils.vkapi.API;
 import com.petersamokhin.bots.sdk.utils.vkapi.docs.DocTypes;
 import com.petersamokhin.bots.sdk.utils.web.Connection;
 import com.petersamokhin.bots.sdk.utils.web.MultipartUtility;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +36,7 @@ public class Message {
     private static final Logger LOG = LoggerFactory.getLogger(Message.class);
 
     private Integer messageId, flags, peerId, timestamp, randomId, stickerId, chatId, chatIdLong;
-    private String text, accessToken, title;
+    private String text, accessToken, title, keyboard;
     private API api;
 
     /**
@@ -211,7 +213,7 @@ public class Message {
         if (photoBytes != null) {
 
             // Getting of server for uploading the photo
-            String getUploadServerQuery = "https://api.vk.com/method/photos.getMessagesUploadServer?access_token=" + accessToken + "&peer_id=" + this.peerId + "&v=5.67";
+            String getUploadServerQuery = "https://api.vk.com/method/photos.getMessagesUploadServer?access_token=" + accessToken + "&peer_id=" + this.peerId + "&v=5.69";
             JSONObject getUploadServerResponse = new JSONObject(Connection.getRequestResponse(getUploadServerQuery));
             String uploadUrl = getUploadServerResponse.has("response") ? getUploadServerResponse.getJSONObject("response").has("upload_url") ? getUploadServerResponse.getJSONObject("response").getString("upload_url") : null : null;
 
@@ -247,7 +249,7 @@ public class Message {
             }
 
             // Saving the photo
-            String saveMessagesPhotoQuery = "https://api.vk.com/method/photos.saveMessagesPhoto?access_token=" + accessToken + "&v=5.67&server=" + server + "&photo=" + photo_param + "&hash=" + hash;
+            String saveMessagesPhotoQuery = "https://api.vk.com/method/photos.saveMessagesPhoto?access_token=" + accessToken + "&v=5.69&server=" + server + "&photo=" + photo_param + "&hash=" + hash;
             JSONObject saveMessagesPhotoResponse = new JSONObject(Connection.getRequestResponse(saveMessagesPhotoQuery));
             String photoAsAttach = saveMessagesPhotoResponse.has("response") ? "photo" + saveMessagesPhotoResponse.getJSONArray("response").getJSONObject(0).getInt("owner_id") + "_" + saveMessagesPhotoResponse.getJSONArray("response").getJSONObject(0).getInt("id") : "";
 
@@ -336,7 +338,7 @@ public class Message {
         if (docBytes != null) {
 
             // Getting of server for uploading the photo
-            String getUploadServerQuery = "https://api.vk.com/method/docs.getMessagesUploadServer?access_token=" + accessToken + "&peer_id=" + this.peerId + "&v=5.67" + "&type=" + typeOfDoc.getType();
+            String getUploadServerQuery = "https://api.vk.com/method/docs.getMessagesUploadServer?access_token=" + accessToken + "&peer_id=" + this.peerId + "&v=5.69" + "&type=" + typeOfDoc.getType();
             JSONObject getUploadServerResponse = new JSONObject(Connection.getRequestResponse(getUploadServerQuery));
             String uploadUrl = getUploadServerResponse.has("response") ? getUploadServerResponse.getJSONObject("response").has("upload_url") ? getUploadServerResponse.getJSONObject("response").getString("upload_url") : null : null;
 
@@ -372,7 +374,7 @@ public class Message {
             }
 
             // Saving the photo
-            String saveMessagesDocQuery = "https://api.vk.com/method/docs.save?access_token=" + accessToken + "&v=5.67&file=" + file;
+            String saveMessagesDocQuery = "https://api.vk.com/method/docs.save?access_token=" + accessToken + "&v=5.69&file=" + file;
             JSONObject saveMessagesDocResponse = new JSONObject(Connection.getRequestResponse(saveMessagesDocQuery));
             String docAsAttach = saveMessagesDocResponse.has("response") ? "doc" + saveMessagesDocResponse.getJSONArray("response").getJSONObject(0).getInt("owner_id") + "_" + saveMessagesDocResponse.getJSONArray("response").getJSONObject(0).getInt("id") : "";
 
@@ -697,6 +699,17 @@ public class Message {
         this.doc(doc, DocTypes.AUDIO_MESSAGE).send(callback);
     }
 
+
+    public Message keyboard(Keyboard keyboard) {
+        this.keyboard = keyboard.toString();
+        return this;
+    }
+
+    public Message clearKeyboard() {
+        this.keyboard = "{\"buttons\":[],\"one_time\":true}";
+        return this;
+    }
+
     /**
      * Send the message
      *
@@ -750,6 +763,7 @@ public class Message {
         if (attachments.size() > 0) params.put("attachment", String.join(",", attachments));
         if (forwardedMessages.size() > 0) params.put("forward_messages", String.join(",", forwardedMessages));
         if (stickerId != null && stickerId > 0) params.put("sticker_id", stickerId);
+        if(keyboard != null) params.put("keyboard", keyboard);
 
         api.call("messages.send", params, response -> {
             if (callback.length > 0) {
@@ -1119,4 +1133,5 @@ public class Message {
                 ",\"attachments\":" + attachmentsOfReceivedMessage.toString() +
                 '}';
     }
+
 }
