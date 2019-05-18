@@ -206,12 +206,12 @@ compile group: 'com.petersamokhin', name: 'vk-bot-java-sdk', version: '0.1.3'
 Please, refer to guidelines for other build systems by Maven: https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk/
 
 ---
-#### If you ARE NOT using any build system
+#### If you ARE NOT using any build system 
 * Download distributive (all dependencies are included): [library (3.2 MB)](http://central.maven.org/maven2/com/petersamokhin/vk-bot-java-sdk/0.1.3/vk-bot-java-sdk-0.1.3.jar) | [md5](http://central.maven.org/maven2/com/petersamokhin/vk-bot-java-sdk/0.1.3/vk-bot-java-sdk-0.1.3.jar.md5)
 * Now, all you need to do is add it to `classpath`:
   * Using shell:
   ```bash
-  javac -cp "/root/vk-bot-java-sdk-0.1.3.jar" Bot.jar
+  javac -cp "/root/vk-bot-java-sdk-0.1.3.jar" Bot.jar 
   ```
   * If you use **IntelliJ IDEA** go to **Project Structure...** | **Libraries**, click `+` and add downloaded .jar to lib list.
 
