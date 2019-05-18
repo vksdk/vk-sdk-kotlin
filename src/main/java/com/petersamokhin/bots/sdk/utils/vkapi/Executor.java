@@ -45,7 +45,7 @@ public class Executor {
 
     private final String URL = "https://api.vk.com/method/execute";
     private final String accessToken;
-    private final String V = "&v=" + 5.78;
+    private final String V = "&v=" + 5.69;
 
 
     /**
@@ -132,6 +132,7 @@ public class Executor {
             }
 
             JSONArray responses = response.getJSONArray("response");
+
             IntStream.range(0, count).forEachOrdered(i -> tmpQueue.get(i).getCallback().onResult(responses.get(i)));
         }
     }

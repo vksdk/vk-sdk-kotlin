@@ -208,7 +208,6 @@ public class UpdatesHandler extends Thread {
 
         Integer randomId = updateObject.length() > 7 ? updateObject.getInt(7) : null;
 
-
         // Check for chat
         if (peerId > Chat.CHAT_PREFIX) {
             chatId = peerId - Chat.CHAT_PREFIX;
