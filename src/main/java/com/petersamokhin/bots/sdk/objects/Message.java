@@ -156,7 +156,7 @@ public class Message {
     public Message photo(String photo) {
 
         // Use already loaded photo
-        if (Pattern.matches("[htps:/vk.com]?photo-?\\d+_\\d+", photo)) {
+        if (Pattern.matches("(https?://vk\\.com)?photo-?\\d+_\\d+", photo)) {
             this.attachments.add(photo.substring(photo.lastIndexOf("photo")));
             return this;
         }
