@@ -107,7 +107,7 @@ public class API {
                 }
             }
         } catch (Exception e) {
-            LOG.error("Some error occured when calling VK API method {} with params {}, error is {}", method, params.toString(), e);
+            LOG.error("Some error occurred when calling VK API method {} with params {}, error is {}", method, params.toString(), e);
         }
     }
 
@@ -146,7 +146,7 @@ public class API {
     }
 
     /**
-     * Call to 'execute' method, because can not call API.execute inside execute.
+     * Call to 'execute' method, because API.execute cannot be called inside execute.
      * More: <a href="https://vk.com/dev/execute">link</a>;
      */
     public JSONObject execute(String code) {
@@ -157,7 +157,7 @@ public class API {
     /**
      * Execute float count of calls, up to 25
      *
-     * @param calls single call to VK API or calls separated by comma.
+     * @param calls single call to VK API or calls separated by the comma.
      * @see CallAsync
      */
     public void execute(CallAsync... calls) {

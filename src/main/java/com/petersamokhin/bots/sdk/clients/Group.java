@@ -14,13 +14,12 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Group client, that contains important methods to work with groups
+ * Group client that contains important methods to work with groups
  */
 public class Group extends Client {
 
-    private CallbackApiHandler callbackApiHandler = null;
-
     private static final Logger LOG = LoggerFactory.getLogger(Group.class);
+    private CallbackApiHandler callbackApiHandler = null;
 
     /**
      * Default constructor
@@ -42,7 +41,7 @@ public class Group extends Client {
     }
 
     /**
-     * Upload group cover by file from url or from disk
+     * Upload group cover as a file from url or from disk
      */
     public void uploadCover(String cover, Callback<Object> callback) {
 
@@ -76,7 +75,7 @@ public class Group extends Client {
     }
 
     /**
-     * Updating cover by bytes (of file or url)
+     * Updating cover as bytes (of file or url)
      *
      * @param bytes    bytes[]
      * @param callback response will return to callback
@@ -116,7 +115,7 @@ public class Group extends Client {
                     JSONObject responseS = new JSONObject(api().callSync("photos.saveOwnerCoverPhoto", params_saveCover));
                     System.out.println("params is " + params_saveCover);
                     if (responseS.toString().length() < 10 || responseS.toString().contains("error")) {
-                        LOG.error("Some error occured, cover not uploaded: {}", responseS);
+                        LOG.error("Some error occurred, cover not uploaded: {}", responseS);
                     }
                     if (callback.length > 0)
                         callback[0].onResult(responseS);
@@ -124,7 +123,7 @@ public class Group extends Client {
                     api().call("photos.saveOwnerCoverPhoto", params_saveCover, response1 -> {
 
                         if (response1.toString().length() < 10 || response1.toString().contains("error")) {
-                            LOG.error("Some error occured, cover not uploaded: {}", response1);
+                            LOG.error("Some error occurred, cover not uploaded: {}", response1);
                         }
                         if (callback.length > 0) {
                             callback[0].onResult(response1);
@@ -132,7 +131,7 @@ public class Group extends Client {
                     });
                 }
             } else {
-                LOG.error("Error occured when uploading cover: no 'photo' or 'hash' param in response {}", coverUploadedResponse);
+                LOG.error("Error occurred when uploading cover: no 'photo' or 'hash' param in response {}", coverUploadedResponse);
                 if (callback.length > 0)
                     callback[0].onResult("false");
             }
@@ -181,6 +180,15 @@ public class Group extends Client {
     public void setCallbackApiSettings(String path) {
         callbackApiHandler = new CallbackApiHandler(path);
         callbackApiHandler.setGroup(this);
+    }
+
+    public void setOnlineStatus(boolean online) {
+        // Changing online status method doesn't have its callback type yet.
+        String stateStr = online ? "enable" : "disable";
+
+        JSONObject params = new JSONObject().put("group_id", getId());
+        api().call(String.format("groups.%sOnline", stateStr), params, responseRaw -> {
+        });
     }
 
     /* Callback API */
