@@ -182,6 +182,10 @@ public class Group extends Client {
         callbackApiHandler.setGroup(this);
     }
 
+    /**
+     * Set group online status.
+     * @param online {@code true} for 'online', {@code false} for 'offline'.
+     */
     public void setOnlineStatus(boolean online) {
         // Changing online status method doesn't have its callback type yet.
         String stateStr = online ? "enable" : "disable";
