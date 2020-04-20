@@ -1,3 +1,4 @@
 # VK SDK Kotlin
+![cover](images/cover.png)
 
-Unofficial VK SDK written as the Kotlin Multiplatform project.
+Unofficial VK.com SDK based on the Kotlin Multiplatform project.
