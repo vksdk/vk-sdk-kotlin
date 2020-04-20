@@ -35,9 +35,6 @@ set -x
 
 rm -rf docs/0.0.x/stately-embedded
 
-rm docs/index.md
-cp README.md docs/index.md
-
 # Copy in special files that GitHub wants in the project root.
 # cp UPGRADING.md docs/upgrading.md
 # cp CHANGELOG.md docs/changelog.md
