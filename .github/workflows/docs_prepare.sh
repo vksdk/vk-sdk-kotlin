@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# From: https://github.com/cashapp/sqldelight
+
 # The website is built using MkDocs with the Material theme.
 # https://squidfunk.github.io/mkdocs-material/
 # It requires Python to run.
@@ -30,6 +32,8 @@ for MARKDOWN_FILE in $(find docs/0.0.x -name '*.md'); do
   title_markdown_file "$MARKDOWN_FILE"
 done
 set -x
+
+rm -rf docs/0.0.x/stately-embedded
 
 # Copy in special files that GitHub wants in the project root.
 # cp UPGRADING.md docs/upgrading.md

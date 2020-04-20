@@ -17,6 +17,7 @@ import io.ktor.client.request.url
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readBytes
 import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
 import io.ktor.http.content.ByteArrayContent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -79,7 +80,7 @@ abstract class VkKtorHttpClient constructor(
     override fun postSync(url: String, body: ByteArray, bodyContentType: ContentType): Response? {
         return runBlocking(coroutineContext) {
             val response = try {
-                client.get<HttpResponse> {
+                client.post<HttpResponse> {
                     url(url)
                     this.body = ByteArrayContent(body, bodyContentType.toKtorContentType())
                 }
@@ -173,7 +174,9 @@ abstract class VkKtorHttpClient constructor(
             url(uploadUrl)
             body = MultiPartFormDataContent(formData {
                 items.forEach {
-                    val headers = Headers.build { this.append("filename", it.fileName) };
+                    val headers = Headers.build {
+                        set(HttpHeaders.ContentDisposition, it.contentDisposition())
+                    }
 
                     when (it) {
                         is UploadableContent.Bytes -> {

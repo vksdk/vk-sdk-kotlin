@@ -11,11 +11,7 @@ mavenPublish {
     }
 }
 
-def skipDocsProjects = ["stately-embedded"]
-
-if (!skipDocsProjects.contains(project.name)) {
-    apply from: rootProject.file("gradle/dokka.gradle")
-}
+apply from: rootProject.file("gradle/dokka.gradle")
 
 def getGpgKey() {
     return hasProperty('signingKey') ? signingKey : ""

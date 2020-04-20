@@ -25,6 +25,6 @@ dependencies {
 
     // If your project is not JVM-based, or you simply want to use ktor.
     // In this case, `ktor-client` is required. You can use any.
-    // implementation(project(":http-clients:common-ktor-http-client"))
-    // implementation("io.ktor:ktor-client-cio:$ktor_version")
+    implementation(project(":http-clients:common-ktor-http-client"))
+    implementation("io.ktor:ktor-client-cio:1.3.2")
 }

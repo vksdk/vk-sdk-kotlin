@@ -53,9 +53,6 @@ internal class VkLongPollEventsHandler(
                     }
                 }
             }
-            else -> {
-                println("unsupported event type: $type")
-            }
         }
 
         return true

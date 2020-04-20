@@ -13,7 +13,6 @@ import com.petersamokhin.vksdk.core.model.objects.UploadableContent
 import com.petersamokhin.vksdk.core.model.objects.keyboard
 import com.petersamokhin.vksdk.core.utils.contentOrNullSafe
 import com.petersamokhin.vksdk.core.utils.jsonObjectOrNullSafe
-import com.petersamokhin.vksdk.http.VkOkHttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,7 +29,6 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.serializerByTypeToken
 import kotlin.coroutines.CoroutineContext
 
 @OptIn(ImplicitReflectionSerializer::class, ExperimentalCoroutinesApi::class)
@@ -63,8 +61,11 @@ class Bot : CoroutineScope {
     fun start(clientId: Int, accessToken: String) {
         if (accessToken == "abcdef123456...") throw RuntimeException("Please, replace dummy access_token with yours in Launcher.kt")
 
+        // Custom implementation of the cross-platform HTTP client
+        val httpClient = CioKtorHttpClient()
+
         // OkHttp client is available only for JVM
-        val httpClient = VkOkHttpClient()
+        // val httpClient = VkOkHttpClient()
 
         // init settings, most of them have default values
         val settings = VkSettings(

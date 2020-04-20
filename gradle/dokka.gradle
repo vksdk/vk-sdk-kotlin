@@ -4,6 +4,8 @@ dokka {
     outputDirectory = "$rootDir/docs/0.0.x"
     outputFormat = 'gfm'
 
+    skipEmptyPackages = true
+
     //noinspection GroovyAssignabilityCheck
     packageOptions {
         prefix = "com.petersamokhin.vksdk.internal"
@@ -17,6 +19,7 @@ dokka {
 
         //noinspection GroovyAssignabilityCheck
         sourceRoot {
+            //noinspection GroovyAssignabilityCheck
             path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0]
             platforms = ["Common"]
         }
@@ -24,6 +27,7 @@ dokka {
     if (kotlin.sourceSets.getNames().contains("jvmMain")) {
         //noinspection GroovyAssignabilityCheck
         sourceRoot {
+            //noinspection GroovyAssignabilityCheck
             path = kotlin.sourceSets.jvmMain.kotlin.srcDirs[0]
             platforms = ["JVM"]
         }
@@ -31,6 +35,7 @@ dokka {
     if (kotlin.sourceSets.getNames().equals("main")) {
         //noinspection GroovyAssignabilityCheck
         sourceRoot {
+            //noinspection GroovyAssignabilityCheck
             path = kotlin.sourceSets.jvmMain.kotlin.srcDirs[0]
             platforms = ["JVM"]
         }
@@ -38,6 +43,7 @@ dokka {
     if (kotlin.sourceSets.getNames().contains("nativeMain")) {
         //noinspection GroovyAssignabilityCheck
         sourceRoot {
+            //noinspection GroovyAssignabilityCheck
             path = kotlin.sourceSets.nativeMain.kotlin.srcDirs[0]
             platforms = ["native"]
         }
