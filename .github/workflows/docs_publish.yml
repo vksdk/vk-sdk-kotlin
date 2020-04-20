@@ -1,6 +1,8 @@
 name: Publish the documentation to GitHub Pages
 
-on: push
+on:
+  release:
+    types: [published]
 
 jobs:
   deploy-website:
