@@ -1,0 +1,75 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../http-client-common-ktor/0.0.1-SNAPSHOT/http-client-common-ktor-0.0.1-SNAPSHOT.module",
+    "group": "com.petersamokhin.vksdk",
+    "module": "http-client-common-ktor",
+    "version": "0.0.1-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.3",
+      "buildId": "7engquverfagtdcwo5nmoycsdy"
+    }
+  },
+  "variants": [
+    {
+      "name": "macosX64-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "macos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-common",
+          "version": {
+            "requires": "1.3.72"
+          }
+        },
+        {
+          "group": "com.petersamokhin.vksdk",
+          "module": "core",
+          "version": {
+            "requires": "0.0.1-SNAPSHOT"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-client-core-native",
+          "version": {
+            "requires": "1.3.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "common-ktor-http-client.klib",
+          "url": "http-client-common-ktor-macosx64-0.0.1-SNAPSHOT.klib",
+          "size": 14930,
+          "sha512": "e10f3c541ec3a0aa6815609bcdf95761ba2eb280acf61e4646af1a73c47b05b577dbfadbd0e15c10345e082274e7e95723aa35b9f33fa56861b49ab933f55b6d",
+          "sha256": "ed17cb31e6947bbc5ce1275fe9bc2abe73fb9a8ac6b3d8e91cba68d63da778d8",
+          "sha1": "01fc486e7a04aa0028888d7c1450ebceb7932e18",
+          "md5": "6e61961fea61bd05141385c3638e3997"
+        }
+      ]
+    },
+    {
+      "name": "metadata-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "available-at": {
+        "url": "../../http-client-common-ktor-metadata/0.0.1-SNAPSHOT/http-client-common-ktor-metadata-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "http-client-common-ktor-metadata",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../stately-embed/0.0.1-SNAPSHOT/stately-embed-0.0.1-SNAPSHOT.module",
+    "group": "com.petersamokhin.vksdk",
+    "module": "stately-embed",
+    "version": "0.0.1-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.3",
+      "buildId": "7engquverfagtdcwo5nmoycsdy"
+    }
+  },
+  "variants": [
+    {
+      "name": "watchosArm64-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-common",
+          "version": {
+            "requires": "1.3.72"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "stately-embedded.klib",
+          "url": "stately-embed-watchosarm64-0.0.1-SNAPSHOT.klib",
+          "size": 63654,
+          "sha512": "5f1920137e329ffc57817a530220f2154fa55b93d0c2e16b64d79100a3d9feaf44e03a11026a498349629cde985f113cc70213b9264a9eb5eaea70ec4659c9b9",
+          "sha256": "b3fd96349ccac3e3587b1ad4fbf2e9d74f469548ece34eb3722ad4cb364b6d9f",
+          "sha1": "4ba52f950d56854d6a87b3e37b4b8665104cf0b5",
+          "md5": "62d256e963e85fc918c2f0a7f236856f"
+        }
+      ]
+    },
+    {
+      "name": "metadata-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "available-at": {
+        "url": "../../stately-embed-metadata/0.0.1-SNAPSHOT/stately-embed-metadata-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-metadata",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    }
+  ]
+}

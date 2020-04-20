@@ -1,0 +1,45 @@
+apply plugin: 'org.jetbrains.dokka'
+
+dokka {
+    outputDirectory = "$rootDir/docs/0.0.x"
+    outputFormat = 'gfm'
+
+    //noinspection GroovyAssignabilityCheck
+    packageOptions {
+        prefix = "com.petersamokhin.vksdk.internal"
+        suppress = true
+    }
+    if (project.plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
+        impliedPlatforms = ["Common"]
+        kotlinTasks {
+            []
+        }
+
+        //noinspection GroovyAssignabilityCheck
+        sourceRoot {
+            path = kotlin.sourceSets.commonMain.kotlin.srcDirs[0]
+            platforms = ["Common"]
+        }
+    }
+    if (kotlin.sourceSets.getNames().contains("jvmMain")) {
+        //noinspection GroovyAssignabilityCheck
+        sourceRoot {
+            path = kotlin.sourceSets.jvmMain.kotlin.srcDirs[0]
+            platforms = ["JVM"]
+        }
+    }
+    if (kotlin.sourceSets.getNames().equals("main")) {
+        //noinspection GroovyAssignabilityCheck
+        sourceRoot {
+            path = kotlin.sourceSets.jvmMain.kotlin.srcDirs[0]
+            platforms = ["JVM"]
+        }
+    }
+    if (kotlin.sourceSets.getNames().contains("nativeMain")) {
+        //noinspection GroovyAssignabilityCheck
+        sourceRoot {
+            path = kotlin.sourceSets.nativeMain.kotlin.srcDirs[0]
+            platforms = ["native"]
+        }
+    }
+}

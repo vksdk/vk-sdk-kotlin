@@ -1,0 +1,61 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../stately-embed/0.0.1-SNAPSHOT/stately-embed-0.0.1-SNAPSHOT.module",
+    "group": "com.petersamokhin.vksdk",
+    "module": "stately-embed",
+    "version": "0.0.1-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.3",
+      "buildId": "7engquverfagtdcwo5nmoycsdy"
+    }
+  },
+  "variants": [
+    {
+      "name": "iosArm64-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-common",
+          "version": {
+            "requires": "1.3.72"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "stately-embedded.klib",
+          "url": "stately-embed-iosarm64-0.0.1-SNAPSHOT.klib",
+          "size": 63622,
+          "sha512": "121e6d3cb31fa723e2bc87dc63478a054203e517664673418e3e27a6c7014ded96c00fb1e475590319769cff68499abaabc92a7c6625f412ee90bcd5791a708d",
+          "sha256": "36a3a7f65d7fac683d0e5bd432ec96dab054db9e88f70dafd389a154798e7b3d",
+          "sha1": "69b5b2e5e90bbc3341a8ebc7a805c167b0e77156",
+          "md5": "569382e144e05b8f97c5ab43ce816cac"
+        }
+      ]
+    },
+    {
+      "name": "metadata-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "available-at": {
+        "url": "../../stately-embed-metadata/0.0.1-SNAPSHOT/stately-embed-metadata-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-metadata",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    }
+  ]
+}

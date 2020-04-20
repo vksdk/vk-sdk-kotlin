@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.petersamokhin.vksdk</groupId>
+  <artifactId>http-client-common-ktor-metadata</artifactId>
+  <versioning>
+    <latest>0.0.1-SNAPSHOT</latest>
+    <versions>
+      <version>0.0.1-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20200420100830</lastUpdated>
+  </versioning>
+</metadata>

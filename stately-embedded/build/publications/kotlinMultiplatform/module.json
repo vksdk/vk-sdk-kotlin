@@ -1,0 +1,242 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.petersamokhin.vksdk",
+    "module": "stately-embed",
+    "version": "0.0.1-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.3",
+      "buildId": "7engquverfagtdcwo5nmoycsdy"
+    }
+  },
+  "variants": [
+    {
+      "name": "iosArm32-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_arm32",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../stately-embed-iosarm32/0.0.1-SNAPSHOT/stately-embed-iosarm32-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-iosarm32",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    },
+    {
+      "name": "iosArm64-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../stately-embed-iosarm64/0.0.1-SNAPSHOT/stately-embed-iosarm64-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-iosarm64",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    },
+    {
+      "name": "iosX64-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../stately-embed-iosx64/0.0.1-SNAPSHOT/stately-embed-iosx64-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-iosx64",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    },
+    {
+      "name": "jvm-api",
+      "attributes": {
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../stately-embed-jvm/0.0.1-SNAPSHOT/stately-embed-jvm-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-jvm",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    },
+    {
+      "name": "jvm-runtime",
+      "attributes": {
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../stately-embed-jvm/0.0.1-SNAPSHOT/stately-embed-jvm-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-jvm",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    },
+    {
+      "name": "linuxArm32Hfp-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_arm32_hfp",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../stately-embed-linuxarm32hfp/0.0.1-SNAPSHOT/stately-embed-linuxarm32hfp-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-linuxarm32hfp",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    },
+    {
+      "name": "linuxMips32-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_mips32",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../stately-embedded-linuxmips32/0.0.1-SNAPSHOT/stately-embedded-linuxmips32-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embedded-linuxmips32",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    },
+    {
+      "name": "linuxX64-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../stately-embed-linuxx64/0.0.1-SNAPSHOT/stately-embed-linuxx64-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-linuxx64",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    },
+    {
+      "name": "macosX64-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "macos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../stately-embed-macosx64/0.0.1-SNAPSHOT/stately-embed-macosx64-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-macosx64",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    },
+    {
+      "name": "metadata-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "available-at": {
+        "url": "../../stately-embed-metadata/0.0.1-SNAPSHOT/stately-embed-metadata-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-metadata",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    },
+    {
+      "name": "mingwX64-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "mingw_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../stately-embedded-mingwx64/0.0.1-SNAPSHOT/stately-embedded-mingwx64-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embedded-mingwx64",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    },
+    {
+      "name": "tvosArm64-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "tvos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../stately-embed-tvosarm64/0.0.1-SNAPSHOT/stately-embed-tvosarm64-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-tvosarm64",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    },
+    {
+      "name": "tvosX64-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "tvos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../stately-embed-tvosx64/0.0.1-SNAPSHOT/stately-embed-tvosx64-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-tvosx64",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    },
+    {
+      "name": "watchosArm32-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_arm32",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../stately-embed-watchosarm32/0.0.1-SNAPSHOT/stately-embed-watchosarm32-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-watchosarm32",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    },
+    {
+      "name": "watchosArm64-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../stately-embed-watchosarm64/0.0.1-SNAPSHOT/stately-embed-watchosarm64-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-watchosarm64",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    },
+    {
+      "name": "watchosX86-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_x86",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../stately-embed-watchosx86/0.0.1-SNAPSHOT/stately-embed-watchosx86-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "stately-embed-watchosx86",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    }
+  ]
+}

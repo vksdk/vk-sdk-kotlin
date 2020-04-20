@@ -1,0 +1,38 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../http-client-common-ktor-watchosx86/0.0.1-SNAPSHOT/http-client-common-ktor-watchosx86-0.0.1-SNAPSHOT.module",
+    "group": "com.petersamokhin.vksdk",
+    "module": "http-client-common-ktor-watchosx86",
+    "version": "0.0.1-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.3",
+      "buildId": "7engquverfagtdcwo5nmoycsdy"
+    }
+  },
+  "variants": [
+    {
+      "name": "metadata-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "files": [
+        {
+          "name": "common-ktor-http-client-metadata-0.0.1-SNAPSHOT.jar",
+          "url": "http-client-common-ktor-metadata-0.0.1-SNAPSHOT.jar",
+          "size": 1764,
+          "sha512": "d0661847dc122d865701a348f1280f22b65bf9005e68ea8211d6c839a3c582927451200fe6f00208b3534afcbb6a8a2b8aa75071963be0d77aea9f8e75e653f7",
+          "sha256": "c258f7f49c7b32656a41cb0cab12fca5f338d97fb5bde6c8411b9660a294bd89",
+          "sha1": "15edb4ee2e4d67f3cb1dc34b980e8eae18cfebed",
+          "md5": "d3a1b7d32d2bf2559039a5ea28408daf"
+        }
+      ]
+    }
+  ]
+}

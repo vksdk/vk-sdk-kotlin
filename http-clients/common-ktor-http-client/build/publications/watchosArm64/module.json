@@ -1,0 +1,75 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../http-client-common-ktor/0.0.1-SNAPSHOT/http-client-common-ktor-0.0.1-SNAPSHOT.module",
+    "group": "com.petersamokhin.vksdk",
+    "module": "http-client-common-ktor",
+    "version": "0.0.1-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.3",
+      "buildId": "7engquverfagtdcwo5nmoycsdy"
+    }
+  },
+  "variants": [
+    {
+      "name": "watchosArm64-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-common",
+          "version": {
+            "requires": "1.3.72"
+          }
+        },
+        {
+          "group": "com.petersamokhin.vksdk",
+          "module": "core",
+          "version": {
+            "requires": "0.0.1-SNAPSHOT"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-client-core-native",
+          "version": {
+            "requires": "1.3.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "common-ktor-http-client.klib",
+          "url": "http-client-common-ktor-watchosarm64-0.0.1-SNAPSHOT.klib",
+          "size": 14919,
+          "sha512": "471aa8ef05089d234a21f5e36b85e309fa623139eff6842d80e1ca55b09b48776142a054bf0119685f570026e3c4f812ec9a9f64d7da7921cb03285315bdac9d",
+          "sha256": "e73b791672b5841cbc3f1105cb1a2416c0f9ffe811e1ed97c44d77c6214047fb",
+          "sha1": "c98771a6567e241ec0728ddd4e90a065660547dc",
+          "md5": "3b75a6d08cf68f067f9db3d4a71fa300"
+        }
+      ]
+    },
+    {
+      "name": "metadata-api",
+      "attributes": {
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "available-at": {
+        "url": "../../http-client-common-ktor-metadata/0.0.1-SNAPSHOT/http-client-common-ktor-metadata-0.0.1-SNAPSHOT.module",
+        "group": "com.petersamokhin.vksdk",
+        "module": "http-client-common-ktor-metadata",
+        "version": "0.0.1-SNAPSHOT"
+      }
+    }
+  ]
+}

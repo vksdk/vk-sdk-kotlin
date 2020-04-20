@@ -1,0 +1,37 @@
+site_name: VK SDK Kotlin
+site_url: https://github.com/vksdk/vk-sdk-kotlin
+repo_name: vk-sdk-kotlin
+repo_url: https://github.com/vksdk/vk-sdk-kotlin
+site_description: "VK SDK Kotlin"
+site_author: Peter Samokhin
+copyright: 'Copyright &copy; 2020 PeterSamokhin.com'
+remote_branch: gh-pages
+
+nav:
+  - 'Overview': index.md
+  - '0.0.x API':
+      - 'core': 0.0.x/core/index.html
+      - 'common-ktor-http-client': 0.0.x/common-ktor-http-client/index.html
+      - 'jvm-okhttp-http-cloent': 0.0.x/jvm-okhttp-http-client/index.html
+
+theme:
+  name: 'material'
+  favicon: images/favicon.png
+  logo: images/logo.png
+  palette:
+    primary: 'indigo'
+    accent: 'indigo'
+
+extra_css:
+  - 'css/custom.css'
+
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/vksdk/vk-sdk-kotlin
+    - icon: fontawesome/brands/vk
+      link: https://vk.com/vk_sdk
+
+markdown_extensions:
+  - codehilite:
+      guess_lang: false
