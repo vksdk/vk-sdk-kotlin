@@ -1,3 +1,4 @@
+@file:Suppress("UNUSED_VARIABLE")
 plugins {
     kotlin("multiplatform")
 }
@@ -56,7 +57,7 @@ kotlin {
             }
         }
 
-    listOf("linuxX64", "linuxArm32Hfp", "linuxMips32")
+    listOf("linuxX64"/*, "linuxArm32Hfp", "linuxMips32"*/)
         .forEach {
             targetFromPreset(presets[it], it) {
                 compilations["main"].source(sourceSets["pthreadMain"])
