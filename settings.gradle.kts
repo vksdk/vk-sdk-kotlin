@@ -7,8 +7,8 @@ include(
     "http-clients:jvm-okhttp-http-client",
     "http-clients:common-ktor-http-client",
 
-    "stately-embedded",
+    "stately-embedded"
 
-    "examples:jvm-kotlin-example",
-    "examples:jvm-only-java-example"
+    //"examples:jvm-kotlin-example",
+    //"examples:jvm-only-java-example"
 )
