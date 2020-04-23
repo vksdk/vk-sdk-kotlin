@@ -20,7 +20,7 @@ class Message(
     var userId: Int? = null,
     var peerId: Int? = null,
     var domain: String? = null,
-    var chatId: String? = null,
+    var chatId: Int? = null,
     var userIds: String? = null,
     var randomId: Long? = null,
     var message: String? = null,
@@ -36,10 +36,115 @@ class Message(
     var dontParseLinks: Int? = null,
     var disableMentions: Int? = null,
     var intent: String? = null,
-    val template: MessageCarouselTemplate? = null
+    var template: MessageCarouselTemplate? = null
 ) {
+    fun intent(v: String): Message {
+        intent = v
+        return this
+    }
+
+    fun payload(v: String): Message {
+        payload = v
+        return this
+    }
+
+    fun keyboard(v: Keyboard): Message {
+        keyboard = v
+        return this
+    }
+
+    fun template(v: MessageCarouselTemplate): Message {
+        template = v
+        return this
+    }
+
+    fun groupId(v: String): Message {
+        groupId = v.toInt()
+        return this
+    }
+
+    fun groupId(v: Int): Message {
+        groupId = v
+        return this
+    }
+
+    fun stickerId(v: String): Message {
+        stickerId = v.toInt()
+        return this
+    }
+
+    fun stickerId(v: Int): Message {
+        stickerId = v
+        return this
+    }
+
     fun sendFrom(client: VkApiClient): VkRequest {
         return client.sendMessage(this)
+    }
+
+    fun replyTo(v: String): Message {
+        replyTo = v.toInt()
+        return this
+    }
+
+    fun replyTo(v: Int): Message {
+        replyTo = v
+        return this
+    }
+
+    fun attachment(v: String): Message {
+        attachment = v
+        return this
+    }
+
+    fun longitude(v: Double): Message {
+        long = v
+        return this
+    }
+
+    fun longitude(v: String): Message {
+        long = v.toDouble()
+        return this
+    }
+
+    fun latitude(v: Double): Message {
+        lat = v
+        return this
+    }
+
+    fun latitude(v: String): Message {
+        lat = v.toDouble()
+        return this
+    }
+
+    fun text(v: String): Message {
+        message = v
+        return this
+    }
+
+    fun chatId(v: String): Message {
+        chatId = v.toInt()
+        return this
+    }
+
+    fun chatId(v: Int): Message {
+        chatId = v
+        return this
+    }
+
+    fun peerId(v: String): Message {
+        peerId = v.toInt()
+        return this
+    }
+
+    fun peerId(v: Int): Message {
+        peerId = v
+        return this
+    }
+
+    fun domain(v: String): Message {
+        domain = v
+        return this
     }
 
     fun userIds(vararg ids: Int): Message {

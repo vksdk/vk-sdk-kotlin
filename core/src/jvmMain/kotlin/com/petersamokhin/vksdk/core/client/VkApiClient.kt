@@ -6,6 +6,7 @@ import com.petersamokhin.vksdk.core.api.botslongpoll.VkBotsLongPollApi
 import com.petersamokhin.vksdk.core.callback.Callback
 import com.petersamokhin.vksdk.core.http.Parameters
 import com.petersamokhin.vksdk.core.model.VkSettings
+import com.petersamokhin.vksdk.core.utils.assembleCallback
 import kotlinx.serialization.json.JsonElement
 
 /**
@@ -22,7 +23,7 @@ actual class VkApiClient actual constructor(
     type: Type,
     settings: VkSettings
 ) : VkApiClientCommon(id, token, type, settings) {
-    private val flowsWrapper = VkApiClientFlows(this)
+    private val flowsWrapper = VkApiClientFlows(this, settings.backgroundDispatcher)
 
     /**
      * Coroutines Flow wrapper
@@ -83,6 +84,50 @@ actual class VkApiClient actual constructor(
             super.callBatchCommon(BatchRequestItem(request, callback))
         } else {
             super.callCommon(request.method, request.params, callback)
+        }
+    }
+
+    /**
+     * Call some API method and receive the response string
+     *
+     * @param method API method, e.g. `users.get`
+     * @param params Parameters, e.g. `user_id`: `Parameters.of("user_id", 1)`
+     * @param batch If true, request will be put into execute queue, [https://vk.com/dev/execute]
+     * @param onResult Successful result callback
+     * @param onError Error callback
+     */
+    actual fun call(
+        method: String,
+        params: Parameters,
+        batch: Boolean,
+        onResult: (JsonElement) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        if (batch) {
+            super.callBatchCommon(BatchRequestItem(call(method, params), assembleCallback(onResult, onError)))
+        } else {
+            super.callCommon(method, params, assembleCallback(onResult, onError))
+        }
+    }
+
+    /**
+     * Call some API method and receive the response string, parsed into JsonElement
+     *
+     * @param request API request wrapper
+     * @param batch If true, request will be put into execute queue, https://vk.com/dev/execute
+     * @param onResult Successful result callback
+     * @param onError Error callback
+     */
+    actual fun call(
+        request: VkRequest,
+        batch: Boolean,
+        onResult: (JsonElement) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        if (batch) {
+            super.callBatchCommon(BatchRequestItem(request, assembleCallback(onResult, onError)))
+        } else {
+            super.callCommon(request.method, request.params, assembleCallback(onResult, onError))
         }
     }
 

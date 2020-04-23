@@ -5,6 +5,8 @@ import com.petersamokhin.vksdk.core.error.UnsupportedActionException
 /**
  * Cross-platform representation of a File
  *
+ * Linux
+ *
  * @property path Path to the file on disk
  */
 actual class FileOnDisk(

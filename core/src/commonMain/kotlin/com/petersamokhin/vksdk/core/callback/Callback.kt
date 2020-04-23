@@ -3,7 +3,7 @@ package com.petersamokhin.vksdk.core.callback
 /**
  * Callback for network calls
  */
-interface Callback<R> {
+interface Callback<in R: Any> {
     /**
      * Called when the network call is successful
      *

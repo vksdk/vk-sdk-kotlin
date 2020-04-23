@@ -16,4 +16,4 @@ dependencies {
     testImplementation(kotlin("test-junit", Config.Versions.Kotlin.kotlin))
 }
 
-apply(from = "${rootDir}/gradle/mavenpublish.gradle")
+apply(from = "${rootDir}/gradle/mavenpublish.gradle.kts")

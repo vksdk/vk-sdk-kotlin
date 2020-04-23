@@ -9,6 +9,7 @@ include(
 
     "stately-embedded"
 
-    //"examples:jvm-kotlin-example",
-    //"examples:jvm-only-java-example"
+    // Do NOT include ":examples:*" here;
+    // they are individual projects.
+    // To test, use `./gradlew publish` and test repository `./build/localMaven`
 )

@@ -89,5 +89,4 @@ class RowDslBuilder {
     private fun addButton(label: String, payload: String?, block: TextButton.() -> Unit, color: Keyboard.Button.Color) {
         buttons += TextButton(label, color, payload).apply(block).build()
     }
-
 }

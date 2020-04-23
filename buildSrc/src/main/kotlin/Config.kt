@@ -7,8 +7,9 @@ object Config {
         }
         object Plugin {
             const val androidGradle = "3.6.1"
-            const val publish = "0.11.1"
-            const val dokka = "0.10.1"
+
+            // https://github.com/Kotlin/dokka/issues/819
+            const val dokka = "0.9.18" // "0.10.1"
         }
         object Test {
             const val junit = "4.12"

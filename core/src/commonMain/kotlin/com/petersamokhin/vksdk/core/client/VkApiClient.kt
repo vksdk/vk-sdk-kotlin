@@ -49,6 +49,23 @@ expect class VkApiClient(
     fun call(method: String, params: Parameters = Parameters(), batch: Boolean = true, callback: Callback<JsonElement>)
 
     /**
+     * Call some API method and receive the response string
+     *
+     * @param method API method, e.g. `users.get`
+     * @param params Parameters, e.g. `user_id`: `Parameters.of("user_id", 1)`
+     * @param batch If true, request will be put into execute queue, [https://vk.com/dev/execute]
+     * @param onResult Successful result callback
+     * @param onError Error callback
+     */
+    fun call(
+        method: String,
+        params: Parameters = Parameters(),
+        batch: Boolean = true,
+        onResult: (JsonElement) -> Unit = {},
+        onError: (Exception) -> Unit = {}
+    )
+
+    /**
      * Call some API method and receive the response string, parsed into JsonElement
      *
      * @param request API request wrapper
@@ -56,6 +73,21 @@ expect class VkApiClient(
      * @param callback Callback to handle the result or an error
      */
     fun call(request: VkRequest, batch: Boolean = true, callback: Callback<JsonElement>)
+
+    /**
+     * Call some API method and receive the response string, parsed into JsonElement
+     *
+     * @param request API request wrapper
+     * @param batch If true, request will be put into execute queue, https://vk.com/dev/execute
+     * @param onResult Successful result callback
+     * @param onError Error callback
+     */
+    fun call(
+        request: VkRequest,
+        batch: Boolean = true,
+        onResult: (JsonElement) -> Unit = {},
+        onError: (Exception) -> Unit = {}
+    )
 
     /**
      * Call some API method and receive the response string, parsed into JsonElement

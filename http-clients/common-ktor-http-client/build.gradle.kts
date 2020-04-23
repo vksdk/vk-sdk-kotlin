@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_VARIABLE")
+
 plugins {
     kotlin("multiplatform")
 }
@@ -50,4 +52,4 @@ kotlin {
         }
 }
 
-apply(from = "${rootDir}/gradle/mavenpublish.gradle")
+apply(from = "${rootDir}/gradle/mavenpublish.gradle.kts")

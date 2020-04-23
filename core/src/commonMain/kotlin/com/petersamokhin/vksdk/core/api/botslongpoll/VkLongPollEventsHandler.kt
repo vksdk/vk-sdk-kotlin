@@ -4,8 +4,8 @@ import com.petersamokhin.vksdk.core.callback.EventCallback
 import com.petersamokhin.vksdk.core.model.event.MessageNew
 import com.petersamokhin.vksdk.core.model.event.RawEvent
 import com.petersamokhin.vksdk.internal.co.touchlab.stately.collections.IsoMutableMap
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -19,11 +19,12 @@ import kotlin.coroutines.CoroutineContext
  */
 internal class VkLongPollEventsHandler(
     private val json: Json,
-    parentJob: Job
+    parentJob: Job,
+    private val backgroundDispatcher: CoroutineDispatcher
 ): CoroutineScope {
     private val job = SupervisorJob(parentJob)
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default + job
+        get() = backgroundDispatcher + job
 
     private val listenersMap: MutableMap<String, MutableCollection<EventCallback<*>>> = IsoMutableMap()
 

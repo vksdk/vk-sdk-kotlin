@@ -1,0 +1,2 @@
+<!-- This is required so androidMain is an Android library and not the simple Java module -->
+<manifest package="com.example.mpp" />

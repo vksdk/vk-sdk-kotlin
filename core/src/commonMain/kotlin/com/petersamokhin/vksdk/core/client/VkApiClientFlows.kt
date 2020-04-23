@@ -7,9 +7,9 @@ import com.petersamokhin.vksdk.core.http.Parameters
 import com.petersamokhin.vksdk.core.model.event.MessageNew
 import com.petersamokhin.vksdk.core.model.event.RawEvent
 import com.petersamokhin.vksdk.core.model.objects.Message
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.awaitClose
@@ -26,7 +26,8 @@ import kotlin.coroutines.CoroutineContext
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class VkApiClientFlows(
-    private val client: VkApiClient
+    private val client: VkApiClient,
+    private val backgroundDispatcher: CoroutineDispatcher
 ): CoroutineScope {
     private val job = SupervisorJob()
 
@@ -34,7 +35,7 @@ class VkApiClientFlows(
         println("VkApiClientFlows::exceptionHandler::error = $throwable")
     }
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default + job + exceptionHandler
+        get() = backgroundDispatcher + job + exceptionHandler
 
     /**
      * Handle each `message_new` event in flow

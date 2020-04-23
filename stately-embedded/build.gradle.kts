@@ -1,4 +1,5 @@
 @file:Suppress("UNUSED_VARIABLE")
+
 plugins {
     kotlin("multiplatform")
 }
@@ -57,13 +58,16 @@ kotlin {
             }
         }
 
-    listOf("linuxX64"/*, "linuxArm32Hfp", "linuxMips32"*/)
-        .forEach {
-            targetFromPreset(presets[it], it) {
-                compilations["main"].source(sourceSets["pthreadMain"])
-                compilations["test"].source(sourceSets["nativeTest"])
-            }
+    listOf(
+        // disabled because these targets are disabled for :core
+        // "linuxArm32Hfp", "linuxMips32",
+        "linuxX64"
+    ).forEach {
+        targetFromPreset(presets[it], it) {
+            compilations["main"].source(sourceSets["pthreadMain"])
+            compilations["test"].source(sourceSets["nativeTest"])
         }
+    }
 
     targetFromPreset(presets["mingwX64"], "mingwX64") {
         compilations["main"].source(sourceSets["mingwMain"])
@@ -71,4 +75,4 @@ kotlin {
     }
 }
 
-apply(from = "${rootDir}/gradle/mavenpublish.gradle")
+apply(from = "${rootDir}/gradle/mavenpublish.gradle.kts")

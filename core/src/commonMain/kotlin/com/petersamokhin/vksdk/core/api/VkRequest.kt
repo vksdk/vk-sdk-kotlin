@@ -7,7 +7,7 @@ import com.petersamokhin.vksdk.core.http.ContentType
 import com.petersamokhin.vksdk.core.http.HttpClient
 import com.petersamokhin.vksdk.core.http.Parameters
 import com.petersamokhin.vksdk.core.http.Response
-import kotlinx.serialization.json.JsonElement
+import com.petersamokhin.vksdk.core.utils.assembleCallback
 
 /**
  * Network request to the VK API
@@ -64,5 +64,16 @@ data class VkRequest(
                 override fun onError(error: Exception) = callback.onError(VkException(cause = error))
             }
         )
+    }
+
+    /**
+     * Execute request asynchronously
+     *
+     * @param onResult Successful result callback
+     * @param onError Error callback
+     */
+    @OptIn(ExperimentalStdlibApi::class)
+    fun enqueue(onResult: (String) -> Unit = {}, onError: (Exception) -> Unit = {}) {
+        enqueue(assembleCallback(onResult, onError))
     }
 }

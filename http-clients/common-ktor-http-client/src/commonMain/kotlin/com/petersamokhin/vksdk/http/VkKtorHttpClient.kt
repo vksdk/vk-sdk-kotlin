@@ -20,6 +20,8 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.content.ByteArrayContent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -34,8 +36,7 @@ import kotlin.coroutines.CoroutineContext
  * @property coroutineContext Coroutine context for network calls
  */
 abstract class VkKtorHttpClient constructor(
-    config: HttpClientConfig,
-    override val coroutineContext: CoroutineContext
+    config: HttpClientConfig = HttpClientConfig()
 ) : HttpClient, CoroutineScope {
     @Suppress("LeakingThis")
     private var client = io.ktor.client.HttpClient(createEngineWithConfig(config))

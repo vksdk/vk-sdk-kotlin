@@ -20,14 +20,22 @@ import java.util.concurrent.TimeUnit
 
 /**
  * HTTP client based on OkHttp
- *
- * @param config Client configuration
  */
-class VkOkHttpClient @JvmOverloads constructor(config: HttpClientConfig = HttpClientConfig()) : HttpClient {
+class VkOkHttpClient : HttpClient {
     private var okHttpClient: OkHttpClient? = null
 
-    init {
+    /**
+     *  @param config Client configuration
+     */
+    @JvmOverloads constructor(config: HttpClientConfig = HttpClientConfig()) {
         applyConfig(config)
+    }
+
+    /**
+     * @param overrideClient Provide yours client
+     */
+    constructor(overrideClient: OkHttpClient) {
+        okHttpClient = overrideClient
     }
 
     /**

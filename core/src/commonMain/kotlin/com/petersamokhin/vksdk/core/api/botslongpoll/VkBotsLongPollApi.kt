@@ -10,9 +10,9 @@ import com.petersamokhin.vksdk.core.model.VkLongPollServerResponse
 import com.petersamokhin.vksdk.core.model.VkResponse
 import com.petersamokhin.vksdk.core.model.VkResponseTypedSerializer
 import com.petersamokhin.vksdk.core.utils.*
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -31,7 +31,8 @@ import kotlin.coroutines.CoroutineContext
  */
 class VkBotsLongPollApi(
     private val clientId: Int,
-    private val api: VkApi
+    private val api: VkApi,
+    private val backgroundDispatcher: CoroutineDispatcher
 ) : CoroutineScope {
     private val job = SupervisorJob()
 
@@ -43,11 +44,11 @@ class VkBotsLongPollApi(
      * Coroutine context for jobs
      */
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default + job + exceptionHandler
+        get() = backgroundDispatcher + job + exceptionHandler
 
     private val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
 
-    private val updatesHandler = VkLongPollEventsHandler(json, job)
+    private val updatesHandler = VkLongPollEventsHandler(json, job, backgroundDispatcher)
 
     /**
      * Start long polling with settings

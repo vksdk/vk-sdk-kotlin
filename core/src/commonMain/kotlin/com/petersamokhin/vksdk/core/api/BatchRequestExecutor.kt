@@ -11,7 +11,6 @@ import com.petersamokhin.vksdk.core.utils.jsonObjectOrNullSafe
 import com.petersamokhin.vksdk.internal.co.touchlab.stately.collections.IsoArrayDeque
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -40,7 +39,7 @@ class BatchRequestExecutor(
      * Coroutine context for the loop
      */
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default + job + exceptionHandler
+        get() = settings.backgroundDispatcher + job + exceptionHandler
 
     private var queue: IsoArrayDeque<BatchRequestItem>? = null
 

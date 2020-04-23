@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_VARIABLE")
+
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization") version Config.Versions.Kotlin.kotlin
@@ -23,6 +25,7 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
+                implementation(kotlin("stdlib-jdk7", Config.Versions.Kotlin.kotlin))
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Config.Versions.Kotlin.coroutines}")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Config.Versions.Kotlin.serialization}")
             }
@@ -88,4 +91,4 @@ kotlin {
     }
 }
 
-apply(from = "$rootDir/gradle/mavenpublish.gradle")
+apply(from = "$rootDir/gradle/mavenpublish.gradle.kts")

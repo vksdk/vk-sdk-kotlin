@@ -10,14 +10,12 @@ import com.petersamokhin.vksdk.core.callback.Callback
 import com.petersamokhin.vksdk.core.callback.EventCallback
 import com.petersamokhin.vksdk.core.error.UnsupportedActionException
 import com.petersamokhin.vksdk.core.http.Parameters
-import com.petersamokhin.vksdk.core.io.FileOnDisk
 import com.petersamokhin.vksdk.core.model.VkSettings
 import com.petersamokhin.vksdk.core.model.event.MessageNew
 import com.petersamokhin.vksdk.core.model.event.RawEvent
 import com.petersamokhin.vksdk.core.model.objects.Message
-import com.petersamokhin.vksdk.core.model.objects.UploadableContent
+import com.petersamokhin.vksdk.core.utils.assembleEventCallback
 import com.petersamokhin.vksdk.core.utils.runBlocking
-import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonElement
@@ -36,12 +34,12 @@ abstract class VkApiClientCommon(
     private val id: Int,
     token: String,
     private val type: VkApiClient.Type,
-    settings: VkSettings
+    private val settings: VkSettings
 ) {
     internal val json = Json(JsonConfiguration.Stable.copy(encodeDefaults = false, ignoreUnknownKeys = true))
     private val api = VkApi(settings.httpClient, settings.apiVersion, token, settings.defaultParams)
     private val batchRequestExecutor = BatchRequestExecutor(token, settings)
-    private var botsLongPollApi = VkBotsLongPollApi(id, api)
+    private var botsLongPollApi = VkBotsLongPollApi(id, api, settings.backgroundDispatcher)
     private val uploader = VkApiUploader(api, json)
 
     /**
@@ -56,7 +54,7 @@ abstract class VkApiClientCommon(
         }
 
         if (restart) {
-            botsLongPollApi = VkBotsLongPollApi(id, api)
+            botsLongPollApi = VkBotsLongPollApi(id, api, this.settings.backgroundDispatcher)
         }
 
         runBlocking {
@@ -94,10 +92,24 @@ abstract class VkApiClientCommon(
     }
 
     /**
+     * Handle each `message_new` event using listener
+     */
+    fun onMessage(block: (MessageNew) -> Unit) {
+        botsLongPollApi.registerListener(MessageNew.TYPE, assembleEventCallback(block))
+    }
+
+    /**
      * Handle each event using listener. Object is raw JSON
      */
     fun onEachEvent(listener: EventCallback<RawEvent>) {
         botsLongPollApi.registerListener(RawEvent.TYPE, listener)
+    }
+
+    /**
+     * Handle each event using listener. Object is raw JSON
+     */
+    fun onEachEvent(block: (RawEvent) -> Unit) {
+        botsLongPollApi.registerListener(RawEvent.TYPE, assembleEventCallback(block))
     }
 
     /**
@@ -135,7 +147,7 @@ abstract class VkApiClientCommon(
      * Call some API method and receive the response string
      */
     protected fun callCommon(method: String, params: Parameters, callback: Callback<JsonElement>) {
-        api.call(method, params).enqueue(object: Callback<String> {
+        api.call(method, params).enqueue(object : Callback<String> {
             override fun onResult(result: String) = callback.onResult(json.parseJson(result))
             override fun onError(error: Exception) = callback.onError(error)
         })

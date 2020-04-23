@@ -8,17 +8,12 @@ buildscript {
     dependencies {
         classpath(kotlin("gradle-plugin", Config.Versions.Kotlin.kotlin))
         classpath("com.android.tools.build:gradle:${Config.Versions.Plugin.androidGradle}")
-        classpath("com.vanniktech:gradle-maven-publish-plugin:${Config.Versions.Plugin.publish}")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:${Config.Versions.Plugin.dokka}")
     }
 }
 
-apply(plugin = "org.jetbrains.dokka")
-
-val GROUP: String by project
-val VERSION_NAME: String by project
-
 allprojects {
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).all {
         JavaVersion.VERSION_1_8.toString().also {
             kotlinOptions.jvmTarget = it
             if (plugins.hasPlugin("org.jetbrains.kotlin.jvm")) {
@@ -34,6 +29,6 @@ allprojects {
         jcenter()
     }
 
-    group = GROUP
-    version = VERSION_NAME
+    group = project.property("GROUP").toString()
+    version = project.property("VERSION_NAME").toString()
 }
