@@ -8,7 +8,7 @@ tasks.jar {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk7", Config.Versions.Kotlin.kotlin))
+    implementation(kotlin("stdlib-jdk8", Config.Versions.Kotlin.kotlin))
     implementation("com.squareup.okhttp3:okhttp:${Config.Versions.okhttp}")
     implementation(project(":core"))
 

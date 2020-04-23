@@ -85,8 +85,7 @@ class VkApiClientFlows(
                 }
 
                 override fun onError(error: Exception) {
-                    close()
-                    throw error
+                    close(error)
                 }
             })
 
@@ -112,8 +111,7 @@ class VkApiClientFlows(
                 }
 
                 override fun onError(error: Exception) {
-                    close()
-                    throw error
+                    close(error)
                 }
             })
 
@@ -137,8 +135,7 @@ class VkApiClientFlows(
                 }
 
                 override fun onError(error: Exception) {
-                    close()
-                    throw error
+                    close(error)
                 }
             })
 

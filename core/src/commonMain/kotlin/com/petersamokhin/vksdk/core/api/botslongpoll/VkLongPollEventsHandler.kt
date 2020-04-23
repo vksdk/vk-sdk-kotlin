@@ -3,7 +3,7 @@ package com.petersamokhin.vksdk.core.api.botslongpoll
 import com.petersamokhin.vksdk.core.callback.EventCallback
 import com.petersamokhin.vksdk.core.model.event.MessageNew
 import com.petersamokhin.vksdk.core.model.event.RawEvent
-import com.petersamokhin.vksdk.internal.co.touchlab.stately.collections.IsoMutableMap
+import co.touchlab.stately.collections.IsoMutableMap
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

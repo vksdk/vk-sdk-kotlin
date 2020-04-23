@@ -19,5 +19,7 @@ object Config {
         const val gson = "2.8.6"
         const val okhttp = "4.5.0"
         const val ktor = "1.3.2"
+        const val stately = "1.0.2"
+        const val statelyNew = "1.0.2-a4"
     }
 }

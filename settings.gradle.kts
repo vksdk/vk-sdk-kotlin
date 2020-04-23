@@ -5,9 +5,7 @@ include(
     "core",
 
     "http-clients:jvm-okhttp-http-client",
-    "http-clients:common-ktor-http-client",
-
-    "stately-embedded"
+    "http-clients:common-ktor-http-client"
 
     // Do NOT include ":examples:*" here;
     // they are individual projects.

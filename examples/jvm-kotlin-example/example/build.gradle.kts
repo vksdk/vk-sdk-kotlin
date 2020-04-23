@@ -12,7 +12,7 @@ kotlin {
 
 dependencies {
     // We want to use Kotlin
-    implementation(kotlin("stdlib-jdk7", "1.3.72"))
+    implementation(kotlin("stdlib-jdk8", "1.3.72"))
 
     val vkSdkKotlinVersion = "0.0.1-SNAPSHOT"
 

@@ -11,10 +11,15 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(project(":stately-embedded"))
                 implementation(kotlin("stdlib-common", Config.Versions.Kotlin.kotlin))
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:${Config.Versions.Kotlin.coroutines}")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${Config.Versions.Kotlin.serialization}")
+
+                // api(project(":stately-embedded"))
+                implementation("co.touchlab:stately-common:${Config.Versions.stately}")
+                implementation("co.touchlab:stately-concurrency:${Config.Versions.stately}")
+                implementation("co.touchlab:stately-isolate:${Config.Versions.statelyNew}")
+                implementation("co.touchlab:stately-iso-collections:${Config.Versions.statelyNew}")
             }
         }
         val commonTest by getting {
@@ -25,7 +30,7 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-jdk7", Config.Versions.Kotlin.kotlin))
+                implementation(kotlin("stdlib-jdk8", Config.Versions.Kotlin.kotlin))
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Config.Versions.Kotlin.coroutines}")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Config.Versions.Kotlin.serialization}")
             }

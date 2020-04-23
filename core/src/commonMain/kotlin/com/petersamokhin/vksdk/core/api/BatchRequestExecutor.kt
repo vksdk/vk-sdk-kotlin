@@ -8,7 +8,7 @@ import com.petersamokhin.vksdk.core.http.paramsOf
 import com.petersamokhin.vksdk.core.model.VkSettings
 import com.petersamokhin.vksdk.core.utils.jsonArrayOrNullSafe
 import com.petersamokhin.vksdk.core.utils.jsonObjectOrNullSafe
-import com.petersamokhin.vksdk.internal.co.touchlab.stately.collections.IsoArrayDeque
+import co.touchlab.stately.collections.IsoArrayDeque
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob

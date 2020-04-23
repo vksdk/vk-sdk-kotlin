@@ -12,7 +12,7 @@ kotlin {
 
 dependencies {
     // We don't want to use Kotlin, so it's not listed in our dependencies.
-    // implementation(kotlin("stdlib-jdk7", org.jetbrains.kotlin.config.KotlinCompilerVersion.VERSION))
+    // implementation(kotlin("stdlib-jdk8", org.jetbrains.kotlin.config.KotlinCompilerVersion.VERSION))
 
     val vkSdkKotlinVersion = "0.0.1-SNAPSHOT"
 

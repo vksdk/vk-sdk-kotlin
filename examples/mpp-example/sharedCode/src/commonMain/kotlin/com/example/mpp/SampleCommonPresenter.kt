@@ -60,9 +60,9 @@ class SampleCommonPresenter {
     /**
      * Get info about Pashka
      */
-    fun getPashkaProfile(): Flow<VkUser> {
+    fun getPashkaProfileFlow(): Flow<VkUser> {
         return vkApiClient.flows()
-            .call("users.get", paramsOf("user_id" to 1), batch =true)
+            .call("users.get", paramsOf("user_id" to 1), batch = true)
             .map {
                 // only the ListSerializer, because VK's execute method returning raw responses array
                 json.fromJson(ListSerializer(VkUser.serializer()), it).first()

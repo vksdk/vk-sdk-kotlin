@@ -4,7 +4,7 @@ repo_name: vk-sdk-kotlin
 repo_url: https://github.com/vksdk/vk-sdk-kotlin
 site_description: "VK SDK Kotlin"
 site_author: Peter Samokhin
-copyright: 'Copyright &copy; 2020 PeterSamokhin.com'
+copyright: 'Copyright &copy; 2020 Peter Samokhin <a href="https://petersamokhin.com">https://petersamokhin.com</a>'
 remote_branch: gh-pages
 
 nav:

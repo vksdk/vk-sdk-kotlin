@@ -24,8 +24,9 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         // Use flows, for example, and the full other functionality.
-        presenter.getPashkaProfile()
+        presenter.getPashkaProfileFlow()
             .onEach { pashka -> someText.text = pashka.firstName }
+            .catch { error -> someText.text = error.message ?: "Error!" }
             .launchIn(lifecycleScope)
     }
 }

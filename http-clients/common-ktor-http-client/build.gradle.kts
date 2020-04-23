@@ -22,7 +22,7 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-jdk7", Config.Versions.Kotlin.kotlin))
+                implementation(kotlin("stdlib-jdk8", Config.Versions.Kotlin.kotlin))
                 implementation("io.ktor:ktor-client-core-jvm:${Config.Versions.ktor}")
             }
         }
