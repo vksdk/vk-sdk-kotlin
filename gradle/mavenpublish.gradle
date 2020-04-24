@@ -1,8 +1,18 @@
 apply plugin: "com.vanniktech.maven.publish"
 
 mavenPublish {
-    useLegacyMode = !project.plugins.hasPlugin('org.jetbrains.kotlin.multiplatform')
-    releaseSigningEnabled = isReleaseBuild()
+    def isLegacyMode = !project.plugins.hasPlugin('org.jetbrains.kotlin.multiplatform')
+    def isRelease = isReleaseBuild()
+    def signKeyValid = !getGpgKey().isEmpty()
+
+    useLegacyMode = isLegacyMode
+    releaseSigningEnabled = isRelease()
+
+    project.logger.warn("publish: maven: release=$isRelease, keyValud=$signKeyValid, legacy=$isLegacyMode")
+
+    if (isRelease && !signKeyValid) {
+        throw new GradleException("Release signing enabled, but key is empty")
+    }
 
     targets {
         installArchives {
