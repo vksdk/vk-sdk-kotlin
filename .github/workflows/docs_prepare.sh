@@ -42,6 +42,9 @@ done
 set -x
 
 # Copy in special files that GitHub wants in the project root.
-# cp UPGRADING.md docs/upgrading.md
-# cp CHANGELOG.md docs/changelog.md
-# cp CONTRIBUTING.md docs/contributing.md
+cp README.md docs/index.md
+cp CHANGELOG.md docs/changelog.md
+
+# Project README.md is also used as the main page for the docs,
+# but all links are relative, so we must fix it when copying
+sed -i -e 's+docs/images+images+g' docs/index.md

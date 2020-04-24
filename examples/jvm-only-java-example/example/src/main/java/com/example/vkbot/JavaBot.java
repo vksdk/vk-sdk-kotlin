@@ -8,8 +8,6 @@ import com.petersamokhin.vksdk.core.http.Parameters;
 import com.petersamokhin.vksdk.core.model.VkSettings;
 import com.petersamokhin.vksdk.core.model.objects.Message;
 import com.petersamokhin.vksdk.http.VkOkHttpClient;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 import kotlinx.serialization.json.JsonElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,7 +49,8 @@ public class JavaBot {
             new Message()
                     .peerId(event.getMessage().getPeerId())
                     .text("Hello, world!")
-                    .sendFrom(vkApiClient);
+                    .sendFrom(vkApiClient)
+                    .execute();
         });
 
         // And, of course, to chat bot be working,

@@ -5,6 +5,7 @@ import com.petersamokhin.vksdk.core.http.HttpClient
 import com.petersamokhin.vksdk.core.http.Parameters
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlin.jvm.JvmOverloads
 
 /**
  * Settings
@@ -17,16 +18,10 @@ import kotlinx.coroutines.Dispatchers
  *
  * @author Peter Samokhin, https://petersamokhin.com
  */
-expect class VkSettings(
-    httpClient: HttpClient,
-    apiVersion: Double = VkApi.DEFAULT_VERSION,
-    defaultParams: Parameters = Parameters(),
-    maxExecuteRequestsPerSecond: Int = VkApi.EXECUTE_MAX_REQUESTS_PER_SECOND_DISABLED,
-    backgroundDispatcher: CoroutineDispatcher = Dispatchers.Default
-) {
-    val httpClient: HttpClient
-    val defaultParams: Parameters
-    val maxExecuteRequestsPerSecond: Int
-    val apiVersion: Double
-    val backgroundDispatcher: CoroutineDispatcher
-}
+data class VkSettings @JvmOverloads constructor(
+    val httpClient: HttpClient,
+    val apiVersion: Double = VkApi.DEFAULT_VERSION,
+    val defaultParams: Parameters = Parameters(),
+    val maxExecuteRequestsPerSecond: Int = VkApi.EXECUTE_MAX_REQUESTS_PER_SECOND_DISABLED,
+    val backgroundDispatcher: CoroutineDispatcher = Dispatchers.Default
+)

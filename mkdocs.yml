@@ -13,6 +13,7 @@ nav:
       - 'core': 0.0.x/core/index.html
       - 'common-ktor-http-client': 0.0.x/common-ktor-http-client/index.html
       - 'jvm-okhttp-http-cloent': 0.0.x/jvm-okhttp-http-client/index.html
+  - 'Changelog': changelog.md
 
 theme:
   name: 'material'

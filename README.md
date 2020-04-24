@@ -4,7 +4,6 @@
 Unofficial VK.com SDK based written in Kotlin.
 Based on Kotlin Multiplatform project, but have Java-friendly API.
 
-
 ## Minimal example bot
 
 ### Kotlin

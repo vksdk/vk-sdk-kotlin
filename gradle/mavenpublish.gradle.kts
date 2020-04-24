@@ -33,6 +33,7 @@ configure<PublishingExtension> {
 
     repositories {
         if (getRepositoryUsername()?.isEmpty() == true && getRepositoryPassword()?.isNotEmpty() == true) {
+            project.logger.warn("publish: maven")
             maven {
                 val isRelease = isReleaseBuild()
                 url = uri(if (isRelease) getReleaseRepositoryUrl() else getSnapshotRepositoryUrl())
@@ -42,11 +43,11 @@ configure<PublishingExtension> {
                 }
             }
         } else {
-            project.logger.warn("no repository login or password provided, skip")
+            project.logger.warn("publish: maven: skip (no repository login or password were provided)")
         }
         maven {
             val testRepoUri = "file://${rootProject.buildDir}/localMaven"
-            project.logger.warn("publish: test repo: $testRepoUri")
+            project.logger.warn("publish: test: repo: $testRepoUri")
 
             name = "test"
             url = uri(testRepoUri)

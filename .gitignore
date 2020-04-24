@@ -1,7 +1,14 @@
+# ItelliJ, Gradle
 build
 .gradle
 .idea
 *.iml
-.DS_Store
-/docs/0.0.x
 local.properties
+
+# MacOS
+.DS_Store
+
+# Docs
+/docs/0.0.x
+/docs/index.md
+/docs/changelog.md
