@@ -49,7 +49,7 @@ client.onMessage(event -> {
     new Message()
         .peerId(event.getMessage().getPeerId())
         .text("Hello, world!")
-        .sendFrom(vkApiClient)
+        .sendFrom(client)
         .execute();
 });
 
