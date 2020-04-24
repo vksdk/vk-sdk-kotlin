@@ -6,7 +6,7 @@ mavenPublish {
     def signKeyValid = !getGpgKey().isEmpty()
 
     useLegacyMode = isLegacyMode
-    releaseSigningEnabled = isRelease()
+    releaseSigningEnabled = isRelease
 
     project.logger.warn("publish: maven: release=$isRelease, keyValud=$signKeyValid, legacy=$isLegacyMode")
 
