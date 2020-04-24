@@ -9,6 +9,7 @@ buildscript {
         classpath(kotlin("gradle-plugin", Config.Versions.Kotlin.kotlin))
         classpath("com.android.tools.build:gradle:${Config.Versions.Plugin.androidGradle}")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:${Config.Versions.Plugin.dokka}")
+        classpath("com.vanniktech:gradle-maven-publish-plugin:${Config.Versions.Plugin.publish}")
     }
 }
 

@@ -96,4 +96,4 @@ kotlin {
     }
 }
 
-apply(from = "$rootDir/gradle/mavenpublish.gradle.kts")
+apply(from = "$rootDir/gradle/mavenpublish.gradle")
