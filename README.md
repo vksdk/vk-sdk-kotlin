@@ -2,7 +2,10 @@
 ![cover](docs/images/cover.png)
 
 Unofficial VK.com SDK based written in Kotlin.
-Based on Kotlin Multiplatform project, but have Java-friendly API.
+Based on Kotlin Multiplatform project, but has Java-friendly API.
+
+The primary goal of the library is to cover most of the possible needs but in abstract way.
+You can't find here a hundred of pre-defined data classes for each API method, but you can write the highly customizable solution.
 
 ## Minimal example bot
 

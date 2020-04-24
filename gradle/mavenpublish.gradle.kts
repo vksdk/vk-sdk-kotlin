@@ -32,7 +32,7 @@ configure<PublishingExtension> {
     }
 
     repositories {
-        if (getRepositoryUsername()?.isEmpty() == true && getRepositoryPassword()?.isNotEmpty() == true) {
+        if (getRepositoryUsername()?.isNotEmpty() == true && getRepositoryPassword()?.isNotEmpty() == true) {
             project.logger.warn("publish: maven")
             maven {
                 val isRelease = isReleaseBuild()
