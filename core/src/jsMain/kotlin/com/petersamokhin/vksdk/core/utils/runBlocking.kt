@@ -13,5 +13,6 @@ import kotlin.coroutines.CoroutineContext
  * @param block Block to execute
  */
 actual fun <T> runBlocking(context: CoroutineContext, block: suspend CoroutineScope.() -> T?): T? {
-    return kotlinx.coroutines.runBlocking(context, block)
+    println("runBlocking is not supported for JS")
+    return null
 }

@@ -14,7 +14,7 @@ dependencies {
     // We want to use Kotlin
     implementation(kotlin("stdlib-jdk8", "1.3.72"))
 
-    val vkSdkKotlinVersion = "0.0.1-SNAPSHOT"
+    val vkSdkKotlinVersion = "0.0.1"
 
     // Module "core" is required.
     // `project(":core")` only available if your project and the SDK are in the same Gradle project.

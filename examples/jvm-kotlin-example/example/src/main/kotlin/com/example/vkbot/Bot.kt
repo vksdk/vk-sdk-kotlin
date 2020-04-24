@@ -55,6 +55,8 @@ class Bot : CoroutineScope {
     )
 
     /**
+     * Change the peer_id in the all places!
+     *
      * @param clientId Group ID
      * @param accessToken Group `access_token`
      */
@@ -70,7 +72,6 @@ class Bot : CoroutineScope {
         // init settings, most of them have default values
         val settings = VkSettings(
             httpClient,
-            maxExecuteRequestsPerSecond = 3,
             defaultParams = paramsOf("lang" to "en")
         )
 
@@ -188,7 +189,7 @@ class Bot : CoroutineScope {
      */
     private fun simpleMessageExample(client: VkApiClient) {
         client.sendMessage {
-            peerId = 62802565
+            peerId = 12345678901
             message = "Hello, World!"
 
             // You can use stickers, replies, location, etc.
@@ -201,7 +202,7 @@ class Bot : CoroutineScope {
      */
     private fun keyboardDslExample(client: VkApiClient) {
         client.sendMessage {
-            peerId = 62802565
+            peerId = 12345678901
             message = "You take the blue pill — the story ends..."
 
             keyboard = keyboard(oneTime = true) {
@@ -217,7 +218,7 @@ class Bot : CoroutineScope {
      * Upload some photo and attach it to the message
      */
     private fun attachImageToMessageExample(client: VkApiClient) {
-        val necessaryPeerId = 62802565
+        val necessaryPeerId = 12345678901
 
         val imageAttachmentString = client.uploader().uploadPhotoForMessage(
             necessaryPeerId,
@@ -235,7 +236,7 @@ class Bot : CoroutineScope {
      * I don't know, why vtentakle can't do it by their API.
      */
     private fun customAttachmentExample(client: VkApiClient) {
-        val necessaryPeerId = 62802565
+        val necessaryPeerId = 12345678901
         val attachmentType = "audio_message"
 
         val audioMessageAttachmentString = client.uploader().uploadContent(

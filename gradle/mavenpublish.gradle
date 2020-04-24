@@ -8,10 +8,10 @@ mavenPublish {
     useLegacyMode = isLegacyMode
     releaseSigningEnabled = isRelease
 
-    project.logger.warn("publish: maven: release=$isRelease, keyValud=$signKeyValid, legacy=$isLegacyMode")
+    project.logger.warn("publish: maven: release=$isRelease, keyValid=$signKeyValid, legacy=$isLegacyMode")
 
     if (isRelease && !signKeyValid) {
-        throw new GradleException("Release signing enabled, but key is empty")
+        project.logger.error("Release signing enabled, but key is empty")
     }
 
     targets {

@@ -12,6 +12,6 @@ import kotlin.coroutines.CoroutineContext
  * @param context Coroutine context
  * @param block Block to execute
  */
-actual fun <T> runBlocking(context: CoroutineContext, block: suspend CoroutineScope.() -> T): T {
+actual fun <T> runBlocking(context: CoroutineContext, block: suspend CoroutineScope.() -> T?): T? {
     return kotlinx.coroutines.runBlocking(context, block)
 }

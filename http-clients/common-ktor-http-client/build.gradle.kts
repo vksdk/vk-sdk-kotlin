@@ -7,6 +7,18 @@ plugins {
 kotlin {
     jvm()
 
+    js {
+        nodejs()
+
+        compilations.all {
+            kotlinOptions {
+                sourceMap = true
+                moduleKind = "umd"
+                metaInfo = true
+            }
+        }
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -29,6 +41,12 @@ kotlin {
         val jvmTest by getting {
             dependencies {
 
+            }
+        }
+        val jsMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-js", Config.Versions.Kotlin.kotlin))
+                implementation("io.ktor:ktor-client-core-js:${Config.Versions.ktor}")
             }
         }
         val nativeMain by creating {

@@ -36,3 +36,4 @@ extra:
 markdown_extensions:
   - codehilite:
       guess_lang: false
+  - admonition

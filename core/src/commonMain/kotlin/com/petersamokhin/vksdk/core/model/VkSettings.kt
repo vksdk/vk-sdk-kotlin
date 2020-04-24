@@ -22,6 +22,6 @@ data class VkSettings @JvmOverloads constructor(
     val httpClient: HttpClient,
     val apiVersion: Double = VkApi.DEFAULT_VERSION,
     val defaultParams: Parameters = Parameters(),
-    val maxExecuteRequestsPerSecond: Int = VkApi.EXECUTE_MAX_REQUESTS_PER_SECOND_DISABLED,
+    val maxExecuteRequestsPerSecond: Int = 3,
     val backgroundDispatcher: CoroutineDispatcher = Dispatchers.Default
 )

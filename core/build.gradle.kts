@@ -8,6 +8,18 @@ plugins {
 kotlin {
     jvm()
 
+    js {
+        nodejs()
+
+        compilations.all {
+            kotlinOptions {
+                sourceMap = true
+                moduleKind = "umd"
+                metaInfo = true
+            }
+        }
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -15,7 +27,6 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:${Config.Versions.Kotlin.coroutines}")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${Config.Versions.Kotlin.serialization}")
 
-                // api(project(":stately-embedded"))
                 implementation("co.touchlab:stately-common:${Config.Versions.stately}")
                 implementation("co.touchlab:stately-concurrency:${Config.Versions.stately}")
                 implementation("co.touchlab:stately-isolate:${Config.Versions.statelyNew}")
@@ -39,6 +50,13 @@ kotlin {
             dependencies {
                 implementation(kotlin("test", Config.Versions.Kotlin.kotlin))
                 implementation(kotlin("test-junit", Config.Versions.Kotlin.kotlin))
+            }
+        }
+        val jsMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-js", Config.Versions.Kotlin.kotlin))
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:${Config.Versions.Kotlin.coroutines}")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:${Config.Versions.Kotlin.serialization}")
             }
         }
         val nativeMain by creating {

@@ -16,7 +16,7 @@ allprojects {
         google()
         jcenter()
         maven {
-            // Change to your path
+            // Change to your path for testing, if it is necessary
             url = uri("file:/Users/petersamokhin/Projects/vksdk/vk-sdk-kotlin/build/localMaven")
         }
     }

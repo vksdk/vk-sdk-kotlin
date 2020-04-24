@@ -1,5 +1,6 @@
 package com.petersamokhin.vksdk.core.api
 
+import com.petersamokhin.vksdk.core.callback.Callback
 import com.petersamokhin.vksdk.core.error.VkResponseException
 import com.petersamokhin.vksdk.core.http.HttpClient
 import com.petersamokhin.vksdk.core.http.Parameters
@@ -65,6 +66,57 @@ class VkApi internal constructor(
         return call(
             methodSave, saveParams
         ).execute()
+    }
+
+    /**
+     * Upload whatever you want wherever you can
+     */
+    @OptIn(ExperimentalStdlibApi::class)
+    fun uploadContent(
+        methodGetUploadUrl: String,
+        methodSave: String,
+        json: Json,
+        params: Parameters,
+        items: List<UploadableContent>,
+        callback: Callback<String>
+    ) {
+        call(methodGetUploadUrl, params)
+            .enqueue(object: Callback<String> {
+                override fun onResult(result: String) {
+                    val uploadUrl = json.parseJson(result).jsonObjectOrNullSafe?.get("response")?.jsonObjectOrNullSafe?.get("upload_url")?.contentOrNullSafe
+                        ?: throw VkResponseException(methodGetUploadUrl)
+
+                    httpClient.postMultipart(
+                        uploadUrl,
+                        items,
+                        object: Callback<Response> {
+                            override fun onResult(result: Response) {
+                                val uploadResult = result.let {
+                                    if (it.isSuccessful()) {
+                                        it.body?.decodeToString()?.let { responseString ->
+                                            json.parseJson(responseString).jsonObjectOrNullSafe
+                                        }
+                                    } else {
+                                        null
+                                    }
+                                } ?: throw VkResponseException("$methodGetUploadUrl -> upload")
+
+                                val saveParams = Parameters()
+
+                                uploadResult.keys.forEach { key ->
+                                    saveParams.put(key, uploadResult[key]?.contentOrNullSafe)
+                                }
+
+                                call(methodSave, saveParams).enqueue(callback)
+                            }
+
+                            override fun onError(error: Exception) = callback.onError(error)
+                        }
+                    )
+                }
+
+                override fun onError(error: Exception) = callback.onError(error)
+            })
     }
 
     @OptIn(ExperimentalStdlibApi::class)
