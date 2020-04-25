@@ -87,7 +87,7 @@ Or provide the platform name otherwise. See the Artifacts section [here](https:/
 
 And, one more dependency is required: you should choose any ktor client, e.g. `CIO`:
 ```kotlin
-
+implementation("io.ktor:ktor-client-cio:1.3.2")
 ```
 
 ### Use

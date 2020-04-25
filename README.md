@@ -69,22 +69,22 @@ client.startLongPolling();
 The primary goal of the library is to cover most of the possible needs but in an abstract way.
 You can't find here a hundred of pre-defined data classes for each API method, but you can write the highly customizable solution in most convenient way.
 
-- Supported platforms: JVM, JS, darwin (iOS, macOS, tvOS, watchOS), mingwX64 (Windows), linuxX64
+- Supported platforms: JVM (+ Android), JS, darwin (iOS, macOS, tvOS, watchOS), mingwX64 (Windows), linuxX64
 - Big and detailed examples: Multiplatform project (iOS & Android), Kotlin project, Java-only project. See the `examples` directory and the [documentation](https://vksdk.github.io/vk-sdk-kotlin/usage/).
 - Written in Kotlin, but has JVM-friendly API with methods overloading, static methods, etc.
 - Modularized and highly customizable: use pre-defined HTTP-clients or write your own; combine API calls, make queues or calls lists, etc.
 - [Bots Long Poll API](https://vk.com/dev/bots_longpoll)
-  - Event is a data class `MessageNew` for `message_new` event
-  - and the [`JsonElement`](https://github.com/Kotlin/kotlinx.serialization) for all the other events
+    - Event is a data class `MessageNew` for `message_new` event
+    - and the [`JsonElement`](https://github.com/Kotlin/kotlinx.serialization) for all the other events
 - Batch requests queue using [execute](https://vk.com/dev/execute) method under the hood: make up to 75+ requests per second and don't think about the [VK API limitations](https://vk.com/dev/api_requests?f=Limits%20and%20recommendations)
-  - Putting into batch requests queue is optional, but done by default for asynchronous requests
-  - Synchronous calls always sent immediately
+    - Putting into batch requests queue is optional, but done by default for asynchronous requests
+    - Synchronous calls always sent immediately
 - API calls:
-  - Synchronous
-  - Asynchronous (using callbacks)
-  - Using [Kotlin Coroutines Flow](https://kotlinlang.org/docs/reference/coroutines/flow.html) wrapper
+    - Synchronous
+    - Asynchronous (using callbacks)
+    - Using [Kotlin Coroutines Flow](https://kotlinlang.org/docs/reference/coroutines/flow.html) wrapper
 - [`messages.send`](https://vk.com/dev/messages.send): use DSL for sending messages and building keyboards. All method capabilities are covered.
-  - Attach files in a couple of lines of code, using a file from disk, URL, etc.
+    - Attach files in a couple of lines of code, using a file from disk, URL, etc.
   
 ## Install
 Library is uploaded to the Maven Central Repository.
@@ -117,12 +117,12 @@ implementation "com.petersamokhin.vksdk:http-client-jvm-okhttp:$vkSdkVersion"
 ## Limitations
 #### Unsupported platforms
 - `linuxArm32Hfp`, `linuxMips32`
-  - https://github.com/Kotlin/kotlinx.coroutines/issues/855
+    - [https://github.com/Kotlin/kotlinx.coroutines/issues/855](https://github.com/Kotlin/kotlinx.coroutines/issues/855)
 
 #### Unsupported functionality
 - Attachment of a file (i.e. access to filesystem) is available only for JS, JVM and darwin. The other platform implementations may be in todo. 
 - Synchronous calls for `js` platform
-  - https://github.com/Kotlin/kotlinx.coroutines/issues/195#issuecomment-354458878
+    - [https://github.com/Kotlin/kotlinx.coroutines/issues/195#issuecomment-354458878](https://github.com/Kotlin/kotlinx.coroutines/issues/195#issuecomment-354458878)
 
 ## 3rd party
 - Kotlin ([coroutines](https://github.com/Kotlin/kotlinx.coroutines), [serialization](https://github.com/Kotlin/kotlinx.serialization), [dokka](https://github.com/Kotlin/dokka))
