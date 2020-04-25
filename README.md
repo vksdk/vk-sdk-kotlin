@@ -1,7 +1,8 @@
 # VK SDK Kotlin
 ![cover](docs/images/cover.png)
 
-###### Create a chat-bot for VK.com in a few lines of code, use the API and forget about the limitations — https://vk.com/vk_sdk
+<p align="center">Create a chat-bot for VK.com in a few lines of code, use the API and forget about the limitations</p>
+<p align="center">https://vk.com/vk_sdk</p>
 
 ---
 
