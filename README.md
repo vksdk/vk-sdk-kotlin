@@ -2,7 +2,7 @@
 ![cover](docs/images/cover.png)
 
 <p align="center">Create a chat-bot for VK.com in a few lines of code, use the API and forget about the limitations</p>
-<p align="center">[https://vk.com/vk_sdk](https://vk.com/vk_sdk)</p>
+<p align="center"><a href="https://vk.com/vk_sdk">https://vk.com/vk_sdk</a></p>
 
 ---
 
