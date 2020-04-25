@@ -1,10 +1,19 @@
 # VK SDK Kotlin
 ![cover](docs/images/cover.png)
 
+###### Create a chat-bot for VK.com in a few lines of code, use the API and forget about the limitations — https://vk.com/vk_sdk
+
+---
+
+![Build](https://github.com/vksdk/vk-sdk-kotlin/workflows/Release/badge.svg) ![Documentation](https://github.com/vksdk/vk-sdk-kotlin/workflows/Documentation/badge.svg) [![Kotlin 1.3.72](https://img.shields.io/badge/Kotlin-1.3.72-blue.svg?style=flat)](http://kotlinlang.org) [![API version](https://img.shields.io/badge/API%20version-5.103-blue?style=flat&logo=vk&logoColor=white)](https://vk.com/dev/versions)
+![GitHub license](https://img.shields.io/badge/License-MIT-yellow.svg)
+
 Unofficial VK.com SDK, written in Kotlin.
 Based on Kotlin Multiplatform project, but has Java-friendly API.
 
 See the documentation: [https://vksdk.github.io/vk-sdk-kotlin](https://vksdk.github.io/vk-sdk-kotlin)
+
+Latest version:  [![maven-central](https://img.shields.io/badge/Maven%20Central-0.0.2-yellowgreen?style=flat)](https://mvnrepository.com/artifact/com.petersamokhin/vk-bot-java-sdk)
 
 ## Minimal example of the echo-chatbot
 
