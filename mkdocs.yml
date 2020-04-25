@@ -8,7 +8,9 @@ copyright: 'Copyright &copy; 2020 Peter Samokhin <a href="https://petersamokhin.
 remote_branch: gh-pages
 
 nav:
-  - 'Overview': index.md
+  - 'Overview':    index.md
+  - 'Usage':       usage.md
+  - 'HTTP cliets': http-clients.md
   - '0.0.x API':
       - 'core': 0.0.x/core/index.html
       - 'common-ktor-http-client': 0.0.x/common-ktor-http-client/index.html
@@ -17,8 +19,8 @@ nav:
 
 theme:
   name: 'material'
-  favicon: images/favicon.png
-  logo: images/logo.png
+  favicon: images/logo_round.png
+  logo: images/logo_round.png
   palette:
     primary: 'indigo'
     accent: 'indigo'
@@ -37,3 +39,5 @@ markdown_extensions:
   - codehilite:
       guess_lang: false
   - admonition
+  - toc:
+      permalink: true

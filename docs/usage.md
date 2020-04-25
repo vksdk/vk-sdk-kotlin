@@ -1,15 +1,15 @@
-# Examples
+# Usage
 
 See the [example projects](https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples):
 
 - Most detailed example, written in Kotlin:
-  - https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples/jvm-kotlin-example
+    - [https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples/jvm-kotlin-example](https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples/jvm-kotlin-example)
 - Minimal example without Kotlin in dependencies:
-  - https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples/jvm-only-java-example
+    - [https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples/jvm-only-java-example](https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples/jvm-only-java-example)
 - Minimal multipatform app example (single activity on Android and SwiftUI on iOS):
-  - https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples/mpp-example
+    - [https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples/mpp-example](https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples/mpp-example)
 
-## Artifacts
+### Artifacts
 List of all available artifacts:
 
 ```groovy
@@ -50,18 +50,6 @@ implementation "com.petersamokhin.vksdk:http-client-common-ktor-macosX64:$vkSdkV
 ```
 
 ## Settings
-### Abstract HTTP client configuration
-```kotlin
-// All parameters are optional.
-val httpClientConfig = HttpClientConfig(
-    connectTimeout = 30_000,
-    readTimeout = 30_000,
-    defaultHeaders = mapOf("User-Agent", "VK SDK Kotlin/0.0.x")
-)
-
-// Configuration is optional.
-val httpClient: HttpClient = VkOkHttpClient(config = httpClientConfig)
-```
 
 ### VkSettings
 ```kotlin
@@ -70,6 +58,7 @@ val vkClientSettings = VkSettings(
     httpClient = httpClient,                    
 
     // Default is [VkApi.DEFAULT_VERSION], 5.103 for 0.0.2
+    // See: https://vk.com/dev/versions
     apiVersion = 5.103,                         
     
     // Default params are empty
@@ -84,26 +73,28 @@ val vkClientSettings = VkSettings(
 )
 ```
 
-### Initialization
+## Initialization
+This client is used in all the snippets in next sections.
 ```kotlin
 val client = VkApiClient(
     // User or Community id
     id = 151083290,
     
-    // VK API access token. Must have `offline` scope to not have the expire time.
+    // VK API access token. Must have `offline` scope to not have the expire time
     // More: https://vk.com/dev/access_token
     token = "abcdef123456...",
  
     // Working with the messages API available only for Communities
     type = VkApiClient.Type.Community,
 
-    // See above.
+    // See the previous snippet
     settings = vkSettings
 )
 ```
 
 ## API requests
-!!! note "Note about the responses"
+
+!!! info "Note about the responses"
     Usually VK responses contain `response` field with the requested data. 
     But, when you are using the `execute` API method, each object from usual `response` field is placed into array.
     So, in this case, if you use `client.call` with `batch = true`, the unwrapped object will be returned into the callback.
@@ -206,7 +197,7 @@ client.flows()
     .launchIn(lifecycleScope)
 ```
 
-### Send message
+## Send messages
 Use the DSL:
 ```kotlin
 client.sendMesage {
@@ -342,12 +333,11 @@ val urlItem: UploadableContent = UploadableContent.Url(
 )
 ```
 
-### React on events
+## React on events
 Use the [Bots Long Poll API](https://vk.com/dev/bots_longpoll).
 
-!!! note "Start listening for the events"
-    The method for start the listening is blocking, 
-    so do not put it at start of your code or wrap it with the async block.
+!!! info "Start listening for the events"
+    The method for starting the listening is blocking, so do not put it at the start of your code or wrap it with the async block.
     
 Start listening for the events:
 ```kotlin
@@ -403,3 +393,7 @@ client.flows().onMessage()
     .flowOn(Dispatchers.IO)
     .launchIn(this)
 ```
+
+## HTTP clients
+
+See: [https://vksdk.github.io/vk-sdk-kotlin/http-clients/](https://vksdk.github.io/vk-sdk-kotlin/http-clients/)

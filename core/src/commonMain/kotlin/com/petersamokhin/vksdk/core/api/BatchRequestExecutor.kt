@@ -9,14 +9,13 @@ import com.petersamokhin.vksdk.core.model.VkSettings
 import com.petersamokhin.vksdk.core.utils.jsonArrayOrNullSafe
 import com.petersamokhin.vksdk.core.utils.jsonObjectOrNullSafe
 import co.touchlab.stately.collections.IsoArrayDeque
+import com.petersamokhin.vksdk.core.utils.defaultJson
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -27,7 +26,7 @@ class BatchRequestExecutor(
     private val token: String,
     private val settings: VkSettings
 ) : CoroutineScope {
-    private val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
+    private val json = defaultJson()
 
     private val job = SupervisorJob()
 

@@ -16,9 +16,8 @@ import com.petersamokhin.vksdk.core.model.event.RawEvent
 import com.petersamokhin.vksdk.core.model.objects.Message
 import com.petersamokhin.vksdk.core.utils.assembleCallback
 import com.petersamokhin.vksdk.core.utils.assembleEventCallback
+import com.petersamokhin.vksdk.core.utils.defaultJson
 import com.petersamokhin.vksdk.core.utils.runBlocking
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonElement
 import kotlin.jvm.JvmOverloads
 
@@ -38,7 +37,7 @@ class VkApiClient(
     private val type: Type,
     private val settings: VkSettings
 ) {
-    internal val json = Json(JsonConfiguration.Stable.copy(encodeDefaults = false, ignoreUnknownKeys = true))
+    internal val json = defaultJson()
     private val api = VkApi(settings.httpClient, settings.apiVersion, token, settings.defaultParams)
     private val batchRequestExecutor = BatchRequestExecutor(token, settings)
     private var botsLongPollApi = VkBotsLongPollApi(id, api, settings.backgroundDispatcher)

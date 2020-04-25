@@ -4,7 +4,7 @@
 Unofficial VK.com SDK, written in Kotlin.
 Based on Kotlin Multiplatform project, but has Java-friendly API.
 
-See the documentation: https://vksdk.github.io/vk-sdk-kotlin
+See the documentation: [https://vksdk.github.io/vk-sdk-kotlin](https://vksdk.github.io/vk-sdk-kotlin)
 
 ## Minimal example of the echo-chatbot
 
@@ -60,7 +60,7 @@ The primary goal of the library is to cover most of the possible needs but in an
 You can't find here a hundred of pre-defined data classes for each API method, but you can write the highly customizable solution in most convenient way.
 
 - Supported platforms: JVM, JS, darwin (iOS, macOS, tvOS, watchOS), mingwX64 (Windows), linuxX64
-- Big and detailed examples: Multiplatform project (iOS & Android), Kotlin project, Java-only project. See the `examples` directory and the [documentation](https://vksdk.github.io/vk-sdk-kotlin/examples/).
+- Big and detailed examples: Multiplatform project (iOS & Android), Kotlin project, Java-only project. See the `examples` directory and the [documentation](https://vksdk.github.io/vk-sdk-kotlin/usage/).
 - Written in Kotlin, but has JVM-friendly API with methods overloading, static methods, etc.
 - Modularized and highly customizable: use pre-defined HTTP-clients or write your own; combine API calls, make queues or calls lists, etc.
 - [Bots Long Poll API](https://vk.com/dev/bots_longpoll)
@@ -110,7 +110,7 @@ implementation "com.petersamokhin.vksdk:http-client-jvm-okhttp:$vkSdkVersion"
   - https://github.com/Kotlin/kotlinx.coroutines/issues/855
 
 #### Unsupported functionality
-- Attachment of a file (i.e. access to filesystem) is available only for darwin and JVM. Other platform implementations may be in todo. 
+- Attachment of a file (i.e. access to filesystem) is available only for JS, JVM and darwin. The other platform implementations may be in todo. 
 - Synchronous calls for `js` platform
   - https://github.com/Kotlin/kotlinx.coroutines/issues/195#issuecomment-354458878
 
@@ -120,7 +120,7 @@ implementation "com.petersamokhin.vksdk:http-client-jvm-okhttp:$vkSdkVersion"
 - [gradle-maven-publish-plugin](https://github.com/vanniktech/gradle-maven-publish-plugin)
 - [OkHttp](https://github.com/square/okhttp)
 - [Stately](https://github.com/touchlab/Stately)
-- SwiftUI for iOS app for the multiplatform example
+- SwiftUI for the iOS app in the multiplatform example
 
 ## License
 See the [License](https://github.com/vksdk/vk-sdk-kotlin/blob/master/LICENSE)

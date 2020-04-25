@@ -17,8 +17,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ImplicitReflectionSerializer
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.serializer
 import kotlin.coroutines.CoroutineContext
@@ -46,7 +44,7 @@ class VkBotsLongPollApi(
     override val coroutineContext: CoroutineContext
         get() = backgroundDispatcher + job + exceptionHandler
 
-    private val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
+    private val json = defaultJson()
 
     private val updatesHandler = VkLongPollEventsHandler(json, job, backgroundDispatcher)
 

@@ -91,7 +91,7 @@ class VkApiUploader(
      * @param callback Get the result: Attachment string, e.g. `photo12345678901_123456`
      */
     fun uploadPhotoForMessage(peerId: Int, item: UploadableContent, callback: Callback<String>) {
-        val responseString = api.uploadContent(
+        api.uploadContent(
             "photos.getMessagesUploadServer",
             "photos.saveMessagesPhoto",
             json,

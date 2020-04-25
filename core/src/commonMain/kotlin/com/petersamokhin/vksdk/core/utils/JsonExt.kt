@@ -1,9 +1,18 @@
 package com.petersamokhin.vksdk.core.utils
 
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonException
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.intOrNull
+
+/**
+ * Default json de/serializer for the project
+ */
+internal fun defaultJson(): Json {
+    return Json(JsonConfiguration.Stable.copy(encodeDefaults = false, ignoreUnknownKeys = true))
+}
 
 /**
  * Get wrapped value or null without exceptions

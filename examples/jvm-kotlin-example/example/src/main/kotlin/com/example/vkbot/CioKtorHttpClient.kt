@@ -22,7 +22,7 @@ class CioKtorHttpClient(
         get() = Dispatchers.IO + SupervisorJob()
 
     /**
-     * Instantiate desired client and apply basic configurations
+     * Instantiate the desired client and apply the basic configurations
      *
      * @param config Basic configurations
      * @return Desired HTTP client engine, e.g. CIO, etc.
