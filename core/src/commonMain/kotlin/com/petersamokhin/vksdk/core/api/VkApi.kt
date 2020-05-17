@@ -48,7 +48,7 @@ class VkApi internal constructor(
             items
         )?.let {
             if (it.isSuccessful()) {
-                it.bodyString()?.let { responseString ->
+                it.bodyString().let { responseString ->
                     json.parseJson(responseString).jsonObjectOrNullSafe
                 }
             } else {

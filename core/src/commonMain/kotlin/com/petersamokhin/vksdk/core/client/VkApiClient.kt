@@ -37,10 +37,10 @@ import kotlin.jvm.JvmStatic
  * @property type Type of the client: [Type.User] or [Type.Community]
  */
 class VkApiClient(
-    private val id: Int,
-    token: String,
-    private val type: Type,
-    private val settings: VkSettings
+    val id: Int,
+    val token: String,
+    val type: Type,
+    val settings: VkSettings
 ) {
     internal val json = defaultJson()
     private val api = VkApi(settings.httpClient, settings.apiVersion, token, settings.defaultParams)
@@ -68,6 +68,11 @@ class VkApiClient(
             botsLongPollApi.startPolling(settings).join()
         }
     }
+
+    /**
+     * Exposed internal API object
+     */
+    fun api() = api
 
     /**
      * Wrapper for files uploading

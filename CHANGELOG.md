@@ -1,5 +1,10 @@
 # Change log
 
+Version 0.0.4 *(2020-05-17)*
+----------------------------
+
+* Made some client methods public
+
 Version 0.0.3 *(2020-05-17)*
 ----------------------------
 
