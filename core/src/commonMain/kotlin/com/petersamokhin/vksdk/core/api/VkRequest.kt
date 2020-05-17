@@ -35,7 +35,7 @@ data class VkRequest(
         )
 
         if (result?.isSuccessful() == true && result.body != null) {
-            return result.body.decodeToString()
+            return result.bodyString()
         } else {
             throw VkResponseException()
         }
@@ -55,7 +55,7 @@ data class VkRequest(
             object : Callback<Response> {
                 override fun onResult(result: Response) {
                     if (result.isSuccessful() && result.body != null) {
-                        callback.onResult(result.body.decodeToString())
+                        callback.onResult(result.bodyString())
                     } else {
                         callback.onError(VkResponseException())
                     }

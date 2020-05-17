@@ -5,7 +5,6 @@ import com.petersamokhin.vksdk.core.error.VkResponseException
 import com.petersamokhin.vksdk.core.http.HttpClient
 import com.petersamokhin.vksdk.core.http.Parameters
 import com.petersamokhin.vksdk.core.http.Response
-import com.petersamokhin.vksdk.core.http.paramsOf
 import com.petersamokhin.vksdk.core.model.VkLongPollServerResponse
 import com.petersamokhin.vksdk.core.model.objects.UploadableContent
 import com.petersamokhin.vksdk.core.utils.contentOrNullSafe
@@ -49,7 +48,7 @@ class VkApi internal constructor(
             items
         )?.let {
             if (it.isSuccessful()) {
-                it.body?.decodeToString()?.let { responseString ->
+                it.bodyString()?.let { responseString ->
                     json.parseJson(responseString).jsonObjectOrNullSafe
                 }
             } else {
@@ -93,7 +92,7 @@ class VkApi internal constructor(
                             override fun onResult(result: Response) {
                                 val uploadResult = result.let {
                                     if (it.isSuccessful()) {
-                                        it.body?.decodeToString()?.let { responseString ->
+                                        it.bodyString().let { responseString ->
                                             json.parseJson(responseString).jsonObjectOrNullSafe
                                         }
                                     } else {

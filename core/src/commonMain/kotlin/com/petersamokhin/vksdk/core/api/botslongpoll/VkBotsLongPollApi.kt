@@ -172,7 +172,7 @@ class VkBotsLongPollApi(
         val response = api.getLongPollUpdates(serverInfo, wait)
 
         return if (response?.isSuccessful() == true && response.body != null) {
-            json.parseJson(response.body.decodeToString()).jsonObjectOrNullSafe
+            json.parseJson(response.bodyString()).jsonObjectOrNullSafe
         } else {
             null
         }

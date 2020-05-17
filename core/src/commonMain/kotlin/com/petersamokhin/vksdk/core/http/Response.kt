@@ -1,5 +1,7 @@
 package com.petersamokhin.vksdk.core.http
 
+import com.petersamokhin.vksdk.core.error.VkResponseException
+
 /**
  * Minimal required information about the HTTP request response.
  *
@@ -10,6 +12,17 @@ data class Response(
     val code: Int,
     val body: ByteArray?
 ) {
+
+    /**
+     * Response body string
+     *
+     * @throws VkResponseException If body is null
+     * @return String if response is successful
+     */
+    @OptIn(ExperimentalStdlibApi::class)
+    fun bodyString(): String {
+        return body?.decodeToString() ?: throw VkResponseException()
+    }
 
     /**
      * Is this response successful based on the HTTP code

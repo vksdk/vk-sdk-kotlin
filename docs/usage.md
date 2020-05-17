@@ -92,6 +92,31 @@ val client = VkApiClient(
 )
 ```
 
+Also, for server-side applications, useful to do something on user behalf, but it is not safe to send the access token from client.
+[Authorization code flow](https://vk.com/dev/authcode_flow_user) can help here.
+```kotlin
+// From here: https://vk.com/apps?act=manage
+// Choose the app and get the ID and the other info from app settings
+// App ID, Secure key, etc.
+val appInfo = AppInfo(
+    clientId = 123456789,
+    clientSecret = "abcdef12345...",
+    redirectUri = "https://oauth.vk.com/blank.html"
+)
+
+val client = VkApiClient.fromCode(
+    // Code from the client
+    code = "abcdef12345...",
+    
+    // App info, see above
+    app = appInfo,
+ 
+    // See the previous snippets; settings for the client
+    // Client always is the User for the Code flow
+    settings = vkSettings
+)
+```
+
 ## API requests
 
 !!! info "Note about the responses"

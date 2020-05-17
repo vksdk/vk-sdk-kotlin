@@ -13,6 +13,7 @@ import com.petersamokhin.vksdk.core.model.objects.UploadableContent
 import com.petersamokhin.vksdk.core.model.objects.keyboard
 import com.petersamokhin.vksdk.core.utils.contentOrNullSafe
 import com.petersamokhin.vksdk.core.utils.jsonObjectOrNullSafe
+import com.petersamokhin.vksdk.http.VkOkHttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -64,10 +65,10 @@ class Bot : CoroutineScope {
         if (accessToken == "abcdef123456...") throw RuntimeException("Please, replace dummy access_token with yours in Launcher.kt")
 
         // Custom implementation of the cross-platform HTTP client
-        val httpClient = CioKtorHttpClient()
+        // val httpClient = CioKtorHttpClient()
 
         // OkHttp client is available only for JVM
-        // val httpClient = VkOkHttpClient()
+        val httpClient = VkOkHttpClient()
 
         // init settings, most of them have default values
         val settings = VkSettings(

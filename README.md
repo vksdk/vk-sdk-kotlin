@@ -14,7 +14,7 @@ Based on Kotlin Multiplatform project, but has Java-friendly API.
 
 See the documentation: [https://vksdk.github.io/vk-sdk-kotlin](https://vksdk.github.io/vk-sdk-kotlin)
 
-Latest version:  [![maven-central](https://img.shields.io/badge/Maven%20Central-0.0.2-yellowgreen?style=flat)](https://search.maven.org/search?q=g:com.petersamokhin.vksdk)
+Latest version:  [![maven-central](https://img.shields.io/badge/Maven%20Central-0.0.3-yellowgreen?style=flat)](https://search.maven.org/search?q=g:com.petersamokhin.vksdk)
 
 ## Minimal example of the echo-chatbot
 
@@ -73,6 +73,7 @@ You can't find here a hundred of pre-defined data classes for each API method, b
 - Big and detailed examples: Multiplatform project (iOS & Android), Kotlin project, Java-only project. See the `examples` directory and the [documentation](https://vksdk.github.io/vk-sdk-kotlin/usage/).
 - Written in Kotlin, but has JVM-friendly API with methods overloading, static methods, etc.
 - Modularized and highly customizable: use pre-defined HTTP-clients or write your own; combine API calls, make queues or calls lists, etc.
+- Use the client created from the `code` or from `access_token`.
 - [Bots Long Poll API](https://vk.com/dev/bots_longpoll)
     - Event is a data class `MessageNew` for `message_new` event
     - and the [`JsonElement`](https://github.com/Kotlin/kotlinx.serialization) for all the other events

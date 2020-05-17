@@ -86,9 +86,7 @@ class BatchRequestExecutor(
                             )
 
                             if (response?.body != null && response.isSuccessful()) {
-                                val bodyString = response.body.decodeToString()
-
-                                json.parseJson(bodyString).jsonObjectOrNullSafe?.also { bodyJson ->
+                                json.parseJson(response.bodyString()).jsonObjectOrNullSafe?.also { bodyJson ->
                                     val responseJson = bodyJson["response"]?.jsonArrayOrNullSafe
 
                                     responseJson?.forEachIndexed { index, element ->

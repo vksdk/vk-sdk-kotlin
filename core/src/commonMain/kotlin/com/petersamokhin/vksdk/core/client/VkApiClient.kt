@@ -9,7 +9,11 @@ import com.petersamokhin.vksdk.core.api.botslongpoll.VkBotsLongPollApi
 import com.petersamokhin.vksdk.core.callback.Callback
 import com.petersamokhin.vksdk.core.callback.EventCallback
 import com.petersamokhin.vksdk.core.error.UnsupportedActionException
+import com.petersamokhin.vksdk.core.error.VkResponseException
+import com.petersamokhin.vksdk.core.error.VkSdkInitiationException
 import com.petersamokhin.vksdk.core.http.Parameters
+import com.petersamokhin.vksdk.core.http.paramsOf
+import com.petersamokhin.vksdk.core.model.VkAccessTokenResponse
 import com.petersamokhin.vksdk.core.model.VkSettings
 import com.petersamokhin.vksdk.core.model.event.MessageNew
 import com.petersamokhin.vksdk.core.model.event.RawEvent
@@ -20,6 +24,7 @@ import com.petersamokhin.vksdk.core.utils.defaultJson
 import com.petersamokhin.vksdk.core.utils.runBlocking
 import kotlinx.serialization.json.JsonElement
 import kotlin.jvm.JvmOverloads
+import kotlin.jvm.JvmStatic
 
 /**
  * VK API client: abstract, common.
@@ -246,6 +251,57 @@ class VkApiClient(
      */
     enum class Type {
         User, Community
+    }
+
+    data class AppInfo(
+        val clientId: Int,
+        val clientSecret: String,
+        val redirectUri: String = DEFAULT_REDIRECT_URI
+    ) {
+        companion object {
+            const val KEY_CLIENT_ID = "client_id"
+            const val KEY_CLIENT_SECRET = "client_secret"
+            const val KEY_REDIRECT_URI = "redirect_uri"
+        }
+    }
+
+    companion object {
+        private const val ACCESS_TOKEN_URL = "https://oauth.vk.com/access_token"
+        private const val KEY_CODE = "code"
+        const val DEFAULT_REDIRECT_URI = "https://oauth.vk.com/blank.html"
+
+        /**
+         * Useful method for server-side operations.
+         * Receive the code from the client and do something on his behalf.
+         *
+         * @param code VK code, https://vk.com/dev/authcode_flow_user
+         * @param app Information about your app (client)
+         * @param settings VK API Client settings
+         * @return VK API client.
+         */
+        @OptIn(ExperimentalStdlibApi::class)
+        @JvmStatic
+        fun fromCode(code: String, app: AppInfo, settings: VkSettings): VkApiClient {
+            val query = paramsOf(
+                AppInfo.KEY_CLIENT_ID to app.clientId,
+                AppInfo.KEY_CLIENT_SECRET to app.clientSecret,
+                AppInfo.KEY_REDIRECT_URI to app.redirectUri,
+                KEY_CODE to code
+            ).buildQuery()
+
+            val tokenResponse = settings.httpClient.getSync("$ACCESS_TOKEN_URL?$query")?.let {
+                defaultJson().parse(VkAccessTokenResponse.serializer(), it.bodyString())
+            } ?: throw VkSdkInitiationException("VK Client from code")
+
+            return VkApiClient(
+                id = tokenResponse.userId
+                    ?: throw VkResponseException("VK access_token from code error: user_id is null"),
+                token = tokenResponse.accessToken
+                    ?: throw VkResponseException("VK access_token from code error: access_token is null"),
+                type = Type.User,
+                settings = settings
+            )
+        }
     }
 }
 

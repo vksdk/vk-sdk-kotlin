@@ -5,7 +5,7 @@ private external fun require(module: String): dynamic
 /**
  * Cross-platform representation of a File
  *
- * Currently supported only for Darwin and JVM
+ * Currently supported only for Darwin, JS and JVM
  */
 actual data class FileOnDisk(
     /**

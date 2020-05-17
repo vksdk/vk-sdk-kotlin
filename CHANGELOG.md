@@ -1,5 +1,12 @@
 # Change log
 
+Version 0.0.3 *(2020-05-17)*
+----------------------------
+
+* Added method for creating VkApiClient from code (authorization code flow)
+* Small refactoring
+* Small documentation changes
+
 Version 0.0.2 *(2020-04-25)*
 ----------------------------
 

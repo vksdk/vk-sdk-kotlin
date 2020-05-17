@@ -16,6 +16,6 @@ actual class FileOnDisk(
      * Read file contents as byte array synchronously
      */
     actual fun readContent(): ByteArray? {
-        throw UnsupportedActionException("Reading files from disk is now supported only for Darwin and JVM")
+        throw UnsupportedActionException("Reading files from disk is now supported only for Darwin, JS and JVM")
     }
 }

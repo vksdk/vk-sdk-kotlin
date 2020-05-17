@@ -3,7 +3,7 @@ package com.petersamokhin.vksdk.core.io
 /**
  * Cross-platform representation of a File
  *
- * Currently supported only for Darwin and JVM
+ * Currently supported only for Darwin, JS and JVM
  */
 expect class FileOnDisk {
 
