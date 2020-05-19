@@ -71,7 +71,7 @@ implementation "com.petersamokhin.vksdk:http-client-jvm-okhttp:$vkSdkVersion"
 val httpClient: HttpClient = VkOkHttpClient(httpClientConfig)
 ```
 
-The HTTP client instance is needed for the `VkApiClient` initialization, but, of course, you also can use it.
+The HTTP client instance is needed for the `VkApiClient` initialization, but, of course, you can use it too.
 
 ## Common: ktor-based client
 [ktor](https://github.com/ktorio/ktor) is a Kotlin-based HTTP client (and also contains some other modules, e.g. server), so it can be used on any plaltform where the Kotlin can be used.
@@ -91,24 +91,25 @@ implementation("io.ktor:ktor-client-cio:1.3.2")
 ```
 
 ### Use
-Common ktor client is abstract, and you should provide and configure the engine, for example:
-
-See the example: [**`CioKtorHttpClient.kt`**](https://github.com/vksdk/vk-sdk-kotlin/blob/master/examples/jvm-kotlin-example/example/src/main/kotlin/com/example/vkbot/CioKtorHttpClient.kt)
+You can provide ktor HttpClient in constructor:
 ```kotlin
-class CioKtorHttpClient(
-    config: HttpClientConfig = HttpClientConfig()
-): VkKtorHttpClient(config) {
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO + SupervisorJob()
+val httpClient: HttpClient = VkOkHttpClient(
+    coroutineContext = Dispatchers.IO + SupervisorJob(),
+    
+    // provide your http client,
+    overrideClient = HttpClient(CIO),
 
-    /**
-     * This method is abstract in [VkKtorHttpClient], so you should
-     * instantiate desired client and apply the basic configurations.
-     *
-     * @param config Basic configurations
-     * @return Desired HTTP client engine, e.g. CIO, etc.
-     */
-    override fun createEngineWithConfig(config: HttpClientConfig): HttpClientEngine {
+    // HTTP client configuration is optional, see the snippet above
+    overrideConfig = HttpClientConfig()
+)
+```
+
+Otherwise, override `createEngineWithConfig` method: 
+```kotlin
+class CioKtorHttpClient: VkKtorHttpClient(
+    coroutineContext = Dispatchers.IO + SupervisorJob()
+) {
+    override fun createEngineWithConfig(config: HttpClientConfig): HttpClientEngine? {
         return CIO.create {
             endpoint {
                 connectTimeout = config.connectTimeout.toLong()
@@ -119,11 +120,7 @@ class CioKtorHttpClient(
 }
 ```
 
-And then all the things are the same:
-```kotlin
-// HTTP client configuration is optional, see the snippet above
-val httpClient: HttpClient = CioKtorHttpClient(httpClientConfig)
-```
+And then all the things are the same.
 
 So, now you can use this client e.g. in the common module of your multiplatform project, etc.
 Of course, as the OkHttp-based client, this ktor client can also be used in Java-only project. 

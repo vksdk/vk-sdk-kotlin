@@ -27,7 +27,8 @@ class VkOkHttpClient : HttpClient {
     /**
      *  @param config Client configuration
      */
-    @JvmOverloads constructor(config: HttpClientConfig = HttpClientConfig()) {
+    @JvmOverloads
+    constructor(config: HttpClientConfig = HttpClientConfig()) {
         applyConfig(config)
     }
 

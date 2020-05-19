@@ -15,8 +15,8 @@ List of all available artifacts:
 ```groovy
 implementation "com.petersamokhin.vksdk:http-client-jvm-okhttp:$vkSdkVersion"
 
-implementation "com.petersamokhin.vksdk:core-jvm::$vkSdkVersion"
-implementation "com.petersamokhin.vksdk:http-client-common-ktor-jvm::$vkSdkVersion"
+implementation "com.petersamokhin.vksdk:core-jvm:$vkSdkVersion"
+implementation "com.petersamokhin.vksdk:http-client-common-ktor-jvm:$vkSdkVersion"
 
 implementation "com.petersamokhin.vksdk:core-js:$vkSdkVersion"
 implementation "com.petersamokhin.vksdk:http-client-common-ktor-js:$vkSdkVersion"

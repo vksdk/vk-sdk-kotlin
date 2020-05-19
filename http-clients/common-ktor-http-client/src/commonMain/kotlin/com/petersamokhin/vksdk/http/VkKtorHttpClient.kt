@@ -2,6 +2,7 @@ package com.petersamokhin.vksdk.http
 
 import com.petersamokhin.vksdk.core.callback.Callback
 import com.petersamokhin.vksdk.core.error.VkException
+import com.petersamokhin.vksdk.core.error.VkSdkInitiationException
 import com.petersamokhin.vksdk.core.http.ContentType
 import com.petersamokhin.vksdk.core.http.HttpClient
 import com.petersamokhin.vksdk.core.http.HttpClientConfig
@@ -21,40 +22,42 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.content.ByteArrayContent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 import kotlin.jvm.JvmOverloads
 
 /**
- * Abstract ktor HTTP client.
+ * Abstract ktor-based HTTP client.
  *
- * Made abstract because this implementation is common
- * and can be used with the any client.
- * So client initiation method is abstract.
+ * You should:
+ * - provide ktor HttpClient to constructor
+ * - or else override createEngineWithConfig.
  *
- * @param config Basic HTTP client configurations
+ * @property client ktor HttpClient which will be used
  * @property coroutineContext Coroutine context for network calls
  */
-abstract class VkKtorHttpClient @JvmOverloads constructor(
-    config: HttpClientConfig = HttpClientConfig()
+open class VkKtorHttpClient @JvmOverloads constructor(
+    override val coroutineContext: CoroutineContext,
+    overrideClient: io.ktor.client.HttpClient? = null,
+    overrideConfig: HttpClientConfig = HttpClientConfig()
 ) : HttpClient, CoroutineScope {
+    private var client: io.ktor.client.HttpClient
 
-    /**
-     * Provide yours client
-     */
-    constructor(overrideClient: io.ktor.client.HttpClient) : this() {
-        client = overrideClient
+    init {
+        client = overrideClient ?: io.ktor.client.HttpClient(
+            overrideConfig.let(::createEngineWithConfig)
+                ?: throw VkSdkInitiationException(message = ERROR_MESSAGE_INITIALIZATION)
+        )
     }
-
-
-    @Suppress("LeakingThis")
-    private var client = io.ktor.client.HttpClient(createEngineWithConfig(config))
 
     /**
      * Apply client configuration
      *
      * @param config Configuration, such as read and connect timeout, etc
      */
-    override fun applyConfig(config: HttpClientConfig) {
-        client = io.ktor.client.HttpClient(createEngineWithConfig(config))
+    final override fun applyConfig(config: HttpClientConfig) {
+        client = io.ktor.client.HttpClient(
+            createEngineWithConfig(config) ?: throw IllegalStateException(ERROR_MESSAGE_INITIALIZATION)
+        )
     }
 
     /**
@@ -191,10 +194,12 @@ abstract class VkKtorHttpClient @JvmOverloads constructor(
                             append(it.fieldName, it.bytes, headers)
                         }
                         is UploadableContent.File -> {
-                            append(it.fieldName, it.file.readContent() ?: throw VkException("Can't read file contents"), headers)
+                            append(it.fieldName, it.file.readContent()
+                                ?: throw VkException("Can't read file contents"), headers)
                         }
                         is UploadableContent.Url -> {
-                            append(it.fieldName, getSync(it.url)?.body ?: throw VkException("Can't read URL contents"), headers)
+                            append(it.fieldName, getSync(it.url)?.body
+                                ?: throw VkException("Can't read URL contents"), headers)
                         }
                     }
                 }
@@ -214,5 +219,10 @@ abstract class VkKtorHttpClient @JvmOverloads constructor(
      * @param config Basic configurations
      * @return Desired HTTP client engine, e.g. CIO, etc.
      */
-    abstract fun createEngineWithConfig(config: HttpClientConfig): HttpClientEngine
+    open fun createEngineWithConfig(config: HttpClientConfig): HttpClientEngine? = null
+
+    companion object {
+        private const val ERROR_MESSAGE_INITIALIZATION = "Please, provide ktor HttpClient to constructor, " +
+            "or override createEngineWithConfig"
+    }
 }

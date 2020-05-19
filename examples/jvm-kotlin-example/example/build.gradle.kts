@@ -14,7 +14,7 @@ dependencies {
     // We want to use Kotlin
     implementation(kotlin("stdlib-jdk8", "1.3.72"))
 
-    val vkSdkKotlinVersion = "0.0.3"
+    val vkSdkKotlinVersion = "0.0.5"
 
     // Module "core" is required.
     // `project(":core")` only available if your project and the SDK are in the same Gradle project.
@@ -26,8 +26,8 @@ dependencies {
     implementation("com.petersamokhin.vksdk:http-client-jvm-okhttp:$vkSdkKotlinVersion")
 
     // If your project is not JVM-based, or you simply want to use ktor.
-    // implementation("com.petersamokhin.vksdk:http-client-common-ktor-jvm:$vkSdkKotlinVersion")
+    implementation("com.petersamokhin.vksdk:http-client-common-ktor-jvm:$vkSdkKotlinVersion")
 
     // In this case, `ktor-client` is required. You can use any.
-    // implementation("io.ktor:ktor-client-cio:1.3.2")
+    implementation("io.ktor:ktor-client-cio:1.3.2")
 }

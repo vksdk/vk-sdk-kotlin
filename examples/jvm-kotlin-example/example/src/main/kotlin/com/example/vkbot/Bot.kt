@@ -13,7 +13,11 @@ import com.petersamokhin.vksdk.core.model.objects.UploadableContent
 import com.petersamokhin.vksdk.core.model.objects.keyboard
 import com.petersamokhin.vksdk.core.utils.contentOrNullSafe
 import com.petersamokhin.vksdk.core.utils.jsonObjectOrNullSafe
+import com.petersamokhin.vksdk.http.VkKtorHttpClient
 import com.petersamokhin.vksdk.http.VkOkHttpClient
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -61,11 +65,12 @@ class Bot : CoroutineScope {
      * @param clientId Group ID
      * @param accessToken Group `access_token`
      */
+    @OptIn(KtorExperimentalAPI::class)
     fun start(clientId: Int, accessToken: String) {
         if (accessToken == "abcdef123456...") throw RuntimeException("Please, replace dummy access_token with yours in Launcher.kt")
 
         // Custom implementation of the cross-platform HTTP client
-        // val httpClient = CioKtorHttpClient()
+        // val httpClient = VkKtorHttpClient(coroutineContext, overrideClient = HttpClient(CIO))
 
         // OkHttp client is available only for JVM
         val httpClient = VkOkHttpClient()

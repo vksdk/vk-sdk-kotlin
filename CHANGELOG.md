@@ -1,6 +1,11 @@
 # Change log
 
-Version 0.0.4 *(2020-05-17)*
+Version 0.0.5 *(2020-05-20)*
+----------------------------
+
+* ktor-based http client is not abstract anymore, but still `open`. Provide client in constructor or override the method.
+
+Version 0.0.4 *(2020-05-18)*
 ----------------------------
 
 * Made some client methods public
@@ -28,4 +33,4 @@ First release.
 Version `vk-bot-java-sdk` *(2017-07-30)*
 ----------------------------
 
-Deprecated and moved to the branch https://github.com/vksdk/vk-sdk-kotlin/tree/old-vk-bot-java-sdk
+Deprecated and moved to the branch [https://github.com/vksdk/vk-sdk-kotlin/tree/old-vk-bot-java-sdk](https://github.com/vksdk/vk-sdk-kotlin/tree/old-vk-bot-java-sdk)
