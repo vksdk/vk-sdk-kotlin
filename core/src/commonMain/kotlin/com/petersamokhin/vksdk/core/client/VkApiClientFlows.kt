@@ -33,6 +33,7 @@ class VkApiClientFlows(
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         println("VkApiClientFlows::exceptionHandler::error = $throwable")
+        throwable.printStackTrace()
     }
     override val coroutineContext: CoroutineContext
         get() = backgroundDispatcher + job + exceptionHandler

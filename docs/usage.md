@@ -70,6 +70,8 @@ val vkClientSettings = VkSettings(
     // Default is Dispatchers.Default from the kotlin coroutines common module
     // See the mutiplatform example and iOS note for ktor
     backgroundDispatcher = Dispatchers.Default, 
+
+    json = Json { /* yours configuration */ }
 )
 ```
 

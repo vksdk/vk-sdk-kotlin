@@ -72,7 +72,7 @@ class VkApiUploader(
             listOf(item)
         )
 
-        return json.parseJson(responseString)
+        return json.parseToJsonElement(responseString)
             .jsonObjectOrNullSafe
             ?.get("response")
             ?.jsonArrayOrNullSafe
@@ -99,7 +99,7 @@ class VkApiUploader(
             listOf(item),
             object: Callback<String> {
                 override fun onResult(result: String) {
-                    json.parseJson(result)
+                    json.parseToJsonElement(result)
                         .jsonObjectOrNullSafe
                         ?.get("response")
                         ?.jsonArrayOrNullSafe

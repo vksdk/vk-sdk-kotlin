@@ -1,5 +1,7 @@
 package com.petersamokhin.vksdk.core.api
 
+import com.petersamokhin.vksdk.core.api.VkApi.ParametersKeys.ACCESS_TOKEN
+import com.petersamokhin.vksdk.core.api.VkApi.ParametersKeys.VERSION
 import com.petersamokhin.vksdk.core.callback.Callback
 import com.petersamokhin.vksdk.core.error.VkResponseException
 import com.petersamokhin.vksdk.core.http.HttpClient
@@ -30,7 +32,6 @@ class VkApi internal constructor(
     /**
      * Upload whatever you want wherever you can
      */
-    @OptIn(ExperimentalStdlibApi::class)
     fun uploadContent(
         methodGetUploadUrl: String,
         methodSave: String,
@@ -40,7 +41,7 @@ class VkApi internal constructor(
     ): String {
         val uploadUrl = call(methodGetUploadUrl, params)
             .execute().let {
-                json.parseJson(it).jsonObjectOrNullSafe?.get("response")?.jsonObjectOrNullSafe?.get("upload_url")?.contentOrNullSafe
+                json.parseToJsonElement(it).jsonObjectOrNullSafe?.get("response")?.jsonObjectOrNullSafe?.get("upload_url")?.contentOrNullSafe
             } ?: throw VkResponseException(methodGetUploadUrl)
 
         val uploadResult = httpClient.postMultipartSync(
@@ -49,7 +50,7 @@ class VkApi internal constructor(
         )?.let {
             if (it.isSuccessful()) {
                 it.bodyString().let { responseString ->
-                    json.parseJson(responseString).jsonObjectOrNullSafe
+                    json.parseToJsonElement(responseString).jsonObjectOrNullSafe
                 }
             } else {
                 null
@@ -70,7 +71,6 @@ class VkApi internal constructor(
     /**
      * Upload whatever you want wherever you can
      */
-    @OptIn(ExperimentalStdlibApi::class)
     fun uploadContent(
         methodGetUploadUrl: String,
         methodSave: String,
@@ -82,7 +82,7 @@ class VkApi internal constructor(
         call(methodGetUploadUrl, params)
             .enqueue(object: Callback<String> {
                 override fun onResult(result: String) {
-                    val uploadUrl = json.parseJson(result).jsonObjectOrNullSafe?.get("response")?.jsonObjectOrNullSafe?.get("upload_url")?.contentOrNullSafe
+                    val uploadUrl = json.parseToJsonElement(result).jsonObjectOrNullSafe?.get("response")?.jsonObjectOrNullSafe?.get("upload_url")?.contentOrNullSafe
                         ?: throw VkResponseException(methodGetUploadUrl)
 
                     httpClient.postMultipart(
@@ -93,7 +93,7 @@ class VkApi internal constructor(
                                 val uploadResult = result.let {
                                     if (it.isSuccessful()) {
                                         it.bodyString().let { responseString ->
-                                            json.parseJson(responseString).jsonObjectOrNullSafe
+                                            json.parseToJsonElement(responseString).jsonObjectOrNullSafe
                                         }
                                     } else {
                                         null
@@ -118,7 +118,6 @@ class VkApi internal constructor(
             })
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     internal fun getLongPollUpdates(
         serverInfo: VkLongPollServerResponse,
         wait: Int

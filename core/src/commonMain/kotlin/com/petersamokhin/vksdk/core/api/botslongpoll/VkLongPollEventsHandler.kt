@@ -9,9 +9,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -23,6 +23,7 @@ internal class VkLongPollEventsHandler(
     private val backgroundDispatcher: CoroutineDispatcher
 ): CoroutineScope {
     private val job = SupervisorJob(parentJob)
+
     override val coroutineContext: CoroutineContext
         get() = backgroundDispatcher + job
 
@@ -34,7 +35,6 @@ internal class VkLongPollEventsHandler(
      * @param type Type of the event
      * @param eventObject `object` from the event JSON-object
      */
-    @OptIn(ImplicitReflectionSerializer::class)
     fun nextEvent(type: String, eventObject: JsonObject, clientId: Int): Boolean {
         listenersMap[RawEvent.TYPE]?.forEach {
             launch {
@@ -45,7 +45,7 @@ internal class VkLongPollEventsHandler(
 
         when (type) {
             MessageNew.TYPE -> {
-                val parsedEvent: MessageNew = json.fromJson(eventObject)
+                val parsedEvent: MessageNew = json.decodeFromJsonElement(eventObject)
 
                 listenersMap[type]?.forEach {
                     launch {

@@ -19,7 +19,6 @@ data class Response(
      * @throws VkResponseException If body is null
      * @return String if response is successful
      */
-    @OptIn(ExperimentalStdlibApi::class)
     fun bodyString(): String {
         return body?.decodeToString() ?: throw VkResponseException()
     }

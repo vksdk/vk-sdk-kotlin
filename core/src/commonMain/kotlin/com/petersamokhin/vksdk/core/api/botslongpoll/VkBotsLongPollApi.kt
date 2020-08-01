@@ -1,6 +1,7 @@
 package com.petersamokhin.vksdk.core.api.botslongpoll
 
 import com.petersamokhin.vksdk.core.api.VkApi
+import com.petersamokhin.vksdk.core.api.botslongpoll.VkBotsLongPollApi.Settings.Companion.IGNORE_FAILS
 import com.petersamokhin.vksdk.core.callback.EventCallback
 import com.petersamokhin.vksdk.core.error.VkException
 import com.petersamokhin.vksdk.core.error.VkResponseException
@@ -10,16 +11,11 @@ import com.petersamokhin.vksdk.core.model.VkLongPollServerResponse
 import com.petersamokhin.vksdk.core.model.VkResponse
 import com.petersamokhin.vksdk.core.model.VkResponseTypedSerializer
 import com.petersamokhin.vksdk.core.utils.*
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.coroutines.*
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.serializer
 import kotlin.coroutines.CoroutineContext
+import kotlin.jvm.JvmOverloads
 
 /**
  * Bots LongPoll API
@@ -27,15 +23,17 @@ import kotlin.coroutines.CoroutineContext
  * @property clientId LongPoll client ID, usually a community ID
  * @property api API wrapper to make network calls
  */
-class VkBotsLongPollApi(
+class VkBotsLongPollApi @JvmOverloads constructor(
     private val clientId: Int,
     private val api: VkApi,
-    private val backgroundDispatcher: CoroutineDispatcher
+    private val backgroundDispatcher: CoroutineDispatcher,
+    private val json: Json = defaultJson()
 ) : CoroutineScope {
     private val job = SupervisorJob()
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         println("BotsLongPollApi::exceptionHandler::error = $throwable")
+        throwable.printStackTrace()
     }
 
     /**
@@ -43,8 +41,6 @@ class VkBotsLongPollApi(
      */
     override val coroutineContext: CoroutineContext
         get() = backgroundDispatcher + job + exceptionHandler
-
-    private val json = defaultJson()
 
     private val updatesHandler = VkLongPollEventsHandler(json, job, backgroundDispatcher)
 
@@ -59,9 +55,9 @@ class VkBotsLongPollApi(
 
         return launch {
             var serverInfo = getInitialServerInfo().response
-                ?: throw VkResponseException("BotsLongPollApi initiation error: bad VK response")
+                ?: throw VkResponseException("BotsLongPollApi initiation error: bad VK response (server info)")
             var lastUpdatesResponse: JsonObject? = getUpdatesResponse(serverInfo, settings.wait)
-                ?: throw VkResponseException("BotsLongPollApi initiation error: bad VK response")
+                ?: throw VkResponseException("BotsLongPollApi initiation error: bad VK response (last updates)")
             var failNum = 0
 
             while (job.isActive) {
@@ -71,7 +67,7 @@ class VkBotsLongPollApi(
                 if (lastUpdatesResponse == null) {
                     failNum++
                     serverInfo = getInitialServerInfo().response
-                        ?: throw VkResponseException("BotsLongPollApi failed retrieving server info after error: bad VK response")
+                        ?: throw VkResponseException("BotsLongPollApi failed retrieving server info after error: bad VK response (server info #2)")
                     lastUpdatesResponse = getUpdatesResponse(serverInfo, settings.wait)
                     continue
                 }
@@ -85,7 +81,7 @@ class VkBotsLongPollApi(
                     }
                     2, 3 -> {
                         serverInfo = getInitialServerInfo().response
-                            ?: throw VkResponseException("BotsLongPollApi failed retrieving server info after error: bad VK response")
+                            ?: throw VkResponseException("BotsLongPollApi failed retrieving server info after error: bad VK response (server info #3)")
                     }
                     else -> {
                         val newTs = lastUpdatesResponse["ts"]?.contentOrNullSafe
@@ -136,7 +132,7 @@ class VkBotsLongPollApi(
      * @param listener Typed listener
      */
     fun <T: Any> registerListener(type: String, listener: EventCallback<T>) {
-        if (job.isCompleted || job.isCancelled) throw VkException("BotsLongPollApi job is not active")
+        if (job.isCompleted || job.isCancelled) throw VkException("BotsLongPollApi job is not active when registering a listener")
 
         updatesHandler.registerListener(type, listener)
     }
@@ -144,7 +140,6 @@ class VkBotsLongPollApi(
     /**
      * @return true if [eventJsonObject] is handled successfully
      */
-    @OptIn(ImplicitReflectionSerializer::class)
     @Suppress("UNCHECKED_CAST")
     private fun handleUpdateEvent(eventJsonObject: JsonObject): Boolean {
         val eventType = eventJsonObject["type"]?.contentOrNullSafe ?: return false
@@ -157,22 +152,20 @@ class VkBotsLongPollApi(
         return updatesHandler.nextEvent(eventType, eventObject, groupId)
     }
 
-    @OptIn(ImplicitReflectionSerializer::class)
     private fun getInitialServerInfo(): VkResponse<VkLongPollServerResponse> {
         return api.call(
             "groups.getLongPollServer",
             paramsOf("group_id" to clientId)
         ).execute().let {
-            json.parse(VkResponseTypedSerializer(VkLongPollServerResponse::class.serializer()), it)
+            json.decodeFromString(VkResponseTypedSerializer(VkLongPollServerResponse.serializer()), it)
         }
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     private fun getUpdatesResponse(serverInfo: VkLongPollServerResponse, wait: Int): JsonObject? {
         val response = api.getLongPollUpdates(serverInfo, wait)
 
         return if (response?.isSuccessful() == true && response.body != null) {
-            json.parseJson(response.bodyString()).jsonObjectOrNullSafe
+            json.parseToJsonElement(response.bodyString()).jsonObjectOrNullSafe
         } else {
             null
         }

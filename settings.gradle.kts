@@ -9,5 +9,5 @@ include(
 
     // Do NOT include ":examples:*" here;
     // they are individual projects.
-    // To test, use `./gradlew publish` and test repository `./build/localMaven`
+    // To test, use `./gradlew installArchives` and test repository `./build/localMaven`
 )

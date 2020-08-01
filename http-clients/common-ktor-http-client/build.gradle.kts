@@ -1,5 +1,3 @@
-@file:Suppress("UNUSED_VARIABLE")
-
 plugins {
     kotlin("multiplatform")
 }
@@ -7,46 +5,29 @@ plugins {
 kotlin {
     jvm()
 
-    js {
-        nodejs()
-
-        compilations.all {
-            kotlinOptions {
-                sourceMap = true
-                moduleKind = "umd"
-                metaInfo = true
-            }
-        }
-    }
+    // todo: core artifact is not resolved by yarn
+//    js {
+//        nodejs()
+//
+//        compilations.all {
+//            kotlinOptions {
+//                sourceMap = true
+//                moduleKind = "umd"
+//                metaInfo = true
+//            }
+//        }
+//    }
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-common", Config.Versions.Kotlin.kotlin))
                 implementation(project(":core"))
-                implementation("io.ktor:ktor-client-core-native:${Config.Versions.ktor}")
+                implementation("io.ktor:ktor-client-core:${Config.Versions.ktor}")
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common", Config.Versions.Kotlin.kotlin))
-            }
-        }
-        val jvmMain by getting {
-            dependencies {
-                implementation(kotlin("stdlib-jdk8", Config.Versions.Kotlin.kotlin))
-                implementation("io.ktor:ktor-client-core-jvm:${Config.Versions.ktor}")
-            }
-        }
-        val jvmTest by getting {
-            dependencies {
-
-            }
-        }
-        val jsMain by getting {
-            dependencies {
-                implementation(kotlin("stdlib-js", Config.Versions.Kotlin.kotlin))
-                implementation("io.ktor:ktor-client-core-js:${Config.Versions.ktor}")
             }
         }
         val nativeMain by creating {

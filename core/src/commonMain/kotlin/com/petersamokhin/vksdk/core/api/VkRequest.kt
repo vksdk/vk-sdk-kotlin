@@ -26,7 +26,6 @@ data class VkRequest(
      * @return Plain response text
      * @throws VkException If some error occurred, then exception is thrown
      */
-    @OptIn(ExperimentalStdlibApi::class)
     fun execute(): String {
         val result = httpClient.postSync(
             "${VkApi.BASE_URL}/$method",
@@ -46,7 +45,6 @@ data class VkRequest(
      *
      * @param callback Get plain response text or an error
      */
-    @OptIn(ExperimentalStdlibApi::class)
     fun enqueue(callback: Callback<String>) {
         httpClient.post(
             "${VkApi.BASE_URL}/$method",
@@ -72,7 +70,6 @@ data class VkRequest(
      * @param onResult Successful result callback
      * @param onError Error callback
      */
-    @OptIn(ExperimentalStdlibApi::class)
     fun enqueue(onResult: (String) -> Unit = {}, onError: (Exception) -> Unit = {}) {
         enqueue(assembleCallback(onResult, onError))
     }

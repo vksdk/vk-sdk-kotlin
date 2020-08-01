@@ -23,9 +23,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-common", Config.Versions.Kotlin.kotlin))
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:${Config.Versions.Kotlin.coroutines}")
-                api("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${Config.Versions.Kotlin.serialization}")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Config.Versions.Kotlin.coroutines}")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Config.Versions.Kotlin.serialization}")
 
                 implementation("co.touchlab:stately-common:${Config.Versions.stately}")
                 implementation("co.touchlab:stately-concurrency:${Config.Versions.stately}")
@@ -35,37 +34,22 @@ kotlin {
         }
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test-common", Config.Versions.Kotlin.kotlin))
+                implementation(kotlin("test", Config.Versions.Kotlin.kotlin))
                 implementation(kotlin("test-annotations-common", Config.Versions.Kotlin.kotlin))
-            }
-        }
-        val jvmMain by getting {
-            dependencies {
-                implementation(kotlin("stdlib-jdk8", Config.Versions.Kotlin.kotlin))
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Config.Versions.Kotlin.coroutines}")
-                api("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Config.Versions.Kotlin.serialization}")
             }
         }
         val jvmTest by getting {
             dependencies {
-                implementation(kotlin("test", Config.Versions.Kotlin.kotlin))
                 implementation(kotlin("test-junit", Config.Versions.Kotlin.kotlin))
             }
         }
-        val jsMain by getting {
+        val jsTest by getting {
             dependencies {
-                implementation(kotlin("stdlib-js", Config.Versions.Kotlin.kotlin))
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:${Config.Versions.Kotlin.coroutines}")
-                api("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:${Config.Versions.Kotlin.serialization}")
+                implementation(kotlin("test-js", Config.Versions.Kotlin.kotlin))
             }
         }
         val nativeMain by creating {
             dependsOn(commonMain)
-
-            dependencies {
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-core-native:${Config.Versions.Kotlin.coroutines}")
-                api("org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:${Config.Versions.Kotlin.serialization}")
-            }
         }
         val nativeTest by creating {
             dependsOn(commonTest)

@@ -1,18 +1,16 @@
 package com.petersamokhin.vksdk.core.model
 
-import kotlinx.serialization.CompositeDecoder
-import kotlinx.serialization.Decoder
-import kotlinx.serialization.Encoder
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.builtins.nullable
-import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.nullable
-import kotlinx.serialization.serializer
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.descriptors.nullable
+import kotlinx.serialization.encoding.CompositeDecoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 /**
  * Base VK response
@@ -31,17 +29,15 @@ data class VkResponse<out T : Any>(
  *
  * @property responseSerializer Serializer for [T]::class
  */
-@Suppress("unused")
 @Serializer(forClass = VkResponse::class)
 class VkResponseTypedSerializer<T: Any>(private val responseSerializer: KSerializer<T>) : KSerializer<VkResponse<T>> {
-    @OptIn(ImplicitReflectionSerializer::class)
-    private val errorSerializer: KSerializer<VkResponseError?> = VkResponseError::class.serializer().nullable
+    private val errorSerializer: KSerializer<VkResponseError?> = VkResponseError.serializer().nullable
 
     /**
      * Describes the structure of the serializable representation of [T], produced
      * by this serializer.
      */
-    override val descriptor: SerialDescriptor = SerialDescriptor("VkResponseTypedSerializer") {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("VkResponseTypedSerializer") {
         val dataDescriptor = responseSerializer.descriptor.nullable
         element("response", dataDescriptor)
         element("error", errorSerializer.descriptor.nullable)
@@ -54,10 +50,11 @@ class VkResponseTypedSerializer<T: Any>(private val responseSerializer: KSeriali
      * @param value Original value
      */
     override fun serialize(encoder: Encoder, value: VkResponse<T>) {
-        val out = encoder.beginStructure(descriptor)
-        out.encodeNullableSerializableElement(descriptor, 0, responseSerializer, value.response)
-        out.encodeNullableSerializableElement(descriptor, 1, errorSerializer, value.error)
-        out.endStructure(descriptor)
+        encoder.beginStructure(descriptor).apply {
+            encodeNullableSerializableElement(descriptor, 0, responseSerializer, value.response)
+            encodeNullableSerializableElement(descriptor, 1, errorSerializer, value.error)
+            endStructure(descriptor)
+        }
     }
 
     /**
@@ -72,7 +69,7 @@ class VkResponseTypedSerializer<T: Any>(private val responseSerializer: KSeriali
         var error: VkResponseError? = null
         loop@ while (true) {
             when (val i = inp.decodeElementIndex(descriptor)) {
-                CompositeDecoder.READ_DONE -> break@loop
+                CompositeDecoder.DECODE_DONE -> break@loop
                 0 -> response = inp.decodeNullableSerializableElement(descriptor, i, responseSerializer.nullable)
                 1 -> error = inp.decodeNullableSerializableElement(descriptor, i, errorSerializer)
                 else -> throw SerializationException("Unknown index $i")

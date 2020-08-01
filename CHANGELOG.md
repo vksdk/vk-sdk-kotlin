@@ -1,5 +1,12 @@
 # Change log
 
+Version 0.0.6-1.4.0-rc *(2020-08-01)*
+----------------------------
+* Migrate to Kotlin `1.4.0-rc`, update dependencies, solve issues
+* Add `json` to constructors everywhere to be able to provide custom configuration
+* Several small minor fixes
+* JS artifact (`nodejs`) is not available for common http client due to the yarn issue
+
 Version 0.0.5 *(2020-05-20)*
 ----------------------------
 
