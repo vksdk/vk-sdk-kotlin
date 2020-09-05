@@ -1,17 +1,17 @@
 package com.petersamokhin.vksdk.core.api.botslongpoll
 
+import co.touchlab.stately.collections.IsoMutableMap
 import com.petersamokhin.vksdk.core.callback.EventCallback
 import com.petersamokhin.vksdk.core.model.event.MessageNew
 import com.petersamokhin.vksdk.core.model.event.RawEvent
-import co.touchlab.stately.collections.IsoMutableMap
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -21,12 +21,14 @@ internal class VkLongPollEventsHandler(
     private val json: Json,
     parentJob: Job,
     private val backgroundDispatcher: CoroutineDispatcher
-): CoroutineScope {
+) : CoroutineScope {
     private val job = SupervisorJob(parentJob)
+
     override val coroutineContext: CoroutineContext
         get() = backgroundDispatcher + job
 
-    private val listenersMap: MutableMap<String, MutableCollection<EventCallback<*>>> = IsoMutableMap()
+    private val listenersMap = IsoMutableMap<String, MutableCollection<EventCallback<*>>>()
+    private val jobsMap = IsoMutableMap<String, MutableCollection<Job>>()
 
     /**
      * Handle next incoming long poll event
@@ -34,23 +36,38 @@ internal class VkLongPollEventsHandler(
      * @param type Type of the event
      * @param eventObject `object` from the event JSON-object
      */
-    @OptIn(ImplicitReflectionSerializer::class)
     fun nextEvent(type: String, eventObject: JsonObject, clientId: Int): Boolean {
-        listenersMap[RawEvent.TYPE]?.forEach {
-            launch {
-                @Suppress("UNCHECKED_CAST")
-                (it as EventCallback<RawEvent>).onEvent(RawEvent(type, eventObject, clientId))
+        listenersMap[RawEvent.TYPE]?.also { listenersList ->
+            jobsMap.access { map ->
+                map[RawEvent.TYPE] = (map[RawEvent.TYPE] ?: mutableListOf()).also {
+                    it += listenersList.map { eventCallback ->
+                        launch {
+                            @Suppress("UNCHECKED_CAST")
+                            (eventCallback as EventCallback<RawEvent>).onEvent(RawEvent(type, eventObject, clientId))
+                        }
+                    }
+                }
             }
         }
 
         when (type) {
             MessageNew.TYPE -> {
-                val parsedEvent: MessageNew = json.fromJson(eventObject)
+                val parsedEvent: MessageNew = try {
+                    json.decodeFromJsonElement(eventObject)
+                } catch (t: Throwable) {
+                    return false
+                }
 
-                listenersMap[type]?.forEach {
-                    launch {
-                        @Suppress("UNCHECKED_CAST")
-                        (it as EventCallback<MessageNew>).onEvent(parsedEvent)
+                listenersMap[type]?.also { listenersList ->
+                    jobsMap.access { map ->
+                        map[type] = (map[type] ?: mutableListOf()).also {
+                            it += listenersList.map { eventCallback ->
+                                launch {
+                                    @Suppress("UNCHECKED_CAST")
+                                    (eventCallback as EventCallback<MessageNew>).onEvent(parsedEvent)
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -65,14 +82,23 @@ internal class VkLongPollEventsHandler(
      * @param type Type key of events
      * @param listener Typed listener
      */
-    fun <T: Any> registerListener(type: String, listener: EventCallback<T>) {
-        listenersMap[type] = (listenersMap[type] ?: mutableListOf()).also {
-            it.add(listener)
+    fun <T : Any> registerListener(type: String, listener: EventCallback<T>) {
+        listenersMap.access { map ->
+            map[type] = (map[type] ?: mutableListOf()).also {
+                it.add(listener)
+            }
         }
     }
 
     /**
      * Clear listeners for all the events
      */
-    fun clearListeners() = listenersMap.clear()
+    fun clearListeners() {
+        listenersMap.clear()
+        jobsMap.access { map ->
+            map.forEach { (_, list) ->
+                list.forEach(Job::cancel)
+            }
+        }
+    }
 }

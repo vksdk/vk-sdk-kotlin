@@ -1,37 +1,34 @@
 package com.petersamokhin.vksdk.core.api
 
+import co.touchlab.stately.collections.IsoArrayDeque
 import com.petersamokhin.vksdk.core.error.VkResponseException
 import com.petersamokhin.vksdk.core.error.VkSdkInitiationException
 import com.petersamokhin.vksdk.core.http.ContentType
 import com.petersamokhin.vksdk.core.http.Parameters
 import com.petersamokhin.vksdk.core.http.paramsOf
 import com.petersamokhin.vksdk.core.model.VkSettings
+import com.petersamokhin.vksdk.core.utils.defaultJson
 import com.petersamokhin.vksdk.core.utils.jsonArrayOrNullSafe
 import com.petersamokhin.vksdk.core.utils.jsonObjectOrNullSafe
-import co.touchlab.stately.collections.IsoArrayDeque
-import com.petersamokhin.vksdk.core.utils.defaultJson
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.serialization.json.Json
 import kotlin.coroutines.CoroutineContext
+import kotlin.jvm.JvmOverloads
 
 /**
  * https://vk.com/dev/execute
  */
 @OptIn(ExperimentalStdlibApi::class)
-class BatchRequestExecutor(
+class BatchRequestExecutor @JvmOverloads constructor(
     private val token: String,
-    private val settings: VkSettings
+    private val settings: VkSettings,
+    private val json: Json = defaultJson()
 ) : CoroutineScope {
-    private val json = defaultJson()
-
     private val job = SupervisorJob()
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         println("BatchRequestExecutor::exceptionHandler::error = $throwable")
+        throwable.printStackTrace()
     }
 
     /**
@@ -86,7 +83,7 @@ class BatchRequestExecutor(
                             )
 
                             if (response?.body != null && response.isSuccessful()) {
-                                json.parseJson(response.bodyString()).jsonObjectOrNullSafe?.also { bodyJson ->
+                                json.parseToJsonElement(response.bodyString()).jsonObjectOrNullSafe?.also { bodyJson ->
                                     val responseJson = bodyJson["response"]?.jsonArrayOrNullSafe
 
                                     responseJson?.forEachIndexed { index, element ->
@@ -130,7 +127,6 @@ class BatchRequestExecutor(
     /**
      * Stop the loop
      */
-    @Suppress("unused")
     fun stop() {
         queue?.dispose()
         queue = null

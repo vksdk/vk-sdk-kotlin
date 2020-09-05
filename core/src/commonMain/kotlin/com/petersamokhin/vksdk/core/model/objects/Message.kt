@@ -1,14 +1,11 @@
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
-
 package com.petersamokhin.vksdk.core.model.objects
 
 import com.petersamokhin.vksdk.core.api.VkRequest
 import com.petersamokhin.vksdk.core.client.VkApiClient
 import com.petersamokhin.vksdk.core.http.Parameters
 import com.petersamokhin.vksdk.core.utils.intValue
-import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.stringify
 import kotlin.random.Random
 
 /**
@@ -192,7 +189,6 @@ class Message(
         return this
     }
 
-    @OptIn(ImplicitReflectionSerializer::class)
     internal fun buildParams(json: Json) = Parameters().apply {
         userId?.also { put("user_id", it) }
         peerId?.also { put("peer_id", it) }
@@ -207,8 +203,8 @@ class Message(
         forwardMessages?.also { put("forward_messages", it) }
         stickerId?.also { put("sticker_id", it) }
         groupId?.also { put("group_id", it) }
-        keyboard?.also { put("keyboard", json.stringify(it)) }
-        template?.also { put("template", json.stringify(it)) }
+        keyboard?.also { put("keyboard", json.encodeToString(it)) }
+        template?.also { put("template", json.encodeToString(it)) }
         payload?.also { put("payload", it) }
         dontParseLinks?.also { put("dont_parse_links", it) }
         disableMentions?.also { put("disable_mentions", it) }

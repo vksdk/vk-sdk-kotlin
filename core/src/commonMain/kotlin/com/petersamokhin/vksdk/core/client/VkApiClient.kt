@@ -1,13 +1,12 @@
 package com.petersamokhin.vksdk.core.client
 
-import com.petersamokhin.vksdk.core.api.BatchRequestExecutor
-import com.petersamokhin.vksdk.core.api.BatchRequestItem
-import com.petersamokhin.vksdk.core.api.VkApi
-import com.petersamokhin.vksdk.core.api.VkApiUploader
-import com.petersamokhin.vksdk.core.api.VkRequest
+import com.petersamokhin.vksdk.core.api.*
 import com.petersamokhin.vksdk.core.api.botslongpoll.VkBotsLongPollApi
 import com.petersamokhin.vksdk.core.callback.Callback
 import com.petersamokhin.vksdk.core.callback.EventCallback
+import com.petersamokhin.vksdk.core.client.VkApiClient.Type
+import com.petersamokhin.vksdk.core.client.VkApiClient.Type.Community
+import com.petersamokhin.vksdk.core.client.VkApiClient.Type.User
 import com.petersamokhin.vksdk.core.error.UnsupportedActionException
 import com.petersamokhin.vksdk.core.error.VkResponseException
 import com.petersamokhin.vksdk.core.error.VkSdkInitiationException
@@ -20,7 +19,6 @@ import com.petersamokhin.vksdk.core.model.event.RawEvent
 import com.petersamokhin.vksdk.core.model.objects.Message
 import com.petersamokhin.vksdk.core.utils.assembleCallback
 import com.petersamokhin.vksdk.core.utils.assembleEventCallback
-import com.petersamokhin.vksdk.core.utils.defaultJson
 import com.petersamokhin.vksdk.core.utils.runBlocking
 import kotlinx.serialization.json.JsonElement
 import kotlin.jvm.JvmOverloads
@@ -42,11 +40,10 @@ class VkApiClient(
     val type: Type,
     val settings: VkSettings
 ) {
-    internal val json = defaultJson()
     private val api = VkApi(settings.httpClient, settings.apiVersion, token, settings.defaultParams)
-    private val batchRequestExecutor = BatchRequestExecutor(token, settings)
-    private var botsLongPollApi = VkBotsLongPollApi(id, api, settings.backgroundDispatcher)
-    private val uploader = VkApiUploader(api, json)
+    private val batchRequestExecutor = BatchRequestExecutor(token, settings, settings.json)
+    private var botsLongPollApi = VkBotsLongPollApi(id, api, settings.backgroundDispatcher, settings.json)
+    private val uploader = VkApiUploader(api, settings.json)
     private val flowsWrapper = VkApiClientFlows(this, settings.backgroundDispatcher)
 
     /**
@@ -56,12 +53,17 @@ class VkApiClient(
      */
     @JvmOverloads
     fun startLongPolling(restart: Boolean = false, settings: VkBotsLongPollApi.Settings = VkBotsLongPollApi.Settings()) {
-        if (type == Type.User) {
+        if (type == User) {
             throw UnsupportedActionException()
         }
 
         if (restart) {
-            botsLongPollApi = VkBotsLongPollApi(id, api, this.settings.backgroundDispatcher)
+            with(botsLongPollApi) {
+                clearListeners()
+                stopPolling()
+            }
+
+            botsLongPollApi = VkBotsLongPollApi(id, api, this.settings.backgroundDispatcher, this.settings.json)
         }
 
         runBlocking {
@@ -128,18 +130,18 @@ class VkApiClient(
      * Send message. Not available for [VkApiClient.Type.User]
      */
     fun sendMessage(message: Message): VkRequest {
-        if (type == Type.User) {
+        if (type == User) {
             throw UnsupportedActionException()
         }
 
-        return api.call("messages.send", message.buildParams(json))
+        return api.call("messages.send", message.buildParams(settings.json))
     }
 
     /**
      * Send message. Not available for [VkApiClient.Type.User]
      */
     fun sendMessage(block: Message.() -> Unit): VkRequest {
-        if (type == Type.User) {
+        if (type == User) {
             throw UnsupportedActionException()
         }
 
@@ -169,7 +171,7 @@ class VkApiClient(
             call(BatchRequestItem(call(method, params), callback))
         } else {
             api.call(method, params).enqueue(object : Callback<String> {
-                override fun onResult(result: String) = callback.onResult(json.parseJson(result))
+                override fun onResult(result: String) = callback.onResult(settings.json.parseToJsonElement(result))
                 override fun onError(error: Exception) = callback.onError(error)
             })
         }
@@ -284,7 +286,6 @@ class VkApiClient(
          * @param settings VK API Client settings
          * @return VK API client.
          */
-        @OptIn(ExperimentalStdlibApi::class)
         @JvmStatic
         fun fromCode(code: String, app: AppInfo, settings: VkSettings): VkApiClient {
             val query = paramsOf(
@@ -295,7 +296,7 @@ class VkApiClient(
             ).buildQuery()
 
             val tokenResponse = settings.httpClient.getSync("$ACCESS_TOKEN_URL?$query")?.let {
-                defaultJson().parse(VkAccessTokenResponse.serializer(), it.bodyString())
+                settings.json.decodeFromString(VkAccessTokenResponse.serializer(), it.bodyString())
             } ?: throw VkSdkInitiationException("VK Client from code")
 
             return VkApiClient(
@@ -303,7 +304,7 @@ class VkApiClient(
                     ?: throw VkResponseException("VK access_token from code error: user_id is null"),
                 token = tokenResponse.accessToken
                     ?: throw VkResponseException("VK access_token from code error: access_token is null"),
-                type = Type.User,
+                type = User,
                 settings = settings
             )
         }

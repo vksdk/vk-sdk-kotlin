@@ -1,55 +1,53 @@
 package com.petersamokhin.vksdk.core.utils
 
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonException
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.*
 
 /**
  * Default json de/serializer for the project
  */
 internal fun defaultJson(): Json {
-    return Json(JsonConfiguration.Stable.copy(encodeDefaults = false, ignoreUnknownKeys = true))
+    return Json {
+        encodeDefaults = false
+        ignoreUnknownKeys = true
+    }
 }
 
 /**
  * Get wrapped value or null without exceptions
  */
-val JsonElement.intOrNullSafe
+internal val JsonElement.intOrNullSafe
     get() = try {
-        intOrNull
-    } catch (e: JsonException) {
+        jsonPrimitive.intOrNull
+    } catch (e: IllegalArgumentException) {
         null
     }
 
 /**
  * Get wrapped value or null without exceptions
  */
-val JsonElement.contentOrNullSafe
+internal val JsonElement.contentOrNullSafe
     get() = try {
-        contentOrNull
-    } catch (e: JsonException) {
+        jsonPrimitive.contentOrNull
+    } catch (e: IllegalArgumentException) {
         null
     }
 
 /**
  * Get wrapped value or null without exceptions
  */
-val JsonElement.jsonArrayOrNullSafe
+internal val JsonElement.jsonArrayOrNullSafe
     get() = try {
         jsonArray
-    } catch (e: JsonException) {
+    } catch (e: IllegalArgumentException) {
         null
     }
 
 /**
  * Get wrapped value or null without exceptions
  */
-val JsonElement.jsonObjectOrNullSafe
+internal val JsonElement.jsonObjectOrNullSafe
     get() = try {
         jsonObject
-    } catch (e: JsonException) {
+    } catch (e: IllegalArgumentException) {
         null
     }

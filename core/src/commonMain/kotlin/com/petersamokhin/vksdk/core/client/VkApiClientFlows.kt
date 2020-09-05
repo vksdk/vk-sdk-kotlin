@@ -33,6 +33,7 @@ class VkApiClientFlows(
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         println("VkApiClientFlows::exceptionHandler::error = $throwable")
+        throwable.printStackTrace()
     }
     override val coroutineContext: CoroutineContext
         get() = backgroundDispatcher + job + exceptionHandler
@@ -156,4 +157,6 @@ class VkApiClientFlows(
     fun sendMessage(block: Message.() -> Unit): Flow<JsonElement> {
         return call(client.sendMessage(block), true)
     }
+
+    fun clear() = job.cancel()
 }

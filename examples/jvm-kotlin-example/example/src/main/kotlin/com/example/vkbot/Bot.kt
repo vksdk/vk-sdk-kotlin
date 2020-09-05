@@ -11,34 +11,26 @@ import com.petersamokhin.vksdk.core.model.VkResponseTypedSerializer
 import com.petersamokhin.vksdk.core.model.VkSettings
 import com.petersamokhin.vksdk.core.model.objects.UploadableContent
 import com.petersamokhin.vksdk.core.model.objects.keyboard
-import com.petersamokhin.vksdk.core.utils.contentOrNullSafe
-import com.petersamokhin.vksdk.core.utils.jsonObjectOrNullSafe
 import com.petersamokhin.vksdk.http.VkKtorHttpClient
 import com.petersamokhin.vksdk.http.VkOkHttpClient
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
+import io.ktor.client.features.logging.*
 import io.ktor.util.KtorExperimentalAPI
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.*
 import kotlin.coroutines.CoroutineContext
 
-@OptIn(ImplicitReflectionSerializer::class, ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 class Bot : CoroutineScope {
-    private val json = Json(JsonConfiguration.Stable.copy(encodeDefaults = false, ignoreUnknownKeys = true))
+    private val json = Json {
+        encodeDefaults = false
+        ignoreUnknownKeys = true
+    }
 
     private val job = SupervisorJob()
 
@@ -70,10 +62,23 @@ class Bot : CoroutineScope {
         if (accessToken == "abcdef123456...") throw RuntimeException("Please, replace dummy access_token with yours in Launcher.kt")
 
         // Custom implementation of the cross-platform HTTP client
-        // val httpClient = VkKtorHttpClient(coroutineContext, overrideClient = HttpClient(CIO))
+        val httpClient = VkKtorHttpClient(coroutineContext, overrideClient = HttpClient(CIO) {
+            engine {
+                // because of long polling
+                requestTimeout = 30000
+            }
+            Logging {
+                level = LogLevel.BODY
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        println(message)
+                    }
+                }
+            }
+        })
 
         // OkHttp client is available only for JVM
-        val httpClient = VkOkHttpClient()
+        // val httpClient = VkOkHttpClient()
 
         // init settings, most of them have default values
         val settings = VkSettings(
@@ -272,7 +277,7 @@ class Bot : CoroutineScope {
      * Of course, you can use your own data class and deserialize it.
      */
     private fun retrieveAttachment(response: String, @Suppress("SameParameterValue") type: String): String? {
-        return json.parseJson(response)
+        return json.parseToJsonElement(response)
             .jsonObjectOrNullSafe
             ?.get("response")
             ?.jsonObjectOrNullSafe
@@ -311,7 +316,7 @@ class Bot : CoroutineScope {
      * all inline calls are dropped and you should do it by yourself.
      */
     private fun parseUsersResponseFromString(pashkaResponseString: String): VkUser {
-        val pashokParsedResponse: VkResponse<List<VkUser>> = json.parse(
+        val pashokParsedResponse: VkResponse<List<VkUser>> = json.decodeFromString(
             VkResponseTypedSerializer(ListSerializer(VkUser.serializer())),
             pashkaResponseString
         )
@@ -322,6 +327,26 @@ class Bot : CoroutineScope {
 
     @Suppress("RedundantSuspendModifier") // IDEA lint bug?
     private suspend fun parseUsersResponseFromJsonElement(pashkaJsonElement: JsonElement): VkUser {
-        return json.fromJson(ListSerializer(VkUser.serializer()), pashkaJsonElement).first()
+        return json.decodeFromJsonElement(ListSerializer(VkUser.serializer()), pashkaJsonElement).first()
     }
 }
+
+/**
+ * Get wrapped value or null without exceptions
+ */
+private val JsonElement.jsonObjectOrNullSafe
+    get() = try {
+        jsonObject
+    } catch (e: IllegalArgumentException) {
+        null
+    }
+
+/**
+ * Get wrapped value or null without exceptions
+ */
+private val JsonElement.contentOrNullSafe
+    get() = try {
+        jsonPrimitive.contentOrNull
+    } catch (e: IllegalArgumentException) {
+        null
+    }

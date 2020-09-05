@@ -3,8 +3,10 @@ package com.petersamokhin.vksdk.core.model
 import com.petersamokhin.vksdk.core.api.VkApi
 import com.petersamokhin.vksdk.core.http.HttpClient
 import com.petersamokhin.vksdk.core.http.Parameters
+import com.petersamokhin.vksdk.core.utils.defaultJson
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.serialization.json.Json
 import kotlin.jvm.JvmOverloads
 
 /**
@@ -23,5 +25,6 @@ data class VkSettings @JvmOverloads constructor(
     val apiVersion: Double = VkApi.DEFAULT_VERSION,
     val defaultParams: Parameters = Parameters(),
     val maxExecuteRequestsPerSecond: Int = 3,
-    val backgroundDispatcher: CoroutineDispatcher = Dispatchers.Default
+    val backgroundDispatcher: CoroutineDispatcher = Dispatchers.Default,
+    val json: Json = defaultJson()
 )

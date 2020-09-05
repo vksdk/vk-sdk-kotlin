@@ -6,7 +6,7 @@
 
 ---
 
-![Build](https://github.com/vksdk/vk-sdk-kotlin/workflows/Release/badge.svg) ![Documentation](https://github.com/vksdk/vk-sdk-kotlin/workflows/Documentation/badge.svg) [![Kotlin 1.3.72](https://img.shields.io/badge/Kotlin-1.3.72-blue.svg?style=flat)](http://kotlinlang.org) [![API version](https://img.shields.io/badge/API%20version-5.103-blue?style=flat&logo=vk&logoColor=white)](https://vk.com/dev/versions)
+![Build](https://github.com/vksdk/vk-sdk-kotlin/workflows/Release/badge.svg) ![Documentation](https://github.com/vksdk/vk-sdk-kotlin/workflows/Documentation/badge.svg) [![Kotlin 1.4.0](https://img.shields.io/badge/Kotlin-1.4.0-blue.svg?style=flat)](http://kotlinlang.org) [![API version](https://img.shields.io/badge/API%20version-5.103+-blue?style=flat&logo=vk&logoColor=white)](https://vk.com/dev/versions)
 [![GitHub license](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat)](https://github.com/vksdk/vk-sdk-kotlin/blob/master/LICENSE)
 
 Unofficial VK.com SDK, written in Kotlin.
@@ -14,7 +14,9 @@ Based on Kotlin Multiplatform project, but has Java-friendly API.
 
 See the documentation: [https://vksdk.github.io/vk-sdk-kotlin](https://vksdk.github.io/vk-sdk-kotlin)
 
-Latest version:  [![maven-central](https://img.shields.io/badge/Maven%20Central-0.0.5-yellowgreen?style=flat)](https://search.maven.org/search?q=g:com.petersamokhin.vksdk)
+Latest version:  [![maven-central](https://img.shields.io/badge/Maven%20Central-0.0.6-yellowgreen?style=flat)](https://search.maven.org/search?q=g:com.petersamokhin.vksdk)
+
+For Kotlin 1.3.72 use version 0.0.5 and below.
 
 ## Minimal example of the echo-chatbot
 

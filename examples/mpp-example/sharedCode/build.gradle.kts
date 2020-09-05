@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     kotlin("multiplatform")
-    kotlin("plugin.serialization") version "1.3.72"
+    kotlin("plugin.serialization") version "1.4.0"
     id("com.android.library")
 }
 
@@ -58,7 +58,7 @@ kotlin {
 
     android()
 
-    val vkSdkKotlinVersion = "0.0.1-SNAPSHOT"
+    val vkSdkKotlinVersion = "0.0.6"
 
     sourceSets {
         val commonMain by getting {
@@ -66,7 +66,7 @@ kotlin {
                 implementation("com.petersamokhin.vksdk:core:$vkSdkKotlinVersion")
                 implementation("com.petersamokhin.vksdk:common-ktor-http-client:$vkSdkKotlinVersion")
 
-                implementation(kotlin("stdlib-common", "1.3.72"))
+                implementation(kotlin("stdlib-common", "1.4.0"))
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.5")
                 implementation("io.ktor:ktor-client-core:1.3.2")

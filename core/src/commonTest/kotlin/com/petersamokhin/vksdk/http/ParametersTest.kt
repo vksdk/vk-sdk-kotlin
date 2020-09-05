@@ -6,35 +6,35 @@ import kotlin.test.assertEquals
 
 class ParametersTest {
     @Test
-    fun `build of strings`() {
+    fun build_of_strings() {
         val params = Parameters.of("key", "value", "and_another", "too", "and_another_one", "yep", "user_id", "1")
 
         assertEquals("key=value&and_another=too&and_another_one=yep&user_id=1", params.buildQuery())
     }
 
     @Test
-    fun `build instantiated from map`() {
+    fun build_instantiated_from_map() {
         val params = Parameters(mapOf("key" to "value", "and_another" to "too", "user_id" to 1))
 
         assertEquals("key=value&and_another=too&user_id=1", params.buildQuery())
     }
 
     @Test
-    fun `build of empty param`() {
+    fun build_of_empty_param() {
         val params = Parameters.of("key", "value", "and_another_one")
 
         assertEquals("key=value&and_another_one", params.buildQuery())
     }
 
     @Test
-    fun `build of list param`() {
+    fun build_of_list_param() {
         val params = Parameters.of("key" to "value", "and_another_one" to listOf("too"))
 
         assertEquals("key=value&and_another_one=too", params.buildQuery())
     }
 
     @Test
-    fun `build json of simple strings`() {
+    fun build_json_of_simple_strings() {
         val params = Parameters.of("key", "value", "and_another", "too")
 
         //language=JSON
@@ -42,7 +42,7 @@ class ParametersTest {
     }
 
     @Test
-    fun `build json of list param`() {
+    fun build_json_of_list_param() {
         val params = Parameters.of("key" to "value", "and_another" to listOf("too", "yep"))
 
         //language=JSON

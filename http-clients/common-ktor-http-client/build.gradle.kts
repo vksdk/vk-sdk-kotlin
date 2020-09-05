@@ -1,5 +1,3 @@
-@file:Suppress("UNUSED_VARIABLE")
-
 plugins {
     kotlin("multiplatform")
 }
@@ -22,9 +20,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-common", Config.Versions.Kotlin.kotlin))
                 implementation(project(":core"))
-                implementation("io.ktor:ktor-client-core-native:${Config.Versions.ktor}")
+                implementation("io.ktor:ktor-client-core:${Config.Versions.ktor}")
             }
         }
         val commonTest by getting {
@@ -34,18 +31,12 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-jdk8", Config.Versions.Kotlin.kotlin))
-                implementation("io.ktor:ktor-client-core-jvm:${Config.Versions.ktor}")
-            }
-        }
-        val jvmTest by getting {
-            dependencies {
-
+                implementation("io.ktor:ktor-client-cio:1.4.0")
+                implementation("io.ktor:ktor-client-logging-jvm:1.4.0")
             }
         }
         val jsMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-js", Config.Versions.Kotlin.kotlin))
                 implementation("io.ktor:ktor-client-core-js:${Config.Versions.ktor}")
             }
         }
