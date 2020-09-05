@@ -157,4 +157,6 @@ class VkApiClientFlows(
     fun sendMessage(block: Message.() -> Unit): Flow<JsonElement> {
         return call(client.sendMessage(block), true)
     }
+
+    fun clear() = job.cancel()
 }

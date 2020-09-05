@@ -53,7 +53,7 @@ class VkApiClient(
      */
     @JvmOverloads
     fun startLongPolling(restart: Boolean = false, settings: VkBotsLongPollApi.Settings = VkBotsLongPollApi.Settings()) {
-        if (type == Type.User) {
+        if (type == User) {
             throw UnsupportedActionException()
         }
 
@@ -130,7 +130,7 @@ class VkApiClient(
      * Send message. Not available for [VkApiClient.Type.User]
      */
     fun sendMessage(message: Message): VkRequest {
-        if (type == Type.User) {
+        if (type == User) {
             throw UnsupportedActionException()
         }
 
@@ -141,7 +141,7 @@ class VkApiClient(
      * Send message. Not available for [VkApiClient.Type.User]
      */
     fun sendMessage(block: Message.() -> Unit): VkRequest {
-        if (type == Type.User) {
+        if (type == User) {
             throw UnsupportedActionException()
         }
 
@@ -304,7 +304,7 @@ class VkApiClient(
                     ?: throw VkResponseException("VK access_token from code error: user_id is null"),
                 token = tokenResponse.accessToken
                     ?: throw VkResponseException("VK access_token from code error: access_token is null"),
-                type = Type.User,
+                type = User,
                 settings = settings
             )
         }

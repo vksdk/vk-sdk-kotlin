@@ -3,7 +3,6 @@ buildscript {
         mavenCentral()
         google()
         jcenter()
-        maven ("https://dl.bintray.com/kotlin/kotlin-eap")
     }
 
     dependencies {
@@ -29,17 +28,6 @@ allprojects {
         mavenCentral()
         google()
         jcenter()
-        maven ("https://dl.bintray.com/kotlin/kotlin-eap")
-
-        // todo: temporary workaround for Stately before it's 1.4.0 release
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/nightstory/Stately")
-            credentials {
-                username = System.getenv("REPO_USERNAME")
-                password = System.getenv("REPO_PASSWORD")
-            }
-        }
     }
 
     group = project.property("GROUP").toString()

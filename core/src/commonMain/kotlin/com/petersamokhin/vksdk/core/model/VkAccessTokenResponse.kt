@@ -9,9 +9,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class VkAccessTokenResponse(
     @SerialName("access_token")
-    val accessToken: String?,
+    val accessToken: String? = null,
     @SerialName("expires_in")
-    val expiresIn: Int?,
+    val expiresIn: Int? = null,
     @SerialName("user_id")
-    val userId: Int?
+    val userId: Int? = null,
+    val error: String? = null,
+    @SerialName("error_description")
+    val errorDescription: String? = null
 )

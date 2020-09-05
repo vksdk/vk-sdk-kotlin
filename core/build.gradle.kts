@@ -24,7 +24,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Config.Versions.Kotlin.coroutines}")
-                api("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Config.Versions.Kotlin.serialization}")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Config.Versions.Kotlin.serialization}")
 
                 implementation("co.touchlab:stately-common:${Config.Versions.stately}")
                 implementation("co.touchlab:stately-concurrency:${Config.Versions.stately}")

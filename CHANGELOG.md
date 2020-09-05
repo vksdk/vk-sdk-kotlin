@@ -1,5 +1,11 @@
 # Change log
 
+Version 0.0.6 *(2020-09-06)*
+----------------------------
+* Kotlin `1.4.0` support
+* JS artifact (`nodejs`) supported again
+* Several small minor fixes
+
 Version 0.0.6-1.4.0-rc *(2020-08-01)*
 ----------------------------
 * Migrate to Kotlin `1.4.0-rc`, update dependencies, solve issues

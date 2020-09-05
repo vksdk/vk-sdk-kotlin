@@ -5,18 +5,17 @@ plugins {
 kotlin {
     jvm()
 
-    // todo: core artifact is not resolved by yarn
-//    js {
-//        nodejs()
-//
-//        compilations.all {
-//            kotlinOptions {
-//                sourceMap = true
-//                moduleKind = "umd"
-//                metaInfo = true
-//            }
-//        }
-//    }
+    js {
+        nodejs()
+
+        compilations.all {
+            kotlinOptions {
+                sourceMap = true
+                moduleKind = "umd"
+                metaInfo = true
+            }
+        }
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -28,6 +27,17 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common", Config.Versions.Kotlin.kotlin))
+            }
+        }
+        val jvmMain by getting {
+            dependencies {
+                implementation("io.ktor:ktor-client-cio:1.4.0")
+                implementation("io.ktor:ktor-client-logging-jvm:1.4.0")
+            }
+        }
+        val jsMain by getting {
+            dependencies {
+                implementation("io.ktor:ktor-client-core-js:${Config.Versions.ktor}")
             }
         }
         val nativeMain by creating {

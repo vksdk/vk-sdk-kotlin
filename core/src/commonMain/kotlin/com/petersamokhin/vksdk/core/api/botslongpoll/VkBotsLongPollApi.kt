@@ -77,7 +77,8 @@ class VkBotsLongPollApi @JvmOverloads constructor(
                         val newTs = lastUpdatesResponse["ts"]?.contentOrNullSafe
                         if (newTs == null) failNum++
 
-                        lastUpdatesResponse = getUpdatesResponse(serverInfo.copy(ts = newTs ?: serverInfo.ts), settings.wait)
+                        lastUpdatesResponse = getUpdatesResponse(serverInfo.copy(ts = newTs
+                            ?: serverInfo.ts), settings.wait)
                     }
                     2, 3 -> {
                         serverInfo = getInitialServerInfo().response
@@ -117,7 +118,8 @@ class VkBotsLongPollApi @JvmOverloads constructor(
     fun stopPolling() {
         try {
             job.cancel()
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+        }
     }
 
     /**
@@ -131,7 +133,7 @@ class VkBotsLongPollApi @JvmOverloads constructor(
      * @param type Type key of events
      * @param listener Typed listener
      */
-    fun <T: Any> registerListener(type: String, listener: EventCallback<T>) {
+    fun <T : Any> registerListener(type: String, listener: EventCallback<T>) {
         if (job.isCompleted || job.isCancelled) throw VkException("BotsLongPollApi job is not active when registering a listener")
 
         updatesHandler.registerListener(type, listener)

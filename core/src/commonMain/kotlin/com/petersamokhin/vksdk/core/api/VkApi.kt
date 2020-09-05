@@ -126,8 +126,8 @@ class VkApi internal constructor(
     }
 
     private fun Parameters.applyRequired() = apply {
-        put(ParametersKeys.ACCESS_TOKEN, token)
-        put(ParametersKeys.VERSION, version)
+        put(ACCESS_TOKEN, token)
+        put(VERSION, version)
         putAll(defaultParams)
     }
 
@@ -151,7 +151,7 @@ class VkApi internal constructor(
      */
     @Suppress("unused")
     companion object {
-        const val DEFAULT_VERSION = 5.103
+        const val DEFAULT_VERSION = 5.122
         const val BASE_URL = "https://api.vk.com/method"
 
         internal const val API_CALL_INTERVAL = 1133L
