@@ -6,7 +6,7 @@ See the [example projects](https://github.com/vksdk/vk-sdk-kotlin/tree/master/ex
     - [https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples/jvm-kotlin-example](https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples/jvm-kotlin-example)
 - Minimal example without Kotlin in dependencies:
     - [https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples/jvm-only-java-example](https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples/jvm-only-java-example)
-- Minimal multipatform app example (single activity on Android and SwiftUI on iOS):
+- Minimal multiplatform app example (single activity on Android and SwiftUI on iOS):
     - [https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples/mpp-example](https://github.com/vksdk/vk-sdk-kotlin/tree/master/examples/mpp-example)
 
 ### Artifacts
@@ -57,9 +57,9 @@ val vkClientSettings = VkSettings(
     // HTTP client is required
     httpClient = httpClient,                    
 
-    // Default is [VkApi.DEFAULT_VERSION], 5.103 for 0.0.2
+    // Default is [VkApi.DEFAULT_VERSION], 5.122 for 0.0.7
     // See: https://vk.com/dev/versions
-    apiVersion = 5.103,                         
+    apiVersion = 5.122,                         
     
     // Default params are empty
     defaultParams = paramsOf("lang" to "en"),   
@@ -71,7 +71,7 @@ val vkClientSettings = VkSettings(
     // See the mutiplatform example and iOS note for ktor
     backgroundDispatcher = Dispatchers.Default, 
 
-    json = Json { /* yours configuration */ }
+    json = Json { /* your configuration */ }
 )
 ```
 

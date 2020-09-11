@@ -12,10 +12,14 @@ Configuration for clients is also optional, but may be useful.
 val httpClientConfig: HttpClientConfig = HttpClientConfig(
     connectTimeout = 30_000,
     readTimeout = 30_000,
-    defaultHeaders = mapOf("User-Agent", "VK SDK Kotlin/0.0.x")
+    defaultHeaders = mapOf("User-Agent" to "VK SDK Kotlin/0.0.x")
 )
 ```
 Usually, this configuration is provided into HTTP client constructor.
+
+!!! info "Note about the logging"
+    It is barely possible to help you without seeing the VK responses, so you need to log it by yourself.
+    For this, you can provide overrided client and configure this using the logging-interceptor for OkHttp, or the logging feature for ktor.
 
 ### Abstract HTTP client methods
 To implement this interface, you should override some simple methods:
@@ -93,27 +97,25 @@ implementation("io.ktor:ktor-client-cio:1.3.2")
 ### Use
 You can provide ktor HttpClient in constructor:
 ```kotlin
-val httpClient: HttpClient = VkOkHttpClient(
-    coroutineContext = Dispatchers.IO + SupervisorJob(),
-    
-    // provide your http client,
-    overrideClient = HttpClient(CIO),
-
-    // HTTP client configuration is optional, see the snippet above
-    overrideConfig = HttpClientConfig()
-)
+val httpClient: HttpClient = VkKtorHttpClient(
+            coroutineContext = Dispatchers.IO /* + job */,
+            overrideClient = HttpClient(CIO) {
+                engine {
+                    requestTimeout = 30_000L
+                }
+            }
+        )
 ```
 
 Otherwise, override `createEngineWithConfig` method: 
 ```kotlin
 class CioKtorHttpClient: VkKtorHttpClient(
-    coroutineContext = Dispatchers.IO + SupervisorJob()
+    coroutineContext = Dispatchers.IO /* + job */
 ) {
     override fun createEngineWithConfig(config: HttpClientConfig): HttpClientEngine? {
         return CIO.create {
-            endpoint {
-                connectTimeout = config.connectTimeout.toLong()
-                requestTimeout = config.readTimeout.toLong()
+            engine {
+                requestTimeout = 30_000L
             }
         }
     }

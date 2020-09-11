@@ -1,7 +1,7 @@
 object Config {
     object Versions {
         object Kotlin {
-            const val kotlin = "1.4.0"
+            const val kotlin = "1.4.10"
             const val coroutines = "1.3.9"
             const val serialization = "1.0.0-RC"
         }
