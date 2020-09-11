@@ -3,7 +3,7 @@
 Version 0.0.7 *(2020-09-11)*
 ----------------------------
 * Update to Kotlin 1.4.10
-* Fix #19 by #22 thanks to [@4uf04eG](https://github.com/4uf04eG)
+* Fix [#19](https://github.com/vksdk/vk-sdk-kotlin/issues/19) by [#22](https://github.com/vksdk/vk-sdk-kotlin/pull/22) thanks to [@4uf04eG](https://github.com/4uf04eG)
 * Fix docs
 
 Version 0.0.6 *(2020-09-06)*
