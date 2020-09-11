@@ -83,6 +83,7 @@ class VkBotsLongPollApi @JvmOverloads constructor(
                     2, 3 -> {
                         serverInfo = getInitialServerInfo().response
                             ?: throw VkResponseException("BotsLongPollApi failed retrieving server info after error: bad VK response (server info #3)")
+                        lastUpdatesResponse = getUpdatesResponse(serverInfo, settings.wait)
                     }
                     else -> {
                         val newTs = lastUpdatesResponse["ts"]?.contentOrNullSafe
