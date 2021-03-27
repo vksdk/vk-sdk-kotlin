@@ -3,6 +3,10 @@ plugins {
     kotlin("jvm")
 }
 
+kotlin {
+    explicitApiWarning()
+}
+
 tasks.jar {
     archiveBaseName.set("vksdk-kotlin-http-client-jvm-okhttp")
 }

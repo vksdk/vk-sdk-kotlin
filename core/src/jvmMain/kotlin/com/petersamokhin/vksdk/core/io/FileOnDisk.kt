@@ -5,7 +5,7 @@ import java.io.File
 /**
  * Cross-platform representation of a File
  */
-actual data class FileOnDisk(
+public actual data class FileOnDisk(
     /**
      * Path to the file on disk
      */
@@ -16,5 +16,6 @@ actual data class FileOnDisk(
     /**
      * Read file contents as byte array synchronously
      */
-    actual fun readContent(): ByteArray? = file.readBytes()
+    public actual fun readContent(): ByteArray? =
+        file.readBytes()
 }

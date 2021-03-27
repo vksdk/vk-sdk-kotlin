@@ -10,8 +10,8 @@ import platform.Foundation.NSURL
  *
  * @property path Path to the file on disk
  */
-actual class FileOnDisk(
-    actual val path: String
+public actual class FileOnDisk(
+    public actual val path: String
 ) {
     private val manager = NSFileManager.defaultManager
 
@@ -19,7 +19,7 @@ actual class FileOnDisk(
      * Read file contents as byte array synchronously
      */
     @OptIn(ExperimentalUnsignedTypes::class)
-    actual fun readContent(): ByteArray? {
+    public actual fun readContent(): ByteArray? {
         return path
             .let { NSURL.fileURLWithPath(it).standardizedURL }
             ?.standardizedURL?.path

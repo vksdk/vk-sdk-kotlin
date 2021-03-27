@@ -20,11 +20,24 @@ import kotlin.jvm.JvmOverloads
  *
  * @author Peter Samokhin, https://petersamokhin.com
  */
-data class VkSettings @JvmOverloads constructor(
+public data class VkSettings @JvmOverloads constructor(
     val httpClient: HttpClient,
-    val apiVersion: Double = VkApi.DEFAULT_VERSION,
+    val apiVersion: String = VkApi.DEFAULT_VERSION,
     val defaultParams: Parameters = Parameters(),
     val maxExecuteRequestsPerSecond: Int = 3,
     val backgroundDispatcher: CoroutineDispatcher = Dispatchers.Default,
     val json: Json = defaultJson()
-)
+) {
+    /**
+     * Another constructor for using `Double` API version.
+     * Be careful as e.g. `5.13` and `5.130` are the different versions.
+     */
+    public constructor(
+        httpClient: HttpClient,
+        apiVersion: Double,
+        defaultParams: Parameters = Parameters(),
+        maxExecuteRequestsPerSecond: Int = 3,
+        backgroundDispatcher: CoroutineDispatcher = Dispatchers.Default,
+        json: Json = defaultJson()
+    ): this(httpClient, apiVersion.toString(), defaultParams, maxExecuteRequestsPerSecond, backgroundDispatcher, json)
+}

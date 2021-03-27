@@ -22,6 +22,7 @@ actual class DispatchersProvider actual constructor() {
 
     actual val default: CoroutineDispatcher
         get() = Dispatchers.Main // Dispatchers.Default
-        // For now, ktor does not support background threads: https://github.com/ktorio/ktor/issues/1538
+        // For now, ktor does not support background threads:
+        // https://github.com/Kotlin/kotlinx.coroutines/issues/1889#issuecomment-606523539
         // get() = Dispatchers.Default
 }

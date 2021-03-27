@@ -17,9 +17,6 @@ import com.petersamokhin.vksdk.core.model.VkSettings
 import com.petersamokhin.vksdk.core.model.event.MessageNew
 import com.petersamokhin.vksdk.core.model.event.RawEvent
 import com.petersamokhin.vksdk.core.model.objects.Message
-import com.petersamokhin.vksdk.core.utils.assembleCallback
-import com.petersamokhin.vksdk.core.utils.assembleEventCallback
-import com.petersamokhin.vksdk.core.utils.runBlocking
 import kotlinx.serialization.json.JsonElement
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
@@ -34,17 +31,17 @@ import kotlin.jvm.JvmStatic
  * @param token Access Token
  * @property type Type of the client: [Type.User] or [Type.Community]
  */
-class VkApiClient(
-    val id: Int,
-    val token: String,
-    val type: Type,
-    val settings: VkSettings
+public class VkApiClient(
+    public val id: Int,
+    public val token: String,
+    public val type: Type,
+    public val settings: VkSettings
 ) {
     private val api = VkApi(settings.httpClient, settings.apiVersion, token, settings.defaultParams)
     private val batchRequestExecutor = BatchRequestExecutor(token, settings, settings.json)
     private var botsLongPollApi = VkBotsLongPollApi(id, api, settings.backgroundDispatcher, settings.json)
     private val uploader = VkApiUploader(api, settings.json)
-    private val flowsWrapper = VkApiClientFlows(this, settings.backgroundDispatcher)
+    private val flowsWrapper = VkApiClientFlows(this, batchRequestExecutor, settings.backgroundDispatcher)
 
     /**
      * Start the long polling, [https://vk.com/dev/bots_longpoll](documentation).
@@ -52,7 +49,10 @@ class VkApiClient(
      * @see [https://vk.com/dev/using_longpoll](this) and [https://vk.com/dev/messages_api](this)
      */
     @JvmOverloads
-    fun startLongPolling(restart: Boolean = false, settings: VkBotsLongPollApi.Settings = VkBotsLongPollApi.Settings()) {
+    public suspend fun startLongPolling(
+        restart: Boolean = false,
+        settings: VkBotsLongPollApi.Settings = VkBotsLongPollApi.Settings()
+    ) {
         if (type == User) {
             throw UnsupportedActionException()
         }
@@ -66,70 +66,92 @@ class VkApiClient(
             botsLongPollApi = VkBotsLongPollApi(id, api, this.settings.backgroundDispatcher, this.settings.json)
         }
 
-        runBlocking {
-            botsLongPollApi.startPolling(settings).join()
-        }
+        botsLongPollApi.startPolling(settings).join()
     }
 
     /**
      * Exposed internal API object
      */
-    fun api() = api
+    public fun api(): VkApi =
+        api
 
     /**
      * Wrapper for files uploading
      */
-    fun uploader() = uploader
+    public fun uploader(): VkApiUploader =
+        uploader
 
     /**
-     * Use the coroutines Flow wrapper
+     * Wrapper for coroutines flows
      */
-    fun flows() = flowsWrapper
+    public fun flows(): VkApiClientFlows =
+        flowsWrapper
 
     /**
      * Stop the long polling loop
      */
-    fun stopLongPolling() {
+    public fun stopLongPolling() {
         botsLongPollApi.stopPolling()
     }
 
     /**
      * Clear all the long polling event listeners
      */
-    fun clearLongPollListeners() = botsLongPollApi.clearListeners()
+    public fun clearLongPollListeners(): Unit =
+        botsLongPollApi.clearListeners()
 
     /**
      * Handle each `message_new` event using listener
      */
-    fun onMessage(listener: EventCallback<MessageNew>) {
+    public fun onMessage(listener: EventCallback<MessageNew>) {
         botsLongPollApi.registerListener(MessageNew.TYPE, listener)
     }
 
     /**
      * Handle each `message_new` event using listener
      */
-    fun onMessage(block: (MessageNew) -> Unit) {
-        botsLongPollApi.registerListener(MessageNew.TYPE, assembleEventCallback(block))
+    public fun onMessage(block: (MessageNew) -> Unit) {
+        botsLongPollApi.registerListener(MessageNew.TYPE, block)
     }
 
     /**
      * Handle each event using listener. Object is raw JSON
      */
-    fun onEachEvent(listener: EventCallback<RawEvent>) {
+    public fun onEachEvent(listener: EventCallback<RawEvent>) {
         botsLongPollApi.registerListener(RawEvent.TYPE, listener)
     }
 
     /**
      * Handle each event using listener. Object is raw JSON
      */
-    fun onEachEvent(block: (RawEvent) -> Unit) {
-        botsLongPollApi.registerListener(RawEvent.TYPE, assembleEventCallback(block))
+    public fun onEachEvent(block: (RawEvent) -> Unit) {
+        botsLongPollApi.registerListener(RawEvent.TYPE, block)
     }
 
     /**
-     * Send message. Not available for [VkApiClient.Type.User]
+     * Remove Callback API listener
      */
-    fun sendMessage(message: Message): VkRequest {
+    public fun unregisterListener(listener: EventCallback<*>) {
+        botsLongPollApi.unregisterListener(listener)
+    }
+
+    /**
+     * Create a [VkRequest]
+     *
+     * @param method API method, e.g. `users.get`
+     * @param params Parameters, e.g. `user_id`: `Parameters.of("user_id", 1)`
+     * @return API request wrapper, which is not yet executed!
+     */
+    @JvmOverloads
+    public fun call(method: String, params: Parameters = Parameters()): VkRequest =
+        api.call(method, params)
+
+    /**
+     * Send message. Not available for [VkApiClient.Type.User]
+     *
+     * @return API request wrapper, which is not yet executed!
+     */
+    public fun sendMessage(message: Message): VkRequest {
         if (type == User) {
             throw UnsupportedActionException()
         }
@@ -139,8 +161,10 @@ class VkApiClient(
 
     /**
      * Send message. Not available for [VkApiClient.Type.User]
+     *
+     * @return API request wrapper, which is not yet executed!
      */
-    fun sendMessage(block: Message.() -> Unit): VkRequest {
+    public fun sendMessage(block: Message.() -> Unit): VkRequest {
         if (type == User) {
             throw UnsupportedActionException()
         }
@@ -151,86 +175,32 @@ class VkApiClient(
     }
 
     /**
-     * Call some API method and receive the response string
-     *
-     * @param method API method, e.g. `users.get`
-     * @param params Parameters, e.g. `user_id`: `Parameters.of("user_id", 1)`
-     * @return API request wrapper
+     * Call some API method and receive the response string as [JsonElement].
+     * Executes the request!
      */
     @JvmOverloads
-    fun call(method: String, params: Parameters = Parameters()): VkRequest {
-        return api.call(method, params)
-    }
-
-    /**
-     * Call some API method and receive the response string
-     */
-    @JvmOverloads
-    fun call(method: String, params: Parameters = Parameters(), batch: Boolean = true, callback: Callback<JsonElement>) {
-        if (batch) {
-            call(BatchRequestItem(call(method, params), callback))
-        } else {
-            api.call(method, params).enqueue(object : Callback<String> {
-                override fun onResult(result: String) = callback.onResult(settings.json.parseToJsonElement(result))
-                override fun onError(error: Exception) = callback.onError(error)
-            })
-        }
-    }
-
-    /**
-     * Call some API method and receive the response string
-     *
-     * @param method API method, e.g. `users.get`
-     * @param params Parameters, e.g. `user_id`: `Parameters.of("user_id", 1)`
-     * @param batch If true, request will be put into execute queue, [https://vk.com/dev/execute]
-     * @param onResult Successful result callback
-     * @param onError Error callback
-     */
-    @JvmOverloads
-    fun call(
-        method: String,
-        params: Parameters = Parameters(),
-        batch: Boolean = true,
-        onResult: (JsonElement) -> Unit = {},
-        onError: (Exception) -> Unit = {}
-    ) {
-        call(method, params, batch, assembleCallback(onResult, onError))
-    }
+    public suspend fun get(method: String, params: Parameters = Parameters()): JsonElement =
+        api.call(method, params).execute().let(settings.json::parseToJsonElement)
 
     /**
      * Call some API method and receive the response string, parsed into JsonElement
      *
      * @param request API request wrapper
-     * @param batch If true, request will be put into execute queue, https://vk.com/dev/execute
      * @param callback Callback to handle the result or an error
-     */
-    @JvmOverloads
-    fun call(request: VkRequest, batch: Boolean = true, callback: Callback<JsonElement>) {
-        call(request.method, request.params, batch, callback)
-    }
-
-    /**
-     * Call some API method and receive the response string, parsed into JsonElement
      *
-     * @param request API request wrapper
-     * @param batch If true, request will be put into execute queue, https://vk.com/dev/execute
-     * @param onResult Successful result callback
-     * @param onError Error callback
+     * Executes the request!
      */
     @JvmOverloads
-    fun call(
-        request: VkRequest,
-        batch: Boolean = true,
-        onResult: (JsonElement) -> Unit = {},
-        onError: (Exception) -> Unit = {}
-    ) {
-        call(request, batch, assembleCallback(onResult, onError))
+    public fun get(request: VkRequest, callback: Callback<JsonElement> = Callback.empty()) {
+        get(BatchRequestItem(request, callback))
     }
 
     /**
-     * Put some API call into queue
+     * Put some API call into queue.
+     *
+     * Executes the request!
      */
-    fun call(item: BatchRequestItem) {
+    public fun get(item: BatchRequestItem) {
         batchRequestExecutor.enqueue(item)
     }
 
@@ -238,16 +208,22 @@ class VkApiClient(
      * Call some API method and receive the response string, parsed into JsonElement
      *
      * @param items Wrappers of the requests and callbacks
+     *
+     * Executes the request!
      */
-    fun call(vararg items: BatchRequestItem) {
-        call(items.toList())
+    public fun get(vararg items: BatchRequestItem) {
+        get(items.toList())
     }
 
     /**
-     * Put some API call into queue
+     * Put some API call into queue.
+     *
+     * Executes the requests!
      */
-    fun call(items: Collection<BatchRequestItem>) {
-        batchRequestExecutor.enqueue(items)
+    public fun get(items: Collection<BatchRequestItem>) {
+        if (items.isNotEmpty()) {
+            batchRequestExecutor.enqueue(items)
+        }
     }
 
     /**
@@ -256,26 +232,29 @@ class VkApiClient(
      * @property User Usual user, can't use messages API
      * @property Community Community (group or public community)
      */
-    enum class Type {
+    public enum class Type {
         User, Community
     }
 
-    data class AppInfo(
+    /**
+     * https://vk.com/apps?act=manage
+     */
+    public data class AppInfo(
         val clientId: Int,
         val clientSecret: String,
         val redirectUri: String = DEFAULT_REDIRECT_URI
     ) {
-        companion object {
-            const val KEY_CLIENT_ID = "client_id"
-            const val KEY_CLIENT_SECRET = "client_secret"
-            const val KEY_REDIRECT_URI = "redirect_uri"
+        public companion object {
+            public const val KEY_CLIENT_ID: String = "client_id"
+            public const val KEY_CLIENT_SECRET: String = "client_secret"
+            public const val KEY_REDIRECT_URI: String = "redirect_uri"
         }
     }
 
-    companion object {
+    public companion object {
         private const val ACCESS_TOKEN_URL = "https://oauth.vk.com/access_token"
         private const val KEY_CODE = "code"
-        const val DEFAULT_REDIRECT_URI = "https://oauth.vk.com/blank.html"
+        public const val DEFAULT_REDIRECT_URI: String = "https://oauth.vk.com/blank.html"
 
         /**
          * Useful method for server-side operations.
@@ -287,7 +266,7 @@ class VkApiClient(
          * @return VK API client.
          */
         @JvmStatic
-        fun fromCode(code: String, app: AppInfo, settings: VkSettings): VkApiClient {
+        public suspend fun fromCode(code: String, app: AppInfo, settings: VkSettings): VkApiClient {
             val query = paramsOf(
                 AppInfo.KEY_CLIENT_ID to app.clientId,
                 AppInfo.KEY_CLIENT_SECRET to app.clientSecret,
@@ -295,9 +274,13 @@ class VkApiClient(
                 KEY_CODE to code
             ).buildQuery()
 
-            val tokenResponse = settings.httpClient.getSync("$ACCESS_TOKEN_URL?$query")?.let {
-                settings.json.decodeFromString(VkAccessTokenResponse.serializer(), it.bodyString())
-            } ?: throw VkSdkInitiationException("VK Client from code")
+            val tokenResponse = try {
+                settings.httpClient.get("$ACCESS_TOKEN_URL?$query").let {
+                    settings.json.decodeFromString(VkAccessTokenResponse.serializer(), it.bodyString())
+                }
+            } catch (e: Throwable) {
+                throw VkSdkInitiationException("VK Client from code", cause = e)
+            }
 
             return VkApiClient(
                 id = tokenResponse.userId

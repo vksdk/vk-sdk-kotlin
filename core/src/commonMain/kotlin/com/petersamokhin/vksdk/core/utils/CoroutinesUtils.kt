@@ -1,6 +1,8 @@
 package com.petersamokhin.vksdk.core.utils
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.SendChannel
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -13,7 +15,16 @@ import kotlin.coroutines.EmptyCoroutineContext
  * @param context Coroutine context
  * @param block Block to execute
  */
-expect fun <T> runBlocking(
+public expect fun <T> runBlocking(
     context: CoroutineContext = EmptyCoroutineContext,
     block: suspend CoroutineScope.() -> T?
 ): T?
+
+/**
+ * Adds [element] into to this channel, **blocking** the caller while this channel [Channel.isFull],
+ * or throws exception if the channel [Channel.isClosedForSend] (see [Channel.close] for details).
+ *
+ * This is a way to call [Channel.send] method inside a blocking code using [runBlocking],
+ * so this function should not be used from coroutine.
+ */
+public expect fun <E> SendChannel<E>.sendBlocking(element: E)

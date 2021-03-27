@@ -7,7 +7,7 @@ private external fun require(module: String): dynamic
  *
  * Currently supported only for Darwin, JS and JVM
  */
-actual data class FileOnDisk(
+public actual data class FileOnDisk(
     /**
      * Path to the file on disk
      */
@@ -16,7 +16,8 @@ actual data class FileOnDisk(
     /**
      * Read file contents as byte array synchronously
      */
-    actual fun readContent(): ByteArray? {
+    @Suppress("RedundantNullableReturnType") // lint bug
+    public actual fun readContent(): ByteArray? {
         val buffer: dynamic = require("fs").readFileSync(path)
         return js("Array").prototype.slice.call(buffer, 0).unsafeCast<ByteArray>()
     }

@@ -81,12 +81,28 @@ internal class VkLongPollEventsHandler(
      *
      * @param type Type key of events
      * @param listener Typed listener
+     * @return true if listener was registered
      */
-    fun <T : Any> registerListener(type: String, listener: EventCallback<T>) {
+    fun <T : Any> registerListener(type: String, listener: EventCallback<T>): Boolean =
         listenersMap.access { map ->
+            val result: Boolean
+
             map[type] = (map[type] ?: mutableListOf()).also {
-                it.add(listener)
+                result = it.add(listener)
             }
+
+            result
+        }
+
+    /**
+     * Remove [listener]
+     * @return true if listener was removed
+     */
+    fun unregisterListener(listener: EventCallback<*>): Boolean {
+        return listenersMap.access { map ->
+            map
+                .map { (_, value) -> value.remove(listener) }
+                .any { it }
         }
     }
 

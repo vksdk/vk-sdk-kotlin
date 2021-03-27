@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
  * @property ts Required parameter
  */
 @Serializable
-data class VkLongPollServerResponse(
+public data class VkLongPollServerResponse(
     val key: String,
     val server: String,
     val ts: String

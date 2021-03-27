@@ -9,15 +9,15 @@ import com.petersamokhin.vksdk.core.io.FileOnDisk
  * @property fileName File name; content disposition
  * @property mediaType Content type; content disposition
  */
-sealed class UploadableContent {
-    abstract val fieldName: String
-    abstract val fileName: String
-    abstract val mediaType: String
+public sealed class UploadableContent {
+    public abstract val fieldName: String
+    public abstract val fileName: String
+    public abstract val mediaType: String
 
     /**
      * Simple ByteArray content
      */
-    data class Bytes(
+    public data class Bytes(
         override val fieldName: String,
         override val fileName: String,
         override val mediaType: String,
@@ -43,7 +43,7 @@ sealed class UploadableContent {
     /**
      * File on disk content
      */
-    data class File(
+    public data class File(
         override val fieldName: String,
         override val fileName: String,
         override val mediaType: String,
@@ -53,7 +53,7 @@ sealed class UploadableContent {
     /**
      * URL content
      */
-    data class Url(
+    public data class Url(
         override val fieldName: String,
         override val fileName: String,
         override val mediaType: String,
@@ -65,8 +65,7 @@ sealed class UploadableContent {
      *
      * @return Content-Disposition header for MultiPart/Form-Data
      */
-    fun contentDisposition(): String {
-        return "name=\"$fieldName\"; filename=\"$fileName\"; Content-Type=\"$mediaType\""
-    }
+    public fun contentDisposition(): String =
+        "name=\"$fieldName\"; filename=\"$fileName\"; Content-Type=\"$mediaType\""
 }
 

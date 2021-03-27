@@ -11,7 +11,7 @@ import kotlinx.serialization.json.JsonElement
  * [https://vk.com/dev/objects/message]
  */
 @Serializable
-data class IncomingMessage(
+public data class IncomingMessage(
     val id: Int,
     val date: Int,
     @SerialName("peer_id")
@@ -38,7 +38,7 @@ data class IncomingMessage(
     val isHidden: Boolean? = null
 ) {
     @Serializable
-    data class Action(
+    public data class Action(
         val type: String,
         @SerialName("member_id")
         val memberId: Int? = null,
@@ -47,7 +47,7 @@ data class IncomingMessage(
         val photo: ChatPhoto? = null
     ) {
         @Suppress("unused")
-        enum class Type {
+        public enum class Type {
             CHAT_PHOTO_UPDATE,
             CHAT_PHOTO_REMOVE,
             CHAT_CREATE,
@@ -59,7 +59,7 @@ data class IncomingMessage(
         }
 
         @Serializable
-        data class ChatPhoto(
+        public data class ChatPhoto(
             @SerialName("photo_50")
             val photo50: String? = null,
             @SerialName("photo_100")
@@ -70,19 +70,19 @@ data class IncomingMessage(
     }
 
     @Serializable
-    data class Keyboard(
+    public data class Keyboard(
         @SerialName("one_time")
         val oneTime: Boolean,
         val inline: Boolean,
         val buttons: List<Button>
     ) {
         @Serializable
-        data class Button(
+        public data class Button(
             val action: JsonElement? = null,
             val color: String
         ) {
             @Suppress("unused")
-            enum class Color {
+            public enum class Color {
                 PRIMARY,
                 SECONDARY,
                 NEGATIVE,
@@ -92,13 +92,13 @@ data class IncomingMessage(
     }
 
     @Serializable
-    data class Geo(
+    public data class Geo(
         val type: String,
         val coordinates: List<Double>? = null,
         val place: Place? = null
     ) {
         @Serializable
-        data class Place(
+        public data class Place(
             val id: Int? = null,
             val title: String? = null,
             val latitude: Double? = null,
@@ -110,14 +110,15 @@ data class IncomingMessage(
         )
     }
 
-    fun isFromChat() = peerId > VkApi.CHAT_ID_PREFIX
+    public fun isFromChat(): Boolean =
+        peerId > VkApi.CHAT_ID_PREFIX
 }
 
 /**
  * Forwarded messages, edited messages, etc
  */
 @Serializable
-data class MessagePartial(
+public data class MessagePartial(
     val id: Int,
     val date: Int,
     @SerialName("from_id")

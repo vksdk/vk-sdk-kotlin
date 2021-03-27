@@ -7,7 +7,7 @@ package com.petersamokhin.vksdk.core.http
  * @property readTimeout Read timeout in milliseconds
  * @property defaultHeaders Default HTTP headers, such as `User-Agent`
  */
-data class HttpClientConfig(
+public data class HttpClientConfig(
     val connectTimeout: Int = 30_000,
     val readTimeout: Int = 30_000,
     val defaultHeaders: Map<String, String> = mapOf()

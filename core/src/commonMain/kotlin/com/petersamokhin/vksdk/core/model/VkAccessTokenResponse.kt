@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  * VK access token response e.g. for receiving the code
  */
 @Serializable
-data class VkAccessTokenResponse(
+public data class VkAccessTokenResponse(
     @SerialName("access_token")
     val accessToken: String? = null,
     @SerialName("expires_in")

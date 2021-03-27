@@ -3,12 +3,12 @@
 package com.petersamokhin.vksdk.core.model.objects
 
 @DslMarker
-annotation class KeyboardDslMarker
+public annotation class KeyboardDslMarker
 
 /**
  * Use keyboard DSL to build the keyboard
  */
-fun keyboard(
+public fun keyboard(
     oneTime: Boolean = false,
     builder: KeyboardDslBuilder.() -> Unit
 ): Keyboard = Keyboard(
@@ -19,7 +19,7 @@ fun keyboard(
 /**
  * Use keyboard DSL to build the keyboard
  */
-fun inlineKeyboard(
+public fun inlineKeyboard(
     builder: KeyboardDslBuilder.() -> Unit
 ): Keyboard = Keyboard(
     inline = true,
@@ -30,22 +30,22 @@ fun inlineKeyboard(
  * [https://vk.com/dev/bots_docs_3]
  */
 @KeyboardDslMarker
-class KeyboardDslBuilder {
+public class KeyboardDslBuilder {
     internal val rows: MutableList<List<Keyboard.Button>> = mutableListOf()
 
-    fun row(block: RowDslBuilder.() -> Unit) {
+    public fun row(block: RowDslBuilder.() -> Unit) {
         rows += RowDslBuilder().apply(block).buttons
     }
 
-    fun locationButton(payload: String? = null, block: LocationButton.() -> Unit = { }) {
+    public fun locationButton(payload: String? = null, block: LocationButton.() -> Unit = { }) {
         rows += listOf(LocationButton(payload).apply(block).build())
     }
 
-    fun vkPayButton(hash: String, payload: String? = null, block: VkPayButton.() -> Unit = { }) {
+    public fun vkPayButton(hash: String, payload: String? = null, block: VkPayButton.() -> Unit = { }) {
         rows += listOf(VkPayButton(hash, payload).apply(block).build())
     }
 
-    fun vkAppButton(
+    public fun vkAppButton(
         label: String,
         appId: Int,
         ownerId: Int? = null,
@@ -56,7 +56,7 @@ class KeyboardDslBuilder {
         rows += listOf(VkAppsButton(label, appId, ownerId, hash, payload).apply(block).build())
     }
 
-    fun openLinkButton(
+    public fun openLinkButton(
         label: String,
         link: String,
         payload: String? = null,
@@ -67,22 +67,22 @@ class KeyboardDslBuilder {
 }
 
 @KeyboardDslMarker
-class RowDslBuilder {
+public class RowDslBuilder {
     internal val buttons: MutableList<Keyboard.Button> = mutableListOf()
 
-    fun primaryButton(label: String, payload: String? = null, block: TextButton.() -> Unit = { }) {
+    public fun primaryButton(label: String, payload: String? = null, block: TextButton.() -> Unit = { }) {
         addButton(label, payload, block, Keyboard.Button.Color.PRIMARY)
     }
 
-    fun secondaryButton(label: String, payload: String? = null, block: TextButton.() -> Unit = { }) {
+    public fun secondaryButton(label: String, payload: String? = null, block: TextButton.() -> Unit = { }) {
         addButton(label, payload, block, Keyboard.Button.Color.SECONDARY)
     }
 
-    fun negativeButton(label: String, payload: String? = null, block: TextButton.() -> Unit = { }) {
+    public fun negativeButton(label: String, payload: String? = null, block: TextButton.() -> Unit = { }) {
         addButton(label, payload, block, Keyboard.Button.Color.NEGATIVE)
     }
 
-    fun positiveButton(label: String, payload: String? = null, block: TextButton.() -> Unit = { }) {
+    public fun positiveButton(label: String, payload: String? = null, block: TextButton.() -> Unit = { }) {
         addButton(label, payload, block, Keyboard.Button.Color.POSITIVE)
     }
 

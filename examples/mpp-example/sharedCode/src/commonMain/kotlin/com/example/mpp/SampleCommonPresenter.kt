@@ -1,43 +1,30 @@
 package com.example.mpp
 
 import com.petersamokhin.vksdk.core.client.VkApiClient
-import com.petersamokhin.vksdk.core.error.VkException
 import com.petersamokhin.vksdk.core.http.HttpClientConfig
 import com.petersamokhin.vksdk.core.http.paramsOf
 import com.petersamokhin.vksdk.core.model.VkResponseTypedSerializer
 import com.petersamokhin.vksdk.core.model.VkSettings
-import com.petersamokhin.vksdk.core.utils.runBlocking
 import com.petersamokhin.vksdk.http.VkKtorHttpClient
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.engine.*
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import kotlin.coroutines.CoroutineContext
-import kotlin.native.concurrent.SharedImmutable
-import kotlin.native.concurrent.ThreadLocal
 
 /**
  * Sample presenter in common code
  */
 class SampleCommonPresenter {
     private val dispatchersProvider = DispatchersProvider()
-    private val json = Json(JsonConfiguration.Stable.copy(encodeDefaults = false, ignoreUnknownKeys = true))
+    private val json = Json { encodeDefaults = false; ignoreUnknownKeys = true }
 
     // Create
-    // Note: For now, ktor does not support background threads: https://github.com/ktorio/ktor/issues/1538
+    // Note: For now, ktor does not support background threads:
+    // https://github.com/Kotlin/kotlinx.coroutines/issues/1889#issuecomment-606523539
     // See the actual class DispatchersProvider in the iosMain module.
     private val vkHttpClient = MyHttpClient(dispatchersProvider.default)
 
@@ -52,7 +39,7 @@ class SampleCommonPresenter {
             // Under the hood, this dispatcher is also used for ktor network calls.
             // So, for now, unfortunately, we should provide `main` thread dispatcher.
             // See the actual class DispatchersProvider in the iosMain module.
-            // Read more: https://github.com/ktorio/ktor/issues/1538
+            // Read more: https://github.com/Kotlin/kotlinx.coroutines/issues/1889#issuecomment-606523539
             backgroundDispatcher = dispatchersProvider.default
         )
     )
@@ -60,51 +47,27 @@ class SampleCommonPresenter {
     /**
      * Get info about Pashka
      */
-    fun getPashkaProfileFlow(): Flow<VkUser> {
-        return vkApiClient.flows()
-            .call("users.get", paramsOf("user_id" to 1), batch = true)
-            .map {
-                // only the ListSerializer, because VK's execute method returning raw responses array
-                json.fromJson(ListSerializer(VkUser.serializer()), it).first()
+    @ExperimentalSerializationApi
+    suspend fun getPashkaProfile(): VkUser? =
+        vkApiClient.get("users.get", paramsOf("user_id" to 1))
+            .let {
+                json.decodeFromJsonElement(VkResponseTypedSerializer(ListSerializer(VkUser.serializer())), it)
+                    .response?.firstOrNull()
             }
-    }
-
-    /**
-     * Get info about Pashka
-     */
-    fun getPashkaProfileAsync(block: (VkUser) -> Unit) {
-        vkApiClient.call("users.get", paramsOf("user_id" to 1))
-            .enqueue(onResult = {
-                // but here call is not executed in batch queue, so you should unwrap it
-                json.parse(VkResponseTypedSerializer(ListSerializer(VkUser.serializer())), it)
-                    .also {
-                        if (it.error != null) {
-                            showError()
-                        }
-                    }
-                    .response // it can be null
-                    ?.first()
-                    ?.also(block) ?: showError()
-            }, onError = ::showError)
-    }
-
-    /**
-     * Handle the error
-     */
-    private fun showError(error: Exception? = null) {}
-
 }
 
 /**
  * Custom http client, based on ktor
  */
-class MyHttpClient(override val coroutineContext: CoroutineContext) : VkKtorHttpClient() {
-    override fun createEngineWithConfig(config: HttpClientConfig): HttpClientEngine = HttpClientEngineProvider().httpEngine()
+class MyHttpClient(override val coroutineContext: CoroutineContext) : VkKtorHttpClient(coroutineContext) {
+    override fun createEngineWithConfig(config: HttpClientConfig): HttpClientEngine =
+        HttpClientEngineProvider().httpEngine()
 }
 
 /**
  * At least for the iOS, dispatchers must have actual implementation.
- * For now, ktor does not support background threads: https://github.com/ktorio/ktor/issues/1538
+ * For now, ktor does not support background threads:
+ * https://github.com/Kotlin/kotlinx.coroutines/issues/1889#issuecomment-606523539
  */
 expect class DispatchersProvider() {
     val main: CoroutineDispatcher

@@ -12,6 +12,7 @@ import com.petersamokhin.vksdk.core.model.VkResponse
 import com.petersamokhin.vksdk.core.model.VkResponseTypedSerializer
 import com.petersamokhin.vksdk.core.utils.*
 import kotlinx.coroutines.*
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlin.coroutines.CoroutineContext
@@ -23,7 +24,7 @@ import kotlin.jvm.JvmOverloads
  * @property clientId LongPoll client ID, usually a community ID
  * @property api API wrapper to make network calls
  */
-class VkBotsLongPollApi @JvmOverloads constructor(
+public class VkBotsLongPollApi @JvmOverloads constructor(
     private val clientId: Int,
     private val api: VkApi,
     private val backgroundDispatcher: CoroutineDispatcher,
@@ -50,7 +51,7 @@ class VkBotsLongPollApi @JvmOverloads constructor(
      * @param settings Long polling settings, such as wait time for server
      * @return Associated coroutine Job
      */
-    fun startPolling(settings: Settings): Job {
+    public fun startPolling(settings: Settings): Job {
         if (job.isCompleted || job.isCancelled) throw VkSdkInitiationException("BotsLongPollApi")
 
         return launch {
@@ -61,7 +62,7 @@ class VkBotsLongPollApi @JvmOverloads constructor(
             var failNum = 0
 
             while (job.isActive) {
-                if (settings.maxFails != Settings.IGNORE_FAILS && failNum >= settings.maxFails)
+                if (settings.maxFails != IGNORE_FAILS && failNum >= settings.maxFails)
                     throw VkResponseException("BotsLongPollApi keeps failing (error #$failNum), last response: $lastUpdatesResponse")
 
                 if (lastUpdatesResponse == null) {
@@ -77,8 +78,10 @@ class VkBotsLongPollApi @JvmOverloads constructor(
                         val newTs = lastUpdatesResponse["ts"]?.contentOrNullSafe
                         if (newTs == null) failNum++
 
-                        lastUpdatesResponse = getUpdatesResponse(serverInfo.copy(ts = newTs
-                            ?: serverInfo.ts), settings.wait)
+                        lastUpdatesResponse = getUpdatesResponse(
+                            serverInfo = serverInfo.copy(ts = newTs ?: serverInfo.ts),
+                            wait = settings.wait
+                        )
                     }
                     2, 3 -> {
                         serverInfo = getInitialServerInfo().response
@@ -116,7 +119,7 @@ class VkBotsLongPollApi @JvmOverloads constructor(
     /**
      * Stop the long polling loop
      */
-    fun stopPolling() {
+    public fun stopPolling() {
         try {
             job.cancel()
         } catch (e: Exception) {
@@ -126,7 +129,8 @@ class VkBotsLongPollApi @JvmOverloads constructor(
     /**
      * Clear listeners for all the events
      */
-    fun clearListeners() = updatesHandler.clearListeners()
+    public fun clearListeners(): Unit =
+        updatesHandler.clearListeners()
 
     /**
      * Register listener for [type] of events
@@ -134,11 +138,18 @@ class VkBotsLongPollApi @JvmOverloads constructor(
      * @param type Type key of events
      * @param listener Typed listener
      */
-    fun <T : Any> registerListener(type: String, listener: EventCallback<T>) {
+    public fun <T : Any> registerListener(type: String, listener: EventCallback<T>) {
         if (job.isCompleted || job.isCancelled) throw VkException("BotsLongPollApi job is not active when registering a listener")
 
         updatesHandler.registerListener(type, listener)
     }
+
+    /**
+     * Remove [listener]
+     * @return true if listener was removed
+     */
+    public fun unregisterListener(listener: EventCallback<*>): Boolean =
+        updatesHandler.unregisterListener(listener)
 
     /**
      * @return true if [eventJsonObject] is handled successfully
@@ -155,19 +166,19 @@ class VkBotsLongPollApi @JvmOverloads constructor(
         return updatesHandler.nextEvent(eventType, eventObject, groupId)
     }
 
-    private fun getInitialServerInfo(): VkResponse<VkLongPollServerResponse> {
-        return api.call(
+    @OptIn(ExperimentalSerializationApi::class)
+    private suspend fun getInitialServerInfo(): VkResponse<VkLongPollServerResponse> =
+        api.call(
             "groups.getLongPollServer",
             paramsOf("group_id" to clientId)
         ).execute().let {
             json.decodeFromString(VkResponseTypedSerializer(VkLongPollServerResponse.serializer()), it)
         }
-    }
 
-    private fun getUpdatesResponse(serverInfo: VkLongPollServerResponse, wait: Int): JsonObject? {
+    private suspend fun getUpdatesResponse(serverInfo: VkLongPollServerResponse, wait: Int): JsonObject? {
         val response = api.getLongPollUpdates(serverInfo, wait)
 
-        return if (response?.isSuccessful() == true && response.body != null) {
+        return if (response.isSuccessful() && response.body != null) {
             json.parseToJsonElement(response.bodyString()).jsonObjectOrNullSafe
         } else {
             null
@@ -180,15 +191,15 @@ class VkBotsLongPollApi @JvmOverloads constructor(
      * @property wait Max wait time if there are no events. Parameter for the request, used by the VK server
      * @property maxFails Max number of errors while handling events before the exception will be thrown. Use [IGNORE_FAILS] to ignore all errors
      */
-    data class Settings(
+    public data class Settings(
         val wait: Int = 25,
         val maxFails: Int = IGNORE_FAILS
     ) {
         /**
          * @property IGNORE_FAILS Constant value for ignoring of all errors
          */
-        companion object {
-            const val IGNORE_FAILS = -1
+        public companion object {
+            public const val IGNORE_FAILS: Int = -1
         }
     }
 }

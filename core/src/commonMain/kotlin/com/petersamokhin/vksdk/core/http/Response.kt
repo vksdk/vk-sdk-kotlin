@@ -8,7 +8,7 @@ import com.petersamokhin.vksdk.core.error.VkResponseException
  * @property code HTTP response code
  * @property body [ByteArray] content of the HTTP response
  */
-data class Response(
+public data class Response(
     val code: Int,
     val body: ByteArray?
 ) {
@@ -19,16 +19,16 @@ data class Response(
      * @throws VkResponseException If body is null
      * @return String if response is successful
      */
-    fun bodyString(): String {
-        return body?.decodeToString() ?: throw VkResponseException()
-    }
+    public fun bodyString(): String =
+        body?.decodeToString() ?: throw VkResponseException()
 
     /**
      * Is this response successful based on the HTTP code
      *
      * @return True if [code] == [HTTP_CODE_OK]
      */
-    fun isSuccessful() = code == HTTP_CODE_OK
+    public fun isSuccessful(): Boolean =
+        code == HTTP_CODE_OK
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -50,10 +50,10 @@ data class Response(
     }
 
 
-    companion object {
+    public companion object {
         /**
          * OK http code constant
          */
-        const val HTTP_CODE_OK = 200
+        public const val HTTP_CODE_OK: Int = 200
     }
 }

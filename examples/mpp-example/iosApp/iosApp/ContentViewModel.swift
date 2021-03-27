@@ -16,11 +16,9 @@ class ContentViewModel: ObservableObject {
     
     /// After the view is ready, request and show some information
     func onAttach() {
-        presenter.getPashkaProfileAsync { pashka in
-            // Use the data class
-            let pashkaFullName = "\(pashka.firstName) \(pashka.lastName)"
+        let pashka = presenter.getPashkaProfile()
+        let pashkaFullName = "\(pashka?.firstName ?? "unknown") \(pashka?.lastName ?? "unknown")"
 
-            self.message = "VK and Telegram CEO is:\n\(pashkaFullName)"
-        }
+        self.message = "Pashka's full name:\n\(pashkaFullName)"
     }
 }

@@ -4,8 +4,6 @@ import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.android.Android
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Runnable
-import kotlin.coroutines.CoroutineContext
 
 /**
  * Actual engine is platform-based

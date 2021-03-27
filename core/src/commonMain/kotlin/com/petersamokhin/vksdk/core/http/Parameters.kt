@@ -8,7 +8,7 @@ import kotlin.jvm.JvmStatic
  * Common class with parameters.
  * Used because it is not possible to have default methods in expect classes.
  */
-class Parameters() {
+public class Parameters() {
     /**
      * Wrapped maps with parameters
      */
@@ -19,7 +19,7 @@ class Parameters() {
      *
      * @param from Original map
      */
-    constructor(from: Map<String, Any?>) : this() {
+    public constructor(from: Map<String, Any?>) : this() {
         map.putAll(mutableMapOf<String, MutableCollection<Any?>>().also {
             from.forEach { (k, v) ->
                 when (v) {
@@ -40,7 +40,7 @@ class Parameters() {
      *
      * @return Query string
      */
-    fun buildQuery(): String {
+    public fun buildQuery(): String {
         val sb = StringBuilder()
         val entries = map.entries
 
@@ -65,7 +65,7 @@ class Parameters() {
      *
      * @return JSON string
      */
-    fun buildJsonString(): String {
+    public fun buildJsonString(): String {
         val mapJsonElement = map.mapValues { (_, v) ->
             JsonPrimitive(buildValue(v))
         }
@@ -73,11 +73,10 @@ class Parameters() {
         return JsonObject(mapJsonElement).toString()
     }
 
-    private fun buildValue(v: Collection<Any?>): String {
-        return v.map { it?.toString().orEmpty() }
+    private fun buildValue(v: Collection<Any?>): String =
+        v.map { it?.toString().orEmpty() }
             .filter { it.isNotEmpty() }
             .joinToString(",")
-    }
 
     /**
      * Sets [value] for [key]
@@ -85,7 +84,7 @@ class Parameters() {
      * @param key Key for the map
      * @param value Value to put in values list to map
      */
-    fun put(key: String, value: Any?) {
+    public fun put(key: String, value: Any?) {
         map[key] = (map[key] ?: mutableListOf()).also {
             when (value) {
                 is Collection<*> -> {
@@ -107,7 +106,7 @@ class Parameters() {
      *
      * @param other Another instance
      */
-    fun putAll(other: Parameters) {
+    public fun putAll(other: Parameters) {
         other.map.forEach { (k, v) ->
             map[k] = (map[k] ?: mutableListOf()).also {
                 it.addAll(v)
@@ -120,7 +119,7 @@ class Parameters() {
      *
      * @param otherMap Other map
      */
-    fun putAll(otherMap: Map<String, Any?>) {
+    public fun putAll(otherMap: Map<String, Any?>) {
         otherMap.forEach { (k, v) -> put(k, v) }
     }
 
@@ -130,21 +129,30 @@ class Parameters() {
      * @param key Key for the map
      * @param value Value to put in values list to map
      */
-    operator fun set(key: String, value: Any?) = put(key, value)
+    public operator fun set(key: String, value: Any?): Unit =
+        put(key, value)
 
     /**
      * Get value for [key]
      *
      * @param key Key for the map
      */
-    operator fun get(key: String) = map[key]
+    public operator fun get(key: String): MutableCollection<Any?>? =
+        map[key]
 
     /**
      * Build string query
      */
-    override fun toString() = buildQuery()
+    override fun toString(): String =
+        buildQuery()
 
-    companion object {
+    /**
+     * Returns copy of this params as [Map]
+     */
+    public fun asMap(): Map<String, MutableCollection<Any?>> =
+        LinkedHashMap(map)
+
+    public companion object {
         /**
          * Empty value for the param
          */
@@ -160,7 +168,7 @@ class Parameters() {
          * @return Parameters instance
          */
         @JvmStatic
-        fun of(vararg arr: String): Parameters = Parameters().apply {
+        public fun of(vararg arr: String): Parameters = Parameters().apply {
             val pairs = arr.toList().chunked(2)
 
             pairs.forEachIndexed { index, list ->
@@ -182,11 +190,12 @@ class Parameters() {
          * @return Parameters instance
          */
         @JvmStatic
-        fun of(vararg pairs: Pair<String, Any?>): Parameters = Parameters().apply {
-            pairs.forEach {
-                put(it.first, it.second)
+        public fun of(vararg pairs: Pair<String, Any?>): Parameters =
+            Parameters().apply {
+                pairs.forEach {
+                    put(it.first, it.second)
+                }
             }
-        }
 
         /**
          * Make a parameters map from map.
@@ -195,7 +204,8 @@ class Parameters() {
          * @return Parameters instance
          */
         @JvmStatic
-        fun of(map: Map<String, Any?>): Parameters = Parameters(map)
+        public fun of(map: Map<String, Any?>): Parameters =
+            Parameters(map)
     }
 }
 
@@ -207,18 +217,21 @@ class Parameters() {
  *
  * @return Parameters instance
  */
-fun paramsOf(vararg arr: String) = Parameters.of(*arr)
+public fun paramsOf(vararg arr: String): Parameters =
+    Parameters.of(*arr)
 
 /**
  * Make a parameters map from pairs.
  *
  * @return Parameters instance
  */
-fun paramsOf(vararg pairs: Pair<String, Any?>) = Parameters.of(*pairs)
+public fun paramsOf(vararg pairs: Pair<String, Any?>): Parameters =
+    Parameters.of(*pairs)
 
 /**
  * Make a parameters map from map.
  *
  * @return Parameters instance
  */
-fun paramsOf(map: Map<String, Any?>) = Parameters.of(map)
+public fun paramsOf(map: Map<String, Any?>): Parameters =
+    Parameters.of(map)

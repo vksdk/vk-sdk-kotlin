@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     kotlin("multiplatform")
-    kotlin("plugin.serialization") version "1.4.0"
+    kotlin("plugin.serialization") version "1.4.30"
     id("com.android.library")
 }
 
@@ -58,27 +58,25 @@ kotlin {
 
     android()
 
-    val vkSdkKotlinVersion = "0.0.6"
+    val vkSdkKotlinVersion = "0.0.8-SNAPSHOT"
 
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation("com.petersamokhin.vksdk:core:$vkSdkKotlinVersion")
-                implementation("com.petersamokhin.vksdk:common-ktor-http-client:$vkSdkKotlinVersion")
+                implementation("com.petersamokhin.vksdk:http-client-common-ktor:$vkSdkKotlinVersion")
 
-                implementation(kotlin("stdlib-common", "1.4.0"))
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.5")
-                implementation("io.ktor:ktor-client-core:1.3.2")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
+                implementation("io.ktor:ktor-client-core:1.5.2")
             }
         }
         val commonTest by getting {}
 
         val androidMain by getting {
             dependencies {
-                implementation(kotlin("stdlib"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
-                implementation("io.ktor:ktor-client-android:1.3.2")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3")
+                implementation("io.ktor:ktor-client-android:1.5.2")
             }
         }
         val androidTest by getting {}
@@ -88,10 +86,10 @@ kotlin {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-native") {
                     version {
-                        strictly("1.3.5-native-mt")
+                        strictly("1.4.3-native-mt")
                     }
                 }
-                implementation("io.ktor:ktor-client-ios:1.3.2")
+                implementation("io.ktor:ktor-client-ios:1.5.2")
             }
         }
         val iosTest by getting {}

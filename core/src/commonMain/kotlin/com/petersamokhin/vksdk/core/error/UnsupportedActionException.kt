@@ -6,11 +6,11 @@ package com.petersamokhin.vksdk.core.error
  * @property message Error message
  * @property cause Error cause
  */
-class UnsupportedActionException(
+public class UnsupportedActionException(
     override val message: String? = ERROR_MESSAGE,
     override val cause: Throwable? = null
 ) : VkException(message = message) {
-    companion object {
+    public companion object {
         private const val ERROR_MESSAGE = "This type of functionality is not supported by this type of client, or with this API version, etc."
     }
 }

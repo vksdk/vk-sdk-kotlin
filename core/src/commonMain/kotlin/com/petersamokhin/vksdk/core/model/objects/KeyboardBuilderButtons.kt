@@ -1,7 +1,7 @@
 package com.petersamokhin.vksdk.core.model.objects
 
 @KeyboardDslMarker
-class TextButton(
+public class TextButton(
     private val label: String,
     private val color: Keyboard.Button.Color,
     private var payload: String?
@@ -17,7 +17,7 @@ class TextButton(
 }
 
 @KeyboardDslMarker
-class LocationButton(
+public class LocationButton(
     private var payload: String?
 ) {
     internal fun build(): Keyboard.Button = Keyboard.Button(
@@ -29,7 +29,7 @@ class LocationButton(
 }
 
 @KeyboardDslMarker
-class VkPayButton(
+public class VkPayButton(
     private val hash: String,
     private var payload: String?
 ) {
@@ -43,7 +43,7 @@ class VkPayButton(
 }
 
 @KeyboardDslMarker
-class VkAppsButton(
+public class VkAppsButton(
     private val label: String,
     private val appId: Int,
     private var ownerId: Int?,
@@ -63,7 +63,7 @@ class VkAppsButton(
 }
 
 @KeyboardDslMarker
-class OpenLinkButton(
+public class OpenLinkButton(
     private val label: String,
     private val link: String,
     private var payload: String?

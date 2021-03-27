@@ -6,12 +6,12 @@ package com.petersamokhin.vksdk.core.error
  * @property message Error message
  * @property cause Error cause
  */
-class VkSdkInitiationException(
+public class VkSdkInitiationException(
     source: String = "Some SDK part",
     override val message: String? = "$source $ERROR_MESSAGE",
     override val cause: Throwable? = null
 ): VkException(message, cause) {
-    companion object {
+    public companion object {
         private const val ERROR_MESSAGE = "is not initiated or disabled, already cancelled or not active"
     }
 }

@@ -5,15 +5,15 @@ package com.petersamokhin.vksdk.core.io
  *
  * Currently supported only for Darwin, JS and JVM
  */
-expect class FileOnDisk {
+public expect class FileOnDisk {
 
     /**
      * Path to the file on disk
      */
-    val path: String
+    public val path: String
 
     /**
      * Read file contents as byte array synchronously
      */
-    fun readContent(): ByteArray?
+    public fun readContent(): ByteArray?
 }

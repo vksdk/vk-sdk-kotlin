@@ -16,7 +16,7 @@ import kotlinx.serialization.encoding.Encoder
  * @property error Some error, if [response] is null
  */
 @Serializable
-data class VkResponse<out T : Any>(
+public data class VkResponse<out T : Any>(
     val response: T? = null,
     val error: VkResponseError? = null
 )
@@ -26,9 +26,9 @@ data class VkResponse<out T : Any>(
  *
  * @property responseSerializer Serializer for [T]::class
  */
-@OptIn(ExperimentalSerializationApi::class)
+@ExperimentalSerializationApi
 @Serializer(forClass = VkResponse::class)
-class VkResponseTypedSerializer<T: Any>(private val responseSerializer: KSerializer<T>) : KSerializer<VkResponse<T>> {
+public class VkResponseTypedSerializer<T: Any>(private val responseSerializer: KSerializer<T>) : KSerializer<VkResponse<T>> {
     private val errorSerializer: KSerializer<VkResponseError?> = VkResponseError.serializer().nullable
 
     /**
@@ -47,7 +47,6 @@ class VkResponseTypedSerializer<T: Any>(private val responseSerializer: KSeriali
      * @param encoder Encoder
      * @param value Original value
      */
-    @OptIn(ExperimentalSerializationApi::class)
     override fun serialize(encoder: Encoder, value: VkResponse<T>) {
         encoder.beginStructure(descriptor).apply {
             encodeNullableSerializableElement(descriptor, 0, responseSerializer, value.response)

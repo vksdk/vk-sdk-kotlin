@@ -2,7 +2,6 @@ package com.petersamokhin.vksdk.core.api
 
 import com.petersamokhin.vksdk.core.api.VkApi.ParametersKeys.ACCESS_TOKEN
 import com.petersamokhin.vksdk.core.api.VkApi.ParametersKeys.VERSION
-import com.petersamokhin.vksdk.core.callback.Callback
 import com.petersamokhin.vksdk.core.error.VkResponseException
 import com.petersamokhin.vksdk.core.http.HttpClient
 import com.petersamokhin.vksdk.core.http.Parameters
@@ -16,23 +15,22 @@ import kotlinx.serialization.json.Json
 /**
  * Class for interaction with the VK API
  */
-class VkApi internal constructor(
+public class VkApi internal constructor(
     private val httpClient: HttpClient,
-    private val version: Double,
+    private val version: String,
     private val token: String,
     private val defaultParams: Parameters = Parameters()
 ) {
     /**
      * Call some API method and receive the response string
      */
-    fun call(method: String, params: Parameters = Parameters()): VkRequest {
-        return VkRequest(method, params.applyRequired(), httpClient)
-    }
+    public fun call(method: String, params: Parameters = Parameters()): VkRequest =
+        VkRequest(method, params.applyRequired(), httpClient)
 
     /**
      * Upload whatever you want wherever you can
      */
-    fun uploadContent(
+    internal suspend fun uploadContent(
         methodGetUploadUrl: String,
         methodSave: String,
         json: Json,
@@ -41,13 +39,15 @@ class VkApi internal constructor(
     ): String {
         val uploadUrl = call(methodGetUploadUrl, params)
             .execute().let {
-                json.parseToJsonElement(it).jsonObjectOrNullSafe?.get("response")?.jsonObjectOrNullSafe?.get("upload_url")?.contentOrNullSafe
+                json.parseToJsonElement(it).jsonObjectOrNullSafe
+                    ?.get("response")?.jsonObjectOrNullSafe
+                    ?.get("upload_url")?.contentOrNullSafe
             } ?: throw VkResponseException(methodGetUploadUrl)
 
-        val uploadResult = httpClient.postMultipartSync(
-            uploadUrl,
-            items
-        )?.let {
+        val uploadResult = httpClient.postMultipart(
+            uploadUrl = uploadUrl,
+            items = items
+        ).let {
             if (it.isSuccessful()) {
                 it.bodyString().let { responseString ->
                     json.parseToJsonElement(responseString).jsonObjectOrNullSafe
@@ -64,66 +64,16 @@ class VkApi internal constructor(
         }
 
         return call(
-            methodSave, saveParams
+            method = methodSave,
+            params = saveParams
         ).execute()
     }
 
-    /**
-     * Upload whatever you want wherever you can
-     */
-    fun uploadContent(
-        methodGetUploadUrl: String,
-        methodSave: String,
-        json: Json,
-        params: Parameters,
-        items: List<UploadableContent>,
-        callback: Callback<String>
-    ) {
-        call(methodGetUploadUrl, params)
-            .enqueue(object: Callback<String> {
-                override fun onResult(result: String) {
-                    val uploadUrl = json.parseToJsonElement(result).jsonObjectOrNullSafe?.get("response")?.jsonObjectOrNullSafe?.get("upload_url")?.contentOrNullSafe
-                        ?: throw VkResponseException(methodGetUploadUrl)
-
-                    httpClient.postMultipart(
-                        uploadUrl,
-                        items,
-                        object: Callback<Response> {
-                            override fun onResult(result: Response) {
-                                val uploadResult = result.let {
-                                    if (it.isSuccessful()) {
-                                        it.bodyString().let { responseString ->
-                                            json.parseToJsonElement(responseString).jsonObjectOrNullSafe
-                                        }
-                                    } else {
-                                        null
-                                    }
-                                } ?: throw VkResponseException("$methodGetUploadUrl -> upload")
-
-                                val saveParams = Parameters()
-
-                                uploadResult.keys.forEach { key ->
-                                    saveParams.put(key, uploadResult[key]?.contentOrNullSafe)
-                                }
-
-                                call(methodSave, saveParams).enqueue(callback)
-                            }
-
-                            override fun onError(error: Exception) = callback.onError(error)
-                        }
-                    )
-                }
-
-                override fun onError(error: Exception) = callback.onError(error)
-            })
-    }
-
-    internal fun getLongPollUpdates(
+    internal suspend fun getLongPollUpdates(
         serverInfo: VkLongPollServerResponse,
         wait: Int
-    ): Response? {
-        return httpClient.getSync("${serverInfo.server}?act=a_check&key=${serverInfo.key}&ts=${serverInfo.ts}&wait=$wait")
-    }
+    ): Response =
+        httpClient.get("${serverInfo.server}?act=a_check&key=${serverInfo.key}&ts=${serverInfo.ts}&wait=$wait")
 
     private fun Parameters.applyRequired() = apply {
         put(ACCESS_TOKEN, token)
@@ -137,9 +87,9 @@ class VkApi internal constructor(
      * @property VERSION API version
      * @property ACCESS_TOKEN Access token
      */
-    object ParametersKeys {
-        const val VERSION = "v"
-        const val ACCESS_TOKEN = "access_token"
+    public object ParametersKeys {
+        public const val VERSION: String = "v"
+        public const val ACCESS_TOKEN: String = "access_token"
     }
 
     /**
@@ -150,13 +100,19 @@ class VkApi internal constructor(
      * @property CHAT_ID_PREFIX Chat ID prefix constant value
      */
     @Suppress("unused")
-    companion object {
-        const val DEFAULT_VERSION = 5.122
-        const val BASE_URL = "https://api.vk.com/method"
-
+    public companion object {
         internal const val API_CALL_INTERVAL = 1133L
-        const val EXECUTE_MAX_REQUESTS_PER_SECOND_DISABLED = -1
 
-        const val CHAT_ID_PREFIX = 2000000000
+        /**
+         * https://vk.com/dev/versions
+         *
+         * [String] because `5.13` and `5.130` are the different versions
+         */
+        public const val DEFAULT_VERSION: String = "5.130"
+        public const val BASE_URL: String = "https://api.vk.com/method"
+
+        public const val EXECUTE_MAX_REQUESTS_PER_SECOND_DISABLED: Int = -1
+
+        public const val CHAT_ID_PREFIX: Int = 2000000000
     }
 }

@@ -1,7 +1,7 @@
 plugins {
     java
     kotlin("jvm")
-    kotlin("plugin.serialization") version "1.4.0"
+    kotlin("plugin.serialization") version "1.4.30"
 }
 
 kotlin {
@@ -14,7 +14,7 @@ dependencies {
     // We don't want to use Kotlin, so it's not listed in our dependencies.
     // implementation(kotlin("stdlib-jdk8", org.jetbrains.kotlin.config.KotlinCompilerVersion.VERSION))
 
-    val vkSdkKotlinVersion = "0.0.6"
+    val vkSdkKotlinVersion = "0.0.8-SNAPSHOT"
 
     // Module "core" is required.
     // `project(":core")` only available if your project and the SDK are in the same Gradle project.
@@ -29,5 +29,5 @@ dependencies {
     // implementation("com.petersamokhin.vksdk:http-client-common-ktor-jvm:$vkSdkKotlinVersion")
 
     // In this case, `ktor-client` is required. You can use any.
-    // implementation("io.ktor:ktor-client-cio:1.4.0")
+    // implementation("io.ktor:ktor-client-cio:1.5.2")
 }

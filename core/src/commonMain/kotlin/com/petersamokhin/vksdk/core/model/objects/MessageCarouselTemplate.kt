@@ -4,13 +4,13 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MessageCarouselTemplate(
+public data class MessageCarouselTemplate(
     val elements: List<Element>
 ) {
-    var type = "carousel"
+    public var type: String = "carousel"
 
     @Serializable
-    data class Element(
+    public data class Element(
         val title: String? = null,
         val description: String? = null,
         @SerialName("photo_id")

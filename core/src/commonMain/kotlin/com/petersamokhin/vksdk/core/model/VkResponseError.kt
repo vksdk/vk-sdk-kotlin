@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
  * @property errorMsg Error message
  */
 @Serializable
-data class VkResponseError(
+public data class VkResponseError(
     @SerialName("error_code")
     val errorCode: Int? = null,
     @SerialName("error_msg")

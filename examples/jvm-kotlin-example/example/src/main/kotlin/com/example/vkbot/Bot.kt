@@ -1,5 +1,6 @@
 package com.example.vkbot
 
+import com.petersamokhin.vksdk.core.api.BatchRequestItem
 import com.petersamokhin.vksdk.core.api.VkRequest
 import com.petersamokhin.vksdk.core.api.botslongpoll.VkBotsLongPollApi
 import com.petersamokhin.vksdk.core.callback.Callback
@@ -12,20 +13,24 @@ import com.petersamokhin.vksdk.core.model.VkSettings
 import com.petersamokhin.vksdk.core.model.objects.UploadableContent
 import com.petersamokhin.vksdk.core.model.objects.keyboard
 import com.petersamokhin.vksdk.http.VkKtorHttpClient
-import com.petersamokhin.vksdk.http.VkOkHttpClient
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
 import io.ktor.client.features.logging.*
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.util.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.*
 import kotlin.coroutines.CoroutineContext
 
-@OptIn(ExperimentalCoroutinesApi::class)
+// will not compile intentionally, replace with yours
+private const val DUMMY_USER_ID = 12345678901
+
 class Bot : CoroutineScope {
     private val json = Json {
         encodeDefaults = false
@@ -57,18 +62,19 @@ class Bot : CoroutineScope {
      * @param clientId Group ID
      * @param accessToken Group `access_token`
      */
-    @OptIn(KtorExperimentalAPI::class)
+    @OptIn(KtorExperimentalAPI::class, FlowPreview::class)
     fun start(clientId: Int, accessToken: String) {
         if (accessToken == "abcdef123456...") throw RuntimeException("Please, replace dummy access_token with yours in Launcher.kt")
 
         // Custom implementation of the cross-platform HTTP client
         val httpClient = VkKtorHttpClient(coroutineContext, overrideClient = HttpClient(CIO) {
             engine {
-                // because of long polling
-                requestTimeout = 30000
+                // because of long polling:
+                // in case of zero events, requests will last 25 sec each
+                requestTimeout = 30_000
             }
             Logging {
-                level = LogLevel.BODY
+                level = LogLevel.ALL
                 logger = object : Logger {
                     override fun log(message: String) {
                         println(message)
@@ -94,25 +100,10 @@ class Bot : CoroutineScope {
         // For example, get info about Pashka Durov
         // val pashkaRequest = client.call("users.get", paramsOf("user_id" to 1))
 
-        // see the sync API call example:
-        // syncApiCallExample(pashkaRequest)
-
-        // Or async:
-        // asyncApiCallExample(pashkaRequest)
-
-        // Or use [Flow]
-        // flowApiCallExample(client, pashkaRequest)
-
         // API rate limits? Ha-ha, we know about the `execute` method.
-        //
-        // Important note: when you are use batch requests, all responses are unwrapped, e.g. `YourClass`,
-        // otherwise you will get the `VkResponse<YourClass>`.
-        // In our case, with `batch = true` we will get `List<VkUser>` as the response,
-        // but with `batch = false`, the `VkResponse<List<VkUser>>` is returned.
-        // executeBatchRequestExample(client, pashkaRequest)
+        // batchRequestsExample(client)
 
         // Send simple messages
-        // Of course, you can use sync, async, flow ways
         // simpleMessageExample(client)
 
         // Use the keyboard DSL
@@ -128,79 +119,61 @@ class Bot : CoroutineScope {
         // using asynchronous callbacks or flows.
         chatBotExample(client)
 
-        // And, of course, to chat bot be working,
+        // And, of course, for the chat bot be working,
         // we must start the long polling loop.
         // Do it at the end of your method,
         // or call in the background thread or coroutine.
-        client.startLongPolling(settings = VkBotsLongPollApi.Settings(maxFails = 5))
+        runBlocking { client.startLongPolling(settings = VkBotsLongPollApi.Settings(maxFails = 5)) }
     }
 
     /**
-     * Use synchronous calls to the API
+     * Call using a [VkRequest]
      */
-    private fun syncApiCallExample(pashkaRequest: VkRequest) {
+    private suspend fun apiCallExample(pashkaRequest: VkRequest) {
         val pashkaResponseString = pashkaRequest.execute()
-        val pashkaUserSync = parseUsersResponseFromString(pashkaResponseString)
-        println("Pashka's full name is '${pashkaUserSync.firstName} ${pashkaUserSync.lastName}'")
-    }
-
-    /**
-     * Use asynchronous calls to the API
-     */
-    private fun asyncApiCallExample(pashkaRequest: VkRequest) {
-        pashkaRequest.enqueue(object : Callback<String> {
-            override fun onResult(result: String) {
-                val pashkaUserAsync = parseUsersResponseFromString(result)
-
-                println("Pashka's full name is '${pashkaUserAsync.firstName} ${pashkaUserAsync.lastName}'")
-            }
-
-            override fun onError(error: Exception) {
-                println("Some error occurred:")
-                error.printStackTrace()
-            }
-        })
-    }
-
-    /**
-     * Use Flows with calls to the API
-     */
-    private fun flowApiCallExample(client: VkApiClient, pashkaRequest: VkRequest) {
-        client.flows().call(pashkaRequest, batch = true)
-            .map(::parseUsersResponseFromJsonElement)
-            .onEach { pashkaUser ->
-                println("Pashka's full name is '${pashkaUser.firstName} ${pashkaUser.lastName}'")
-            }
-            .flowOn(Dispatchers.IO)
-            .launchIn(this)
+        val pashkaUser = parseUsersResponseFromString(pashkaResponseString)
+        println("Pashka's full name is '${pashkaUser.firstName} ${pashkaUser.lastName}'")
     }
 
     /**
      * Use batch requests, https://vk.com/dev/execute
+     *
+     *  Important note: when you are use batch requests, all responses are unwrapped, e.g. `YourClass`,
+     * otherwise you will get the `VkResponse<YourClass>`.
+     * In our case, with `batch = true` we will get `List<VkUser>` as the response,
+     * but with `batch = false`, the `VkResponse<List<VkUser>>` is returned.
      */
-    private fun executeBatchRequestExample(client: VkApiClient, pashkaRequest: VkRequest) {
-        // ha-ha, 200 requests requests go brr
-        for (i in 0 until 200) {
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    private fun batchRequestsExample(client: VkApiClient) = launch {
+        client.get(
+            (1..200).map { index -> // ha-ha, 200 requests requests go brr
+                BatchRequestItem(
+                    request = client.call("users.get", paramsOf("user_id" to index)),
+                    callback = Callback.assemble(onResult = { result ->
+                        val user = parseUsersResponseFromJsonElement(result)
+                        println("[result] user with id $index: $user")
+                    }, onError = { error ->
+                        println("[error] requesting user with id $index:")
+                        error.printStackTrace()
+                    })
+                )
+            }
+        )
 
-            // All the calls will be put into queue.
-            // You can do up to `25 * maxExecuteRequestsPerSecond` (see the client settings)
-            // requests per second using this feature.
-            client.flows().call(pashkaRequest, batch = true)
-                .map(::parseUsersResponseFromJsonElement)
-                .onEach { pashkaUser ->
-                    println("Pashka's full name is '${pashkaUser.firstName} ${pashkaUser.lastName}'")
-                }
-                .flowOn(Dispatchers.IO)
-                .launchIn(this)
-        }
+        // callback above handles the result already,
+        // but you also can use flow
+        client.flows().onBatchRequestResult()
+            .collect { (request, response) ->
+                // println("[batch] request: ${request}, response: $response")
+            }
     }
 
     /**
      * Send message
      */
-    private fun simpleMessageExample(client: VkApiClient) {
+    private suspend fun simpleMessageExample(client: VkApiClient) {
         client.sendMessage {
-            peerId = 12345678901
+            peerId = DUMMY_USER_ID
             message = "Hello, World!"
 
             // You can use stickers, replies, location, etc.
@@ -211,9 +184,9 @@ class Bot : CoroutineScope {
     /**
      * Build keyboard using convenient DSL
      */
-    private fun keyboardDslExample(client: VkApiClient) {
+    private suspend fun keyboardDslExample(client: VkApiClient) {
         client.sendMessage {
-            peerId = 12345678901
+            peerId = DUMMY_USER_ID
             message = "You take the blue pill — the story ends..."
 
             keyboard = keyboard(oneTime = true) {
@@ -228,8 +201,8 @@ class Bot : CoroutineScope {
     /**
      * Upload some photo and attach it to the message
      */
-    private fun attachImageToMessageExample(client: VkApiClient) {
-        val necessaryPeerId = 12345678901
+    private suspend fun attachImageToMessageExample(client: VkApiClient) {
+        val necessaryPeerId = DUMMY_USER_ID
 
         val imageAttachmentString = client.uploader().uploadPhotoForMessage(
             necessaryPeerId,
@@ -246,8 +219,8 @@ class Bot : CoroutineScope {
      * Upload whatever you want using the same scheme.
      * I don't know, why vtentakle can't do it by their API.
      */
-    private fun customAttachmentExample(client: VkApiClient) {
-        val necessaryPeerId = 12345678901
+    private suspend fun customAttachmentExample(client: VkApiClient) {
+        val necessaryPeerId = DUMMY_USER_ID
         val attachmentType = "audio_message"
 
         val audioMessageAttachmentString = client.uploader().uploadContent(
@@ -276,8 +249,8 @@ class Bot : CoroutineScope {
      * Yes, it's ugly. Horrible.
      * Of course, you can use your own data class and deserialize it.
      */
-    private fun retrieveAttachment(response: String, @Suppress("SameParameterValue") type: String): String? {
-        return json.parseToJsonElement(response)
+    private fun retrieveAttachment(response: String, @Suppress("SameParameterValue") type: String): String? =
+        json.parseToJsonElement(response)
             .jsonObjectOrNullSafe
             ?.get("response")
             ?.jsonObjectOrNullSafe
@@ -286,28 +259,30 @@ class Bot : CoroutineScope {
             ?.let {
                 "${it["owner_id"]?.contentOrNullSafe}_${it["id"]?.contentOrNullSafe}_${it["access_key"]?.contentOrNullSafe}"
             }
-    }
 
     /**
      * Simple chat bot which wants to work only in group chats
      */
-    private fun chatBotExample(client: VkApiClient) {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun chatBotExample(client: VkApiClient) = launch {
         client.flows().onMessage()
-            .flatMapLatest {
-                if (it.message.isFromChat()) {
-                    client.flows().sendMessage {
-                        peerId = it.message.peerId
+            .flowOn(Dispatchers.IO)
+            .map { (msg) ->
+                val request = if (msg.isFromChat()) {
+                    client.sendMessage {
+                        peerId = msg.peerId
                         message = "Hello, chat"
                     }
                 } else {
-                    client.flows().sendMessage {
-                        peerId = it.message.peerId
+                    client.sendMessage {
+                        peerId = msg.peerId
                         message = "Sorry, I ignore personal conversations."
                     }
                 }
+
+                client.get(BatchRequestItem(request, Callback.empty()))
             }
-            .flowOn(Dispatchers.IO)
-            .launchIn(this)
+            .collect()
     }
 
     /**
@@ -315,6 +290,7 @@ class Bot : CoroutineScope {
      * To provide the same convenient library API for Java and Kotlin on all platforms,
      * all inline calls are dropped and you should do it by yourself.
      */
+    @OptIn(ExperimentalSerializationApi::class)
     private fun parseUsersResponseFromString(pashkaResponseString: String): VkUser {
         val pashokParsedResponse: VkResponse<List<VkUser>> = json.decodeFromString(
             VkResponseTypedSerializer(ListSerializer(VkUser.serializer())),
@@ -325,10 +301,8 @@ class Bot : CoroutineScope {
         return pashokParsedResponse.response?.first() ?: throw Exception("Pashka? Where are you?")
     }
 
-    @Suppress("RedundantSuspendModifier") // IDEA lint bug?
-    private suspend fun parseUsersResponseFromJsonElement(pashkaJsonElement: JsonElement): VkUser {
-        return json.decodeFromJsonElement(ListSerializer(VkUser.serializer()), pashkaJsonElement).first()
-    }
+    private fun parseUsersResponseFromJsonElement(pashkaJsonElement: JsonElement): VkUser =
+        json.decodeFromJsonElement(ListSerializer(VkUser.serializer()), pashkaJsonElement).first()
 }
 
 /**

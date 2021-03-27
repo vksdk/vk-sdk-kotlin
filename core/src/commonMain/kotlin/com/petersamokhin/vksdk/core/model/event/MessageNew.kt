@@ -4,13 +4,13 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MessageNew(
+public data class MessageNew(
     val message: IncomingMessage,
     @SerialName("client_info")
     val clientInfo: ClientInfo
 ) {
     @Serializable
-    data class ClientInfo(
+    public data class ClientInfo(
         @SerialName("button_actions")
         val buttonActions: List<String>? = null,
         val keyboard: Boolean? = null,
@@ -21,7 +21,7 @@ data class MessageNew(
         val langId: Int? = null
     )
 
-    companion object {
-        const val TYPE = "message_new"
+    public companion object {
+        public const val TYPE: String = "message_new"
     }
 }

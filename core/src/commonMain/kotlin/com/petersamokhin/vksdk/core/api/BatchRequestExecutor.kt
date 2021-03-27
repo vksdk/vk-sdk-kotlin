@@ -11,7 +11,12 @@ import com.petersamokhin.vksdk.core.utils.defaultJson
 import com.petersamokhin.vksdk.core.utils.jsonArrayOrNullSafe
 import com.petersamokhin.vksdk.core.utils.jsonObjectOrNullSafe
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlin.coroutines.CoroutineContext
 import kotlin.jvm.JvmOverloads
 
@@ -19,7 +24,7 @@ import kotlin.jvm.JvmOverloads
  * https://vk.com/dev/execute
  */
 @OptIn(ExperimentalStdlibApi::class)
-class BatchRequestExecutor @JvmOverloads constructor(
+public class BatchRequestExecutor @JvmOverloads constructor(
     private val token: String,
     private val settings: VkSettings,
     private val json: Json = defaultJson()
@@ -39,62 +44,63 @@ class BatchRequestExecutor @JvmOverloads constructor(
 
     private var queue: IsoArrayDeque<BatchRequestItem>? = null
 
+    @ExperimentalCoroutinesApi
+    private val resultsChannel = BroadcastChannel<BatchRequestResult>(Channel.BUFFERED)
+
     init {
+        startQueueLoop()
+    }
+
+    /**
+     * Add [item] to the [queue]
+     */
+    public fun enqueue(item: BatchRequestItem) {
+        if (settings.maxExecuteRequestsPerSecond == VkApi.EXECUTE_MAX_REQUESTS_PER_SECOND_DISABLED) throw VkSdkInitiationException(
+            "BatchRequestExecutor"
+        )
+        if (job.isCompleted || job.isCancelled) throw VkSdkInitiationException("BatchRequestExecutor")
+
+        requireQueue()
+            .addLast(item)
+    }
+
+    /**
+     * Add [items] to the [queue]
+     */
+    public fun enqueue(items: Collection<BatchRequestItem>) {
+        if (settings.maxExecuteRequestsPerSecond == VkApi.EXECUTE_MAX_REQUESTS_PER_SECOND_DISABLED)
+            throw VkSdkInitiationException("BatchRequestExecutor")
+        if (job.isCompleted || job.isCancelled)
+            throw VkSdkInitiationException("BatchRequestExecutor")
+
+        requireQueue()
+            .addAll(items)
+    }
+
+    /**
+     * Stop the loop
+     */
+    public fun stop() {
+        queue?.dispose()
+        queue = null
+        job.cancel()
+    }
+
+    @FlowPreview
+    @ExperimentalCoroutinesApi
+    public fun observeResults(): Flow<BatchRequestResult> =
+        resultsChannel.asFlow()
+
+    /**
+     * Loop started during initialization
+     */
+    private fun startQueueLoop() {
         if (settings.maxExecuteRequestsPerSecond != VkApi.EXECUTE_MAX_REQUESTS_PER_SECOND_DISABLED) {
             queue = IsoArrayDeque()
 
             launch {
                 while (isActive) {
-                    launch {
-                        if (queue?.isEmpty() == false) {
-                            val currentItems = (queue ?: throw VkSdkInitiationException("BatchRequestExecutor"))
-                                .access {
-                                    val queue = it as ArrayDeque<BatchRequestItem>
-
-                                    mutableListOf<BatchRequestItem>().also { list ->
-                                        for (i in 0 until MAX_QUEUE_ITEMS_COUNT) {
-                                            list.add(queue.removeFirstOrNull() ?: break)
-                                        }
-                                    }
-                                }
-
-                            fun notifyErrorsAll() {
-                                currentItems.forEach {
-                                    it.callback.onError(VkResponseException("Call to execute method is not successful"))
-                                }
-                            }
-
-                            val codeStringBuilder = StringBuilder("return [").also { sb ->
-                                currentItems.forEach { item ->
-                                    sb.append(item.request.buildExecuteCode()).append(',')
-                                }
-                                sb.append("];")
-                            }
-
-                            val body = paramsOf("code" to codeStringBuilder.toString())
-                                .applyRequired()
-                                .buildQuery()
-                                .encodeToByteArray()
-
-                            val response = settings.httpClient.postSync(
-                                "${VkApi.BASE_URL}/execute",
-                                body,
-                                ContentType.FormUrlEncoded
-                            )
-
-                            if (response?.body != null && response.isSuccessful()) {
-                                json.parseToJsonElement(response.bodyString()).jsonObjectOrNullSafe?.also { bodyJson ->
-                                    val responseJson = bodyJson["response"]?.jsonArrayOrNullSafe
-
-                                    responseJson?.forEachIndexed { index, element ->
-                                        currentItems[index].callback.onResult(element)
-                                    } ?: notifyErrorsAll()
-                                } ?: notifyErrorsAll()
-                            } else {
-                                notifyErrorsAll()
-                            }
-                        }
-                    }
+                    executeQueueItems()
 
                     delay(VkApi.API_CALL_INTERVAL / settings.maxExecuteRequestsPerSecond)
                 }
@@ -102,48 +108,91 @@ class BatchRequestExecutor @JvmOverloads constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun executeQueueItems(): Job =
+        launch {
+            if (queue?.isEmpty() == false) {
+                val currentItems: List<BatchRequestItem> = pollItemsFromQueue()
+
+                val body = paramsOf("code" to currentItems.buildExecuteCode())
+                    .applyRequired()
+                    .buildQuery()
+                    .encodeToByteArray()
+
+                val response = settings.httpClient.post(
+                    "${VkApi.BASE_URL}/execute",
+                    body,
+                    ContentType.FormUrlEncoded
+                )
+
+                val responsesArray: JsonArray? by lazy {
+                    response.bodyString().parseResponseArray()
+                }
+
+                if (response.body != null && response.isSuccessful() && responsesArray != null) {
+                    responsesArray?.forEachIndexed { index, element ->
+                        val (request, callback) = currentItems[index]
+
+                        callback.onResult(element)
+                        resultsChannel.send(BatchRequestResult(request, element))
+                    }
+                } else {
+                    currentItems.notifyErrors()
+                }
+            }
+        }
+
     /**
-     * Add [item] to the [queue]
+     * Polls [MAX_QUEUE_ITEMS_COUNT] items from the queue to handle them
      */
-    fun enqueue(item: BatchRequestItem) {
-        if (settings.maxExecuteRequestsPerSecond == VkApi.EXECUTE_MAX_REQUESTS_PER_SECOND_DISABLED) throw VkSdkInitiationException("BatchRequestExecutor")
-        if (job.isCompleted || job.isCancelled) throw VkSdkInitiationException("BatchRequestExecutor")
+    private fun pollItemsFromQueue(): List<BatchRequestItem> =
+        requireQueue()
+            .access {
+                val queue = it as ArrayDeque<BatchRequestItem>
 
-        (queue ?: throw VkSdkInitiationException("BatchRequestExecutor"))
-            .addLast(item)
-    }
+                mutableListOf<BatchRequestItem>().also { list ->
+                    for (i in 0 until MAX_QUEUE_ITEMS_COUNT) {
+                        list.add(queue.removeFirstOrNull() ?: break)
+                    }
+                }
+            }
 
     /**
-     * Add [items] to the [queue]
+     * Converts the requests to VK API execute method code:
+     * https://vk.com/dev/execute
      */
-    fun enqueue(items: Collection<BatchRequestItem>) {
-        if (settings.maxExecuteRequestsPerSecond == VkApi.EXECUTE_MAX_REQUESTS_PER_SECOND_DISABLED) throw VkSdkInitiationException("BatchRequestExecutor")
-        if (job.isCompleted || job.isCancelled) throw VkSdkInitiationException("BatchRequestExecutor")
+    private fun List<BatchRequestItem>.buildExecuteCode(): String =
+        StringBuilder("return [").also { sb ->
+            forEach { item: BatchRequestItem ->
+                sb.append(item.request.buildExecuteCode()).append(',')
+            }
+            sb.append("];")
+        }.toString()
 
-        (queue ?: throw VkSdkInitiationException("BatchRequestExecutor"))
-            .addAll(items)
-    }
+    private fun List<BatchRequestItem>.notifyErrors() =
+        forEach { (_, callback) ->
+            callback.onError(VkResponseException("Call to execute method is not successful"))
+        }
 
-    /**
-     * Stop the loop
-     */
-    fun stop() {
-        queue?.dispose()
-        queue = null
-        job.cancel()
-    }
+    private fun requireQueue(): IsoArrayDeque<BatchRequestItem> =
+        queue ?: throw VkSdkInitiationException("BatchRequestExecutor")
 
-    private fun VkRequest.buildExecuteCode(): String {
-        return "API.${method}(${params.buildJsonString()})"
-    }
+    private fun VkRequest.buildExecuteCode(): String =
+        "API.${method}(${params.buildJsonString()})"
 
-    private fun Parameters.applyRequired() = apply {
-        put(VkApi.ParametersKeys.ACCESS_TOKEN, token)
-        put(VkApi.ParametersKeys.VERSION, settings.apiVersion)
-        putAll(settings.defaultParams)
-    }
+    private fun Parameters.applyRequired(): Parameters =
+        apply {
+            put(VkApi.ParametersKeys.ACCESS_TOKEN, token)
+            put(VkApi.ParametersKeys.VERSION, settings.apiVersion)
+            putAll(settings.defaultParams)
+        }
 
-    companion object {
+    private fun String.parseResponseArray(): JsonArray? =
+        json
+            .parseToJsonElement(this).jsonObjectOrNullSafe
+            ?.get("response")?.jsonArrayOrNullSafe
+
+    public companion object {
         private const val MAX_QUEUE_ITEMS_COUNT = 25
     }
 }

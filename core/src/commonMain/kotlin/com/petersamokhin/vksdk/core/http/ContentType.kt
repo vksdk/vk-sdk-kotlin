@@ -5,7 +5,7 @@ package com.petersamokhin.vksdk.core.http
  *
  * @property stringValue String value
  */
-enum class ContentType(val stringValue: String) {
+public enum class ContentType(public val stringValue: String) {
 
     /**
      * Default content type for POST requests to VK API

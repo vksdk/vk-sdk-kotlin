@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  * https://vk.com/dev/bots_docs_3
  */
 @Serializable
-data class Keyboard(
+public data class Keyboard(
     val buttons: List<List<Button>> = emptyList(),
     @SerialName("one_time")
     val oneTime: Boolean = false,
@@ -16,12 +16,12 @@ data class Keyboard(
     val authorId: Int? = null
 ) {
     @Serializable
-    class Button(
+    public data class Button(
         val action: Action,
         val color: Color? = null
     ) {
         @Serializable
-        enum class Color {
+        public enum class Color {
             @SerialName("primary")
             PRIMARY,
             @SerialName("secondary")
@@ -33,7 +33,7 @@ data class Keyboard(
         }
 
         @Serializable
-        data class Action(
+        public data class Action(
             val type: Type,
             val label: String? = null,
             val payload: String? = null,
@@ -45,7 +45,7 @@ data class Keyboard(
             val ownerId: Int? = null
         ) {
             @Serializable
-            enum class Type {
+            public enum class Type {
                 @SerialName("text")
                 TEXT,
                 @SerialName("open_link")

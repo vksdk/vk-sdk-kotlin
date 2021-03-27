@@ -3,6 +3,8 @@ plugins {
 }
 
 kotlin {
+    explicitApiWarning()
+
     jvm()
 
     js {
