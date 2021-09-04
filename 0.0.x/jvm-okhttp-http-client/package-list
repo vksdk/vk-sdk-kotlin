@@ -1,0 +1,12 @@
+$dokka.format:gfm-v1
+$dokka.linkExtension:md
+$dokka.location:com.petersamokhin.vksdk.http////PointingToDeclaration/jvm-okhttp-http-client/com.petersamokhin.vksdk.http/index.md
+$dokka.location:com.petersamokhin.vksdk.http/VkOkHttpClient///PointingToDeclaration/jvm-okhttp-http-client/com.petersamokhin.vksdk.http/-vk-ok-http-client/index.md
+$dokka.location:com.petersamokhin.vksdk.http/VkOkHttpClient/VkOkHttpClient/#com.petersamokhin.vksdk.core.http.HttpClientConfig/PointingToDeclaration/jvm-okhttp-http-client/com.petersamokhin.vksdk.http/-vk-ok-http-client/-vk-ok-http-client.md
+$dokka.location:com.petersamokhin.vksdk.http/VkOkHttpClient/VkOkHttpClient/#okhttp3.OkHttpClient/PointingToDeclaration/jvm-okhttp-http-client/com.petersamokhin.vksdk.http/-vk-ok-http-client/-vk-ok-http-client.md
+$dokka.location:com.petersamokhin.vksdk.http/VkOkHttpClient/applyConfig/#com.petersamokhin.vksdk.core.http.HttpClientConfig/PointingToDeclaration/jvm-okhttp-http-client/com.petersamokhin.vksdk.http/-vk-ok-http-client/apply-config.md
+$dokka.location:com.petersamokhin.vksdk.http/VkOkHttpClient/get/#kotlin.String/PointingToDeclaration/jvm-okhttp-http-client/com.petersamokhin.vksdk.http/-vk-ok-http-client/get.md
+$dokka.location:com.petersamokhin.vksdk.http/VkOkHttpClient/post/#kotlin.String#kotlin.ByteArray#com.petersamokhin.vksdk.core.http.ContentType/PointingToDeclaration/jvm-okhttp-http-client/com.petersamokhin.vksdk.http/-vk-ok-http-client/post.md
+$dokka.location:com.petersamokhin.vksdk.http/VkOkHttpClient/postMultipart/#kotlin.String#kotlin.collections.List[com.petersamokhin.vksdk.core.model.objects.UploadableContent]/PointingToDeclaration/jvm-okhttp-http-client/com.petersamokhin.vksdk.http/-vk-ok-http-client/post-multipart.md
+com.petersamokhin.vksdk.http
+

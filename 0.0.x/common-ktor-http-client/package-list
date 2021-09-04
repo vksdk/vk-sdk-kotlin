@@ -1,0 +1,13 @@
+$dokka.format:gfm-v1
+$dokka.linkExtension:md
+$dokka.location:com.petersamokhin.vksdk.http////PointingToDeclaration/common-ktor-http-client/com.petersamokhin.vksdk.http/index.md
+$dokka.location:com.petersamokhin.vksdk.http/VkKtorHttpClient///PointingToDeclaration/common-ktor-http-client/com.petersamokhin.vksdk.http/-vk-ktor-http-client/index.md
+$dokka.location:com.petersamokhin.vksdk.http/VkKtorHttpClient/VkKtorHttpClient/#kotlin.coroutines.CoroutineContext#io.ktor.client.HttpClient?#com.petersamokhin.vksdk.core.http.HttpClientConfig/PointingToDeclaration/common-ktor-http-client/com.petersamokhin.vksdk.http/-vk-ktor-http-client/-vk-ktor-http-client.md
+$dokka.location:com.petersamokhin.vksdk.http/VkKtorHttpClient/applyConfig/#com.petersamokhin.vksdk.core.http.HttpClientConfig/PointingToDeclaration/common-ktor-http-client/com.petersamokhin.vksdk.http/-vk-ktor-http-client/apply-config.md
+$dokka.location:com.petersamokhin.vksdk.http/VkKtorHttpClient/coroutineContext/#/PointingToDeclaration/common-ktor-http-client/com.petersamokhin.vksdk.http/-vk-ktor-http-client/coroutine-context.md
+$dokka.location:com.petersamokhin.vksdk.http/VkKtorHttpClient/createEngineWithConfig/#com.petersamokhin.vksdk.core.http.HttpClientConfig/PointingToDeclaration/common-ktor-http-client/com.petersamokhin.vksdk.http/-vk-ktor-http-client/create-engine-with-config.md
+$dokka.location:com.petersamokhin.vksdk.http/VkKtorHttpClient/get/#kotlin.String/PointingToDeclaration/common-ktor-http-client/com.petersamokhin.vksdk.http/-vk-ktor-http-client/get.md
+$dokka.location:com.petersamokhin.vksdk.http/VkKtorHttpClient/post/#kotlin.String#kotlin.ByteArray#com.petersamokhin.vksdk.core.http.ContentType/PointingToDeclaration/common-ktor-http-client/com.petersamokhin.vksdk.http/-vk-ktor-http-client/post.md
+$dokka.location:com.petersamokhin.vksdk.http/VkKtorHttpClient/postMultipart/#kotlin.String#kotlin.collections.List[com.petersamokhin.vksdk.core.model.objects.UploadableContent]/PointingToDeclaration/common-ktor-http-client/com.petersamokhin.vksdk.http/-vk-ktor-http-client/post-multipart.md
+com.petersamokhin.vksdk.http
+

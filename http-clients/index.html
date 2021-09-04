@@ -1,0 +1,752 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="VK SDK Kotlin">
+      
+      
+      
+        <meta name="author" content="Peter Samokhin">
+      
+      
+        <link rel="canonical" href="https://vksdk.github.io/vk-sdk-kotlin/http-clients/">
+      
+      <link rel="icon" href="../images/logo_round.png">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.6">
+    
+    
+      
+        <title>HTTP clients - VK SDK Kotlin</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.802231af.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../css/custom.css">
+    
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#http-clients" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="VK SDK Kotlin" class="md-header__button md-logo" aria-label="VK SDK Kotlin" data-md-component="logo">
+      
+  <img src="../images/logo_round.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            VK SDK Kotlin
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              HTTP clients
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        
+<a href="https://github.com/vksdk/vk-sdk-kotlin/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    vk-sdk-kotlin
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="VK SDK Kotlin" class="md-nav__button md-logo" aria-label="VK SDK Kotlin" data-md-component="logo">
+      
+  <img src="../images/logo_round.png" alt="logo">
+
+    </a>
+    VK SDK Kotlin
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/vksdk/vk-sdk-kotlin/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    vk-sdk-kotlin
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/" class="md-nav__link">
+        Usage
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          HTTP clients
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        HTTP clients
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#abstract-http-client-configuration" class="md-nav__link">
+    Abstract HTTP client configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#abstract-http-client-methods" class="md-nav__link">
+    Abstract HTTP client methods
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jvm-okhttp-based-client" class="md-nav__link">
+    JVM: OkHttp-based client
+  </a>
+  
+    <nav class="md-nav" aria-label="JVM: OkHttp-based client">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    Install
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use" class="md-nav__link">
+    Use
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-ktor-based-client" class="md-nav__link">
+    Common: ktor-based client
+  </a>
+  
+    <nav class="md-nav" aria-label="Common: ktor-based client">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install_1" class="md-nav__link">
+    Install
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use_1" class="md-nav__link">
+    Use
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        0.0.x API
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="0.0.x API" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          0.0.x API
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../0.0.x/core/index.html" class="md-nav__link">
+        core
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../0.0.x/common-ktor-http-client/index.html" class="md-nav__link">
+        common-ktor-http-client
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../0.0.x/jvm-okhttp-http-client/index.html" class="md-nav__link">
+        jvm-okhttp-http-cloent
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#abstract-http-client-configuration" class="md-nav__link">
+    Abstract HTTP client configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#abstract-http-client-methods" class="md-nav__link">
+    Abstract HTTP client methods
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jvm-okhttp-based-client" class="md-nav__link">
+    JVM: OkHttp-based client
+  </a>
+  
+    <nav class="md-nav" aria-label="JVM: OkHttp-based client">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    Install
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use" class="md-nav__link">
+    Use
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-ktor-based-client" class="md-nav__link">
+    Common: ktor-based client
+  </a>
+  
+    <nav class="md-nav" aria-label="Common: ktor-based client">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install_1" class="md-nav__link">
+    Install
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use_1" class="md-nav__link">
+    Use
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/vksdk/vk-sdk-kotlin/edit/master/docs/http-clients.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="http-clients">HTTP clients<a class="headerlink" href="#http-clients" title="Permanent link">&para;</a></h1>
+<p>Library uses <a href="https://vksdk.github.io/vk-sdk-kotlin/0.0.x/core/com.petersamokhin.vksdk.core.http/-http-client/">the abstract HTTP client</a>, you can write your own implementation, which will be the best for your needs, e.g. for your platform.</p>
+<p>There are some implementations, which you can already add to your dependencies and use, see the sections below.
+All the client artifacts are uploaded to the Maven Central Repository.</p>
+<h3 id="abstract-http-client-configuration">Abstract HTTP client configuration<a class="headerlink" href="#abstract-http-client-configuration" title="Permanent link">&para;</a></h3>
+<p>All parameters are optional.
+Configuration for clients is also optional, but may be useful.
+<div class="highlight"><pre><span></span><code><span class="kd">val</span> <span class="nv">httpClientConfig</span><span class="p">:</span> <span class="n">HttpClientConfig</span> <span class="o">=</span> <span class="n">HttpClientConfig</span><span class="p">(</span>
+    <span class="n">connectTimeout</span> <span class="o">=</span> <span class="m">30</span><span class="n">_000</span><span class="p">,</span>
+    <span class="n">readTimeout</span> <span class="o">=</span> <span class="m">30</span><span class="n">_000</span><span class="p">,</span>
+    <span class="n">defaultHeaders</span> <span class="o">=</span> <span class="n">mapOf</span><span class="p">(</span><span class="s">&quot;User-Agent&quot;</span> <span class="n">to</span> <span class="s">&quot;VK SDK Kotlin/0.0.x&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>
+Usually, this configuration is provided into HTTP client constructor.</p>
+<div class="admonition info">
+<p class="admonition-title">Note about the logging</p>
+<p>It is barely possible to help you without seeing the VK responses, so you need to log it by yourself.
+For this, you can provide overrided client and configure this using the logging-interceptor for OkHttp, or the logging feature for ktor.</p>
+</div>
+<h3 id="abstract-http-client-methods">Abstract HTTP client methods<a class="headerlink" href="#abstract-http-client-methods" title="Permanent link">&para;</a></h3>
+<p>To implement this interface, you should override some simple methods:</p>
+<p><a href="https://github.com/vksdk/vk-sdk-kotlin/blob/master/core/src/commonMain/kotlin/com/petersamokhin/vksdk/core/http/HttpClient.kt"><strong><code>HttpClient.kt</code></strong></a>
+<div class="highlight"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm"> * Abstract HTTP client</span>
+<span class="cm"> */</span>
+<span class="kd">interface</span> <span class="nc">HttpClient</span> <span class="p">{</span>    
+    <span class="cm">/**</span>
+<span class="cm">     * Apply client configuration</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param config Configuration, such as read and connect timeout, etc</span>
+<span class="cm">     */</span>
+    <span class="kd">fun</span> <span class="nf">applyConfig</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">HttpClientConfig</span><span class="p">)</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Make GET request</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param url Full request url: host, query, etc.</span>
+<span class="cm">     * @return Response</span>
+<span class="cm">     */</span>
+    <span class="kd">fun</span> <span class="nf">getSync</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="kt">String</span><span class="p">):</span> <span class="n">Response?</span>
+
+    <span class="cm">/* And there are some other methods */</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p>Where <a href="https://github.com/vksdk/vk-sdk-kotlin/blob/master/core/src/commonMain/kotlin/com/petersamokhin/vksdk/core/http/Response.kt"><strong><code>Response.kt</code></strong></a> is very simple:
+<div class="highlight"><pre><span></span><code><span class="kd">data</span> <span class="kd">class</span> <span class="nc">Response</span><span class="p">(</span>
+    <span class="kd">val</span> <span class="nv">code</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span>
+    <span class="kd">val</span> <span class="nv">body</span><span class="p">:</span> <span class="n">ByteArray?</span>
+<span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/* Some pre-defined methods */</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h2 id="jvm-okhttp-based-client">JVM: OkHttp-based client<a class="headerlink" href="#jvm-okhttp-based-client" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/square/okhttp">OkHttp</a> is available <strong>only</strong> for JVM, so you can use this client e.g. in Android or in the simple Java project.</p>
+<h3 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// also, core module is required</span>
+<span class="n">implementation</span> <span class="s2">&quot;com.petersamokhin.vksdk:http-client-jvm-okhttp:$vkSdkVersion&quot;</span>
+</code></pre></div>
+<h3 id="use">Use<a class="headerlink" href="#use" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// HTTP client configuration is optional, see the snippet above</span>
+<span class="kd">val</span> <span class="nv">httpClient</span><span class="p">:</span> <span class="n">HttpClient</span> <span class="o">=</span> <span class="n">VkOkHttpClient</span><span class="p">(</span><span class="n">httpClientConfig</span><span class="p">)</span>
+</code></pre></div>
+<p>The HTTP client instance is needed for the <code>VkApiClient</code> initialization, but, of course, you can use it too.</p>
+<h2 id="common-ktor-based-client">Common: ktor-based client<a class="headerlink" href="#common-ktor-based-client" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/ktorio/ktor">ktor</a> is a Kotlin-based HTTP client (and also contains some other modules, e.g. server), so it can be used on any plaltform where the Kotlin can be used.</p>
+<h3 id="install_1">Install<a class="headerlink" href="#install_1" title="Permanent link">&para;</a></h3>
+<p>As for the <code>core</code>, if the Gradle Metadata is enabled, you can simply add this this to your dependencies:
+<div class="highlight"><pre><span></span><code><span class="n">implementation</span> <span class="s">&quot;com.petersamokhin.vksdk:http-client-common-ktor:</span><span class="si">$</span><span class="n">vkSdkVersion</span><span class="s">&quot;</span>
+</code></pre></div></p>
+<p>Or provide the platform name otherwise. See the Artifacts section <a href="https://vksdk.github.io/vk-sdk-kotlin/usage/">here</a>.</p>
+<p>And, one more dependency is required: you should choose any ktor client, e.g. <code>CIO</code>:
+<div class="highlight"><pre><span></span><code><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;io.ktor:ktor-client-cio:1.3.2&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="use_1">Use<a class="headerlink" href="#use_1" title="Permanent link">&para;</a></h3>
+<p>You can provide ktor HttpClient in constructor:
+<div class="highlight"><pre><span></span><code><span class="kd">val</span> <span class="nv">httpClient</span><span class="p">:</span> <span class="n">HttpClient</span> <span class="o">=</span> <span class="n">VkKtorHttpClient</span><span class="p">(</span>
+            <span class="n">coroutineContext</span> <span class="o">=</span> <span class="n">Dispatchers</span><span class="p">.</span><span class="na">IO</span> <span class="cm">/* + job */</span><span class="p">,</span>
+            <span class="n">overrideClient</span> <span class="o">=</span> <span class="n">HttpClient</span><span class="p">(</span><span class="n">CIO</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">engine</span> <span class="p">{</span>
+                    <span class="n">requestTimeout</span> <span class="o">=</span> <span class="m">30</span><span class="n">_000L</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+</code></pre></div></p>
+<p>Otherwise, override <code>createEngineWithConfig</code> method: 
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">CioKtorHttpClient</span><span class="p">:</span> <span class="n">VkKtorHttpClient</span><span class="p">(</span>
+    <span class="n">coroutineContext</span> <span class="o">=</span> <span class="n">Dispatchers</span><span class="p">.</span><span class="na">IO</span> <span class="cm">/* + job */</span>
+<span class="p">)</span> <span class="p">{</span>
+    <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">createEngineWithConfig</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">HttpClientConfig</span><span class="p">):</span> <span class="n">HttpClientEngine? </span><span class="p">{</span>
+        <span class="k">return</span> <span class="n">CIO</span><span class="p">.</span><span class="na">create</span> <span class="p">{</span>
+            <span class="n">engine</span> <span class="p">{</span>
+                <span class="n">requestTimeout</span> <span class="o">=</span> <span class="m">30</span><span class="n">_000L</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p>And then all the things are the same.</p>
+<p>So, now you can use this client e.g. in the common module of your multiplatform project, etc.
+Of course, as the OkHttp-based client, this ktor client can also be used in Java-only project. </p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../usage/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Usage" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Usage
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../changelog/" class="md-footer__link md-footer__link--next" aria-label="Next: Changelog" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Changelog
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2021 Peter Samokhin <a href="https://petersamokhin.com">https://petersamokhin.com</a>
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+        
+        
+      
+      <a href="https://github.com/vksdk/vk-sdk-kotlin" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://vk.com/vk_sdk" target="_blank" rel="noopener" title="vk.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M545 117.7c3.7-12.5 0-21.7-17.8-21.7h-58.9c-15 0-21.9 7.9-25.6 16.7 0 0-30 73.1-72.4 120.5-13.7 13.7-20 18.1-27.5 18.1-3.7 0-9.4-4.4-9.4-16.9V117.7c0-15-4.2-21.7-16.6-21.7h-92.6c-9.4 0-15 7-15 13.5 0 14.2 21.2 17.5 23.4 57.5v86.8c0 19-3.4 22.5-10.9 22.5-20 0-68.6-73.4-97.4-157.4-5.8-16.3-11.5-22.9-26.6-22.9H38.8c-16.8 0-20.2 7.9-20.2 16.7 0 15.6 20 93.1 93.1 195.5C160.4 378.1 229 416 291.4 416c37.5 0 42.1-8.4 42.1-22.9 0-66.8-3.4-73.1 15.4-73.1 8.7 0 23.7 4.4 58.7 38.1 40 40 46.6 57.9 69 57.9h58.9c16.8 0 25.3-8.4 20.4-25-11.2-34.9-86.9-106.7-90.3-111.5-8.7-11.2-6.2-16.2 0-26.2.1-.1 72-101.3 79.4-135.6z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.409db549.min.js", "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.756773cc.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+      
+        <script src="../javascripts/config.js"></script>
+      
+    
+  </body>
+</html>
