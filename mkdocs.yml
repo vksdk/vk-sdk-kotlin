@@ -25,8 +25,13 @@ theme:
     primary: 'indigo'
     accent: 'indigo'
 
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js
+  - javascripts/config.js
+
 extra_css:
   - 'css/custom.css'
+  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css
 
 extra:
   social:
