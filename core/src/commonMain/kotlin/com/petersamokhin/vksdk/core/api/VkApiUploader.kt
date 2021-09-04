@@ -43,11 +43,11 @@ public class VkApiUploader(
      */
     public suspend fun uploadPhotoForMessage(peerId: Int, item: UploadableContent): String? {
         val responseString = api.uploadContent(
-            "photos.getMessagesUploadServer",
-            "photos.saveMessagesPhoto",
-            json,
-            paramsOf("peer_id" to peerId),
-            listOf(item)
+            methodGetUploadUrl = "photos.getMessagesUploadServer",
+            methodSave = "photos.saveMessagesPhoto",
+            json = json,
+            params = paramsOf("peer_id" to peerId),
+            items = listOf(item)
         )
 
         return json.parseToJsonElement(responseString)
@@ -70,10 +70,10 @@ public class VkApiUploader(
      */
     public suspend fun uploadPhotoForMessage(peerId: Int, file: FileOnDisk): String? {
         val item = UploadableContent.File(
-            "photo",
-            "photo.png",
-            "image/png",
-            file
+            fieldName = "photo",
+            fileName = "photo.png",
+            mediaType = "image/png",
+            file = file
         )
 
         return uploadPhotoForMessage(peerId, item)
@@ -88,10 +88,10 @@ public class VkApiUploader(
      */
     public suspend fun uploadPhotoForMessage(peerId: Int, bytes: ByteArray): String? {
         val item = UploadableContent.Bytes(
-            "photo",
-            "photo.png",
-            "image/png",
-            bytes
+            fieldName = "photo",
+            fileName = "photo.png",
+            mediaType = "image/png",
+            bytes = bytes
         )
 
         return uploadPhotoForMessage(peerId, item)
@@ -106,10 +106,10 @@ public class VkApiUploader(
      */
     public suspend fun uploadPhotoForMessage(peerId: Int, url: String): String? {
         val item = UploadableContent.Url(
-            "photo",
-            "photo.png",
-            "image/png",
-            url
+            fieldName = "photo",
+            fileName = "photo.png",
+            mediaType = "image/png",
+            url = url
         )
 
         return uploadPhotoForMessage(peerId, item)

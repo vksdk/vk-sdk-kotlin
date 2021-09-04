@@ -6,7 +6,7 @@
 
 ---
 
-![Build](https://github.com/vksdk/vk-sdk-kotlin/workflows/Release/badge.svg) ![Documentation](https://github.com/vksdk/vk-sdk-kotlin/workflows/Documentation/badge.svg) [![Kotlin 1.4.10](https://img.shields.io/badge/Kotlin-1.4.10-blue.svg?style=flat)](http://kotlinlang.org) [![API version](https://img.shields.io/badge/API%20version-5.103+-blue?style=flat&logo=vk&logoColor=white)](https://vk.com/dev/versions)
+![Build](https://github.com/vksdk/vk-sdk-kotlin/workflows/Release/badge.svg) ![Documentation](https://github.com/vksdk/vk-sdk-kotlin/workflows/Documentation/badge.svg) [![Kotlin 1.5.30](https://img.shields.io/badge/Kotlin-1.5.30-blue.svg?style=flat)](http://kotlinlang.org) [![API version](https://img.shields.io/badge/API%20version-5.131+-blue?style=flat&logo=vk&logoColor=white)](https://vk.com/dev/versions)
 [![GitHub license](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat)](https://github.com/vksdk/vk-sdk-kotlin/blob/master/LICENSE)
 
 Unofficial VK.com SDK, written in Kotlin.

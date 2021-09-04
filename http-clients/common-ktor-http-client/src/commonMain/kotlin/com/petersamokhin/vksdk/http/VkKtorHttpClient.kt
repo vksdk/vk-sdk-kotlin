@@ -90,6 +90,7 @@ public open class VkKtorHttpClient @JvmOverloads constructor(
         }
 
     private suspend fun UploadableContent.toFormPart(): FormPart<ByteArray> {
+        @Suppress("EXPERIMENTAL_API_USAGE_FUTURE_ERROR")
         val headers = Headers.build {
             set(HttpHeaders.ContentDisposition, contentDisposition())
         }

@@ -1,5 +1,13 @@
 # Change log
 
+Version 0.0.8 *(2021-09-04)*
+----------------------------
+* Update to Kotlin 1.5.30, bump all the other dependencies
+
+* Refactor callbacks, flows etc. to use suspend functions
+* Introduce a couple of helpful workarounds for using suspend functions from Java
+* Refactor a lot
+
 Version 0.0.7 *(2020-09-11)*
 ----------------------------
 * Update to Kotlin 1.4.10

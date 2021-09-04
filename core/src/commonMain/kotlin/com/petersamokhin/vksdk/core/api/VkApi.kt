@@ -108,7 +108,7 @@ public class VkApi internal constructor(
          *
          * [String] because `5.13` and `5.130` are the different versions
          */
-        public const val DEFAULT_VERSION: String = "5.130"
+        public const val DEFAULT_VERSION: String = "5.131"
         public const val BASE_URL: String = "https://api.vk.com/method"
 
         public const val EXECUTE_MAX_REQUESTS_PER_SECOND_DISABLED: Int = -1

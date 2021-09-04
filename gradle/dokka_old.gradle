@@ -1,0 +1,78 @@
+apply plugin: 'org.jetbrains.dokka'
+
+/**
+ * Should be changed after each major and minor release.
+ * Also, previous docs subdirectory should be added to .gitignore file.
+ */
+def CURRENT_VERSION_DOCS_DIR_PREFIX = "0.0"
+
+dokkaGfm {
+    outputDirectory = "$rootDir/docs/${CURRENT_VERSION_DOCS_DIR_PREFIX}.x"
+    outputFormat = 'gfm'
+    skipEmptyPackages = true
+
+    //noinspection GroovyAssignabilityCheck
+    packageOptions {
+        prefix = 'com.petersamokhin.vksdk.internal'
+        suppress = true
+    }
+
+    if (project.plugins.hasPlugin('org.jetbrains.kotlin.multiplatform')) {
+        impliedPlatforms = ['common']
+        kotlinTasks {
+            []
+        }
+
+        // https://github.com/Kotlin/dokka/issues/819
+        def multiplatformMapping = [
+                common: [
+                        sourceSetsNames    : ['common'],
+                        sourceSetPathsNames: ['common'],
+                        platforms          : ['common']
+                ],
+                jvm   : [
+                        sourceSetsNames    : ['jvm'],
+                        sourceSetPathsNames: ['jvm'],
+                        platforms          : ['jvm']
+                ],
+                darwin: [
+                        sourceSetsNames    : [
+                                'iosX64', 'iosArm32', 'iosArm64',
+                                'tvosX64', 'tvosArm64',
+                                'watchosX86', 'watchosArm32', 'watchosArm64',
+                                'macosX64'
+                        ],
+                        sourceSetPathsNames: ['darwin'],
+                        platforms          : ['native']
+                ],
+                linux : [
+                        sourceSetsNames    : ['linuxX64'],
+                        sourceSetPathsNames: ['linux', 'pthread'],
+                        platforms          : ['native']
+                ],
+                mingw : [
+                        sourceSetsNames    : ['mingwX64'],
+                        sourceSetPathsNames: ['mingw'],
+                        platforms          : ['native']
+                ]
+        ]
+
+        multiplatformMapping.forEach { k, v ->
+            if (v.sourceSetsNames.any { kotlin.sourceSets.getNames().contains("${it}Main") }) {
+                v.sourceSetPathsNames.forEach { srcPathName ->
+                    def srcPath = "${getProject().getProjectDir().toString()}/src/${srcPathName}Main"
+                    if (file(srcPath).isDirectory()) {
+                        //noinspection GroovyAssignabilityCheck
+                        sourceRoot {
+                            path = srcPath
+                            platforms = v.platforms
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        // otherwise this project handled automatically
+        // by dokka as the simple JVM-based
+    }
+}

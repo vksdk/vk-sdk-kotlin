@@ -11,10 +11,9 @@ import com.petersamokhin.vksdk.core.utils.defaultJson
 import com.petersamokhin.vksdk.core.utils.jsonArrayOrNullSafe
 import com.petersamokhin.vksdk.core.utils.jsonObjectOrNullSafe
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlin.coroutines.CoroutineContext
@@ -44,8 +43,7 @@ public class BatchRequestExecutor @JvmOverloads constructor(
 
     private var queue: IsoArrayDeque<BatchRequestItem>? = null
 
-    @ExperimentalCoroutinesApi
-    private val resultsChannel = BroadcastChannel<BatchRequestResult>(Channel.BUFFERED)
+    private val resultsChannel = MutableSharedFlow<BatchRequestResult>(0, 64)
 
     init {
         startQueueLoop()
@@ -89,7 +87,7 @@ public class BatchRequestExecutor @JvmOverloads constructor(
     @FlowPreview
     @ExperimentalCoroutinesApi
     public fun observeResults(): Flow<BatchRequestResult> =
-        resultsChannel.asFlow()
+        resultsChannel.asSharedFlow()
 
     /**
      * Loop started during initialization
@@ -134,7 +132,7 @@ public class BatchRequestExecutor @JvmOverloads constructor(
                         val (request, callback) = currentItems[index]
 
                         callback.onResult(element)
-                        resultsChannel.send(BatchRequestResult(request, element))
+                        resultsChannel.emit(BatchRequestResult(request, element))
                     }
                 } else {
                     currentItems.notifyErrors()

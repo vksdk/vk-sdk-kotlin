@@ -16,7 +16,7 @@ CURRENT_VERSION_DOCS_DIR_PREFIX='0.0'
 set -ex
 
 # Generate the API docs
-./gradlew dokka
+./gradlew dokkaGfm
 
 # Dokka filenames like `-http-url/index.md` don't work well with MkDocs <title> tags.
 # Assign metadata to the file's first Markdown heading.

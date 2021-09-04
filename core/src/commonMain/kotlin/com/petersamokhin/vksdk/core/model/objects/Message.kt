@@ -4,6 +4,7 @@ import com.petersamokhin.vksdk.core.api.VkRequest
 import com.petersamokhin.vksdk.core.client.VkApiClient
 import com.petersamokhin.vksdk.core.http.Parameters
 import com.petersamokhin.vksdk.core.utils.intValue
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.random.Random
@@ -189,6 +190,7 @@ public class Message(
         return this
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
     internal fun buildParams(json: Json) = Parameters().apply {
         userId?.also { put("user_id", it) }
         peerId?.also { put("peer_id", it) }

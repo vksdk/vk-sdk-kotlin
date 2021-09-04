@@ -25,9 +25,9 @@ public data class VkRequest(
      */
     public suspend fun execute(): String {
         val result = httpClient.post(
-            "${VkApi.BASE_URL}/$method",
-            params.buildQuery().encodeToByteArray(),
-            ContentType.FormUrlEncoded
+            url = "${VkApi.BASE_URL}/$method",
+            body = params.buildQuery().encodeToByteArray(),
+            bodyContentType = ContentType.FormUrlEncoded
         )
 
         if (result.isSuccessful() && result.body != null) {

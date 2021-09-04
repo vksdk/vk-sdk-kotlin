@@ -62,7 +62,7 @@ class Bot : CoroutineScope {
      * @param clientId Group ID
      * @param accessToken Group `access_token`
      */
-    @OptIn(KtorExperimentalAPI::class, FlowPreview::class)
+    @OptIn(FlowPreview::class)
     fun start(clientId: Int, accessToken: String) {
         if (accessToken == "abcdef123456...") throw RuntimeException("Please, replace dummy access_token with yours in Launcher.kt")
 

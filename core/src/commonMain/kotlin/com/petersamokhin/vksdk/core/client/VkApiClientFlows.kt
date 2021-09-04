@@ -5,7 +5,6 @@ import com.petersamokhin.vksdk.core.api.BatchRequestResult
 import com.petersamokhin.vksdk.core.callback.EventCallback
 import com.petersamokhin.vksdk.core.model.event.MessageNew
 import com.petersamokhin.vksdk.core.model.event.RawEvent
-import com.petersamokhin.vksdk.core.utils.sendBlocking
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -38,7 +37,7 @@ public class VkApiClientFlows internal constructor(
     @ExperimentalCoroutinesApi
     public fun onMessage(): Flow<MessageNew> =
         callbackFlow {
-            val listener: EventCallback<MessageNew> = EventCallback(::sendBlocking)
+            val listener: EventCallback<MessageNew> = EventCallback(::trySend)
             client.onMessage(listener)
 
             awaitClose { client.unregisterListener(listener) }
@@ -50,7 +49,7 @@ public class VkApiClientFlows internal constructor(
     @ExperimentalCoroutinesApi
     public fun onEachEvent(): Flow<RawEvent> =
         callbackFlow {
-            val listener: EventCallback<RawEvent> = EventCallback(::sendBlocking)
+            val listener: EventCallback<RawEvent> = EventCallback(::trySend)
             client.onEachEvent(listener)
 
             awaitClose { client.unregisterListener(listener) }

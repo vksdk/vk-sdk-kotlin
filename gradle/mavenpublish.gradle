@@ -1,25 +1,35 @@
 apply plugin: "com.vanniktech.maven.publish"
 
-mavenPublish {
-    def isLegacyMode = !project.plugins.hasPlugin('org.jetbrains.kotlin.multiplatform')
-    def isRelease = isReleaseBuild()
-    def signKeyValid = !getGpgKey().isEmpty()
-
-    useLegacyMode = isLegacyMode
-    releaseSigningEnabled = isRelease
-
-    project.logger.warn("publish: maven: release=$isRelease, keyValid=$signKeyValid, legacy=$isLegacyMode")
-
-    if (isRelease && !signKeyValid) {
-        project.logger.error("Release signing enabled, but key is empty")
+allprojects {
+    plugins.withId("com.vanniktech.maven.publish.base") {
+        mavenPublishing {
+            publishToMavenCentral("DEFAULT")
+            signAllPublications()
+            pomFromGradleProperties()
+        }
     }
 
-    targets {
-        installArchives {
-            def url = file("${rootProject.buildDir}/localMaven").toURI().toString()
-            project.logger.warn("publish: test: repo: $url")
-            releaseRepositoryUrl = url
-            snapshotRepositoryUrl = url
+    plugins.withId("com.vanniktech.maven.publish") {
+        mavenPublish {
+            def isRelease = isReleaseBuild()
+            def signKeyValid = !getGpgKey().isEmpty()
+
+            releaseSigningEnabled = isRelease
+
+            project.logger.warn("publish: maven: release=$isRelease, keyValid=$signKeyValid")
+
+            if (isRelease && !signKeyValid) {
+                project.logger.error("Release signing enabled, but key is empty")
+            }
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = 'buildLocalMaven'
+            url = file("${rootProject.buildDir}/localMaven").toURI().toString()
         }
     }
 }
@@ -33,16 +43,16 @@ signing {
 }
 
 @SuppressWarnings("GrMethodMayBeStatic")
-Boolean isReleaseBuild() {
+def isReleaseBuild() {
     return !VERSION_NAME.contains("SNAPSHOT")
 }
 
 def getGpgKey() {
-    return hasProperty('signingKey') ? signingKey : ""
+    return hasProperty("signingKey") ? signingKey : ""
 }
 
 def getGpgPassword() {
-    return hasProperty('signingPassword') ? signingPassword : ""
+    return hasProperty("signingPassword") ? signingPassword : ""
 }
 
 apply from: "$rootDir/gradle/dokka.gradle"
